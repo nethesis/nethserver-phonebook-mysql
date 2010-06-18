@@ -1,0 +1,5 @@
+#!/usr/bin/perl -w
+
+use esmith::Build::CreateLinks qw(:all);
+
+event_link("odbc-install", "odbc-update", "90");

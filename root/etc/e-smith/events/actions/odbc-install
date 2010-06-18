@@ -1,0 +1,4 @@
+#!/bin/bash
+
+/usr/bin/odbcinst -i -s -f /etc/odbc.ini
+/usr/bin/odbcinst -i -d -f /etc/odbcinst.ini
