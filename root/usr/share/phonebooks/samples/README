@@ -1,0 +1,11 @@
+questi sono alcuni esempi di collegamento con gestionali noti
+
+se avete script da integrare a questi mandateli a supporto@nethesis.it
+
+INSTALLAZIONE
+ - copiare il file in /usr/share/phonebooks/sync_rubrica.php 
+ - modificare il file in base alle proprie esisgenze e credenziali di accesso
+     $dsn="DSN_NAME";
+     $user="dsn_user";
+     $pass="dsn_pass";
+

@@ -1,0 +1,12 @@
+#######################################################################
+# sql database definitions for ext_phonebook
+#######################################################################
+
+database        sql
+suffix          "dc=rubrica"
+rootdn          "cn=root,dc=rubrica"
+dbname          ext_phonebook-ldap
+has_ldapinfo_dn_ru      no
+dbuser          pbookuser
+dbpasswd        pbookpass
+

@@ -1,0 +1,96 @@
+#!/bin/bash
+mysql -f << END
+
+use ext_phonebook;
+
+DROP TABLE ldap_attr_mappings;
+CREATE TABLE ldap_attr_mappings (
+  id int(10) unsigned NOT NULL auto_increment,
+  oc_map_id int(10) unsigned NOT NULL default '0',
+  name varchar(255) NOT NULL default '',
+  sel_expr varchar(255) NOT NULL default '',
+  sel_expr_u varchar(255) default NULL,
+  from_tbls varchar(255) NOT NULL default '',
+  join_where varchar(255) default NULL,
+  add_proc varchar(255) default NULL,
+  delete_proc varchar(255) default NULL,
+  param_order tinyint(4) NOT NULL default '0',
+  expect_return tinyint(4) NOT NULL default '0',
+  PRIMARY KEY  (id)
+) TYPE=MyISAM;
+
+
+INSERT INTO ldap_attr_mappings VALUES (1,1,'cn',"trim(concat(if(azienda is null,'',azienda),' ',if(nome is null,'',nome)))","trim(concat(if(azienda is null,'',azienda),' ',if(nome is null,'',nome)))",'rubrica',NULL,NULL,NULL,3,0);
+INSERT INTO ldap_attr_mappings VALUES (2,1,'givenName',"if(nome is null,'',nome)","if(nome is null,'',nome)",'rubrica',NULL,NULL,NULL,3,0);
+INSERT INTO ldap_attr_mappings VALUES (3,1,'telephoneNumber','tel','tel','rubrica',NULL,NULL,NULL,3,0);
+INSERT INTO ldap_attr_mappings VALUES (4,1,'facsimiletelephonenumber','fax','fax','rubrica',NULL,NULL,NULL,3,0);
+INSERT INTO ldap_attr_mappings VALUES (5,1,'mail','email','email','rubrica',NULL,NULL,NULL,3,0);
+INSERT INTO ldap_attr_mappings VALUES (6,1,'o','azienda','azienda','rubrica',NULL,NULL,NULL,3,0);
+INSERT INTO ldap_attr_mappings VALUES (7,1,'mobile','cell','cell','rubrica',NULL,NULL,NULL,3,0);
+INSERT INTO ldap_attr_mappings VALUES (8,1,'streetaddress','via','via','rubrica',NULL,NULL,NULL,3,0);
+INSERT INTO ldap_attr_mappings VALUES (9,1,'l','citta','citta','rubrica',NULL,NULL,NULL,3,0);
+INSERT INTO ldap_attr_mappings VALUES (10,1,'stateOrProvinceName','prov','prov','rubrica',NULL,NULL,NULL,3,0);
+
+
+DROP TABLE ldap_entries;
+CREATE TABLE ldap_entries (
+  id int(10) unsigned NOT NULL auto_increment,
+  dn varchar(255) NOT NULL default '',
+  oc_map_id int(10) unsigned NOT NULL default '0',
+  parent int(11) NOT NULL default '0',
+  keyval int(11) NOT NULL default '0',
+  PRIMARY KEY  (id),
+  UNIQUE KEY dn (dn),
+  UNIQUE KEY oc_map_id (oc_map_id,keyval)
+) TYPE=MyISAM;
+
+
+INSERT INTO ldap_entries VALUES (1,'dc=rubrica',2,0,1);
+INSERT INTO ldap_entries VALUES (2,'ou=Referral,dc=rubrica',3,0,1);
+
+REPLACE INTO ldap_entries (dn,oc_map_id,parent,keyval) 
+  SELECT CONCAT('cn=',trim(concat(if(azienda is null,'',azienda),' ',if(nome is null,'',nome))),',dc=rubrica'),1,1,id 
+    FROM rubrica;
+
+
+DROP TABLE ldap_entry_objclasses;
+CREATE TABLE ldap_entry_objclasses (
+  entry_id int(11) NOT NULL default '0',
+  oc_name varchar(64) default NULL
+) TYPE=MyISAM;
+
+
+INSERT INTO ldap_entry_objclasses VALUES (1,'dcObject');
+INSERT INTO ldap_entry_objclasses VALUES (7,'extensibleObject');
+
+
+DROP TABLE ldap_oc_mappings;
+CREATE TABLE ldap_oc_mappings (
+  id int(10) unsigned NOT NULL auto_increment,
+  name varchar(64) NOT NULL default '',
+  keytbl varchar(64) NOT NULL default '',
+  keycol varchar(64) NOT NULL default '',
+  create_proc varchar(255) default NULL,
+  delete_proc varchar(255) default NULL,
+  expect_return tinyint(4) NOT NULL default '0',
+  PRIMARY KEY  (id)
+) TYPE=MyISAM;
+
+
+INSERT INTO ldap_oc_mappings VALUES (1,'inetOrgPerson','rubrica','id',NULL,NULL,0);
+
+
+DROP TABLE ldap_referrals;
+CREATE TABLE ldap_referrals (
+  entry_id int(11) NOT NULL default '0',
+  url text NOT NULL
+) TYPE=MyISAM;
+
+GRANT SELECT ON ext_phonebook.ldap_oc_mappings TO pbookuser IDENTIFIED BY 'pbookpass';
+GRANT SELECT ON ext_phonebook.ldap_attr_mappings TO pbookuser;
+GRANT SELECT ON ext_phonebook.ldap_entries TO pbookuser;
+GRANT SELECT ON ext_phonebook.ldap_referrals TO pbookuser;
+GRANT SELECT ON ext_phonebook.ldap_entry_objclasses TO pbookuser;
+GRANT ALL ON ext_phonebook.rubrica TO pbookuser;
+
+END
