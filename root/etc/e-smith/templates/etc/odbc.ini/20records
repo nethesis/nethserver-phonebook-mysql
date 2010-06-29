@@ -17,7 +17,7 @@
     my $records = @records || '0';
     if ($records > 0)
     {
-      $OUT .= "\n";
+      $OUT .= "\n\n";
       
       my $record;
       foreach $record (sort @records)
@@ -29,7 +29,7 @@
     	}
       }
 
-        $OUT .= "\n";
+        $OUT .= "\n\n";
     }
     
 }
