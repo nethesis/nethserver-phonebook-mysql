@@ -1,0 +1,6 @@
+[MySQL]
+DRIVER          = /usr/lib/libmyodbc3.so
+SETUP           = /usr/lib/libmyodbc3S.so
+UsageCount              = 5
+FileUsage               = 10
+
