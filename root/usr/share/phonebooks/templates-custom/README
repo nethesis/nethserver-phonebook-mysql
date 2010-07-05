@@ -5,13 +5,22 @@ INSTALLAZIONE sync rubrica
 
 mkdir -p /etc/e-smith/templates-custom/etc/cron.d/
 
-Lo script sync_rubrica.php verrà inserito nel cron per sincronizzare i dati con la rubrica esterna ad intervalli regolari.
+Copiare uno script d'esempio, o crearne uno, in /usr/share/phonebooks/sync_rubrica.php. Assicurarsi quindi che lo script sia eseguibile:
+chmod a+x /usr/share/phonebooks/sync_rubrica.php
+
+Lo script sync_rubrica.php verrà inserito nel cron per sincronizzare i dati con la rubrica esterna ad intervalli regolari:
 cp /usr/share/phonebooks/templates-custom/cron.d /etc/e-smith/templates-custom/etc/cron.d/sync_rubrica
 expand-template /etc/cron.d/sync_rubrica 
 
 INSTALLAZIONE Rubrica2Ldap
 
+cp /usr/share/phonebooks/templates-custom/cron.d_ldap /etc/e-smith/templates-custom/etc/cron.d/rubrica2ldap
+
 expand-template /etc/cron.d/rubrica2ldap
 
+
+INSTALLAZIONE Rubrica Sogo
+
+cp /usr/share/phonebooks/templates-custom/cron.d_sogo /etc/e-smith/templates-custom/etc/cron.d/exportsogo
 
 
