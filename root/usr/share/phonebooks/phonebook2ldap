@@ -25,7 +25,7 @@ INSERT INTO ldap_attr_mappings VALUES (2,1,'sn','name','name','phonebook',NULL,N
 INSERT INTO ldap_attr_mappings VALUES (3,1,'givenName','name','name','phonebook',NULL,NULL,NULL,3,0);
 INSERT INTO ldap_attr_mappings VALUES (4,1,'telephoneNumber','workphone','workphone','phonebook',NULL,NULL,NULL,3,0);
 INSERT INTO ldap_attr_mappings VALUES (5,1,'facsimiletelephonenumber','fax','fax','phonebook',NULL,NULL,NULL,3,0);
-INSERT INTO ldap_attr_mappings VALUES (6,1,'mail','email','email','phonebook',NULL,NULL,NULL,3,0);
+INSERT INTO ldap_attr_mappings VALUES (6,1,'mail','workemail','workemail','phonebook',NULL,NULL,NULL,3,0);
 INSERT INTO ldap_attr_mappings VALUES (7,1,'o','company','company','phonebook',NULL,NULL,NULL,3,0);
 INSERT INTO ldap_attr_mappings VALUES (8,1,'mobile','cellphone','cellphone','phonebook',NULL,NULL,NULL,3,0);
 INSERT INTO ldap_attr_mappings VALUES (9,1,'streetaddress','workstreet','workstreet','phonebook',NULL,NULL,NULL,3,0);
@@ -52,7 +52,7 @@ INSERT INTO ldap_entries VALUES (1,'dc=rubrica',2,0,1);
 INSERT INTO ldap_entries VALUES (2,'ou=Referral,dc=rubrica',3,0,1);
 
 REPLACE INTO ldap_entries (dn,oc_map_id,parent,keyval) 
-  SELECT CONCAT('cn=',name,'dc=rubrica'),1,1,id 
+  SELECT CONCAT('cn=',name,',','dc=rubrica'),1,1,id 
     FROM phonebook;
 
 
@@ -81,7 +81,7 @@ CREATE TABLE ldap_oc_mappings (
 
 
 INSERT INTO ldap_oc_mappings VALUES (1,'inetOrgPerson','phonebook','id',NULL,NULL,0);
-
+INSERT INTO ldap_oc_mappings VALUES (2,'document','phonebook','id',NULL,NULL,0);
 
 DROP TABLE IF EXISTS ldap_referrals;
 CREATE TABLE ldap_referrals (
