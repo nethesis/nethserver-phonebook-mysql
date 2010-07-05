@@ -21,6 +21,9 @@ expand-template /etc/cron.d/rubrica2ldap
 
 INSTALLAZIONE Rubrica Sogo
 
-cp /usr/share/phonebooks/templates-custom/cron.d_sogo /etc/e-smith/templates-custom/etc/cron.d/exportsogo
+E' possibile esportare la rubrica di sogo nella tabella phonebook all'interno del database ext_phonebbok.
+
+1) Creare il database: mysql < /usr/share/phonebooks/ext_phonebook.sql
+2) Attivare lo script in cron:cp /usr/share/phonebooks/templates-custom/cron.d_sogo /etc/e-smith/templates-custom/etc/cron.d/exportsogo
 
 
