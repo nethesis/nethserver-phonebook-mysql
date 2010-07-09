@@ -1,6 +1,14 @@
 Frammenti di template da inserire in templates-custom per attivare 
 la pubblicazione ldap della rubrica
 
+ABILITAZIONE Rubrica condivisa ext_phonebook
+1) Creare il database:
+ mysql < /usr/share/phonebooks/ext_phonebook.sql
+2) Abilitare il database
+ config set ext_phonebook-ldap ODBC Description "Ext_Phonebook" Driver "MySQL" SERVER "localhost" PORT 3306 DATABASE ext_phonebook
+ signal-event odbc-update
+
+
 INSTALLAZIONE sync rubrica
 
 mkdir -p /etc/e-smith/templates-custom/etc/cron.d/
