@@ -27,9 +27,9 @@
 	while ( my ($key, $value) = each(%props) ) {
         	$OUT .= "$key = $value\n";
     	}
+        $OUT .= "\n\n";
       }
 
-        $OUT .= "\n\n";
     }
     
 }
