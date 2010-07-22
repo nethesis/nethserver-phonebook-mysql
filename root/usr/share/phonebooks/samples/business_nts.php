@@ -2,7 +2,7 @@
 <?
 
 $database = mysql_connect('localhost','pbookuser','pbookpass') or die("Database error config");
-mysql_select_db('ext_phonebook', $database);
+mysql_select_db('phonebook', $database);
 
 
  function ODBCconnect(){ 
