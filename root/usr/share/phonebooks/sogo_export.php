@@ -109,7 +109,7 @@ foreach($tables as $table)
 			echo " NOTE = $NOTE\n";
 			echo " url = $url\n";
 		}
-		@$query = "INSERT INTO ext_phonebook.phonebook (owner_id,workemail,homeemail,homephone,workphone,cellphone,fax,title,company,name,homestreet,homecity,homeprovince,homepostalcode,homecountry,workstreet,workcity,workprovince,workpostalcode,workcountry,notes,url) VALUES ('$users[$table]','{$EMAIL['work']}','{$EMAIL['home']}','{$TEL['home']}','{$TEL['work']}','{$TEL['cell']}','{$TEL['fax']}','$TITLE','$ORG','$FN','{$ADR['home']['street']}','{$ADR['home']['city']}','{$ADR['home']['prov']}','{$ADR['home']['code']}','{$ADR['home']['country']}','{$ADR['work']['street']}','{$ADR['work']['city']}','{$ADR['work']['prov']}','{$ADR['work']['code']}','{$ADR['work']['country']}','$NOTE','$url')";
+		@$query = "INSERT INTO phonebook.phonebook (owner_id,workemail,homeemail,homephone,workphone,cellphone,fax,title,company,name,homestreet,homecity,homeprovince,homepostalcode,homecountry,workstreet,workcity,workprovince,workpostalcode,workcountry,notes,url) VALUES ('$users[$table]','{$EMAIL['work']}','{$EMAIL['home']}','{$TEL['home']}','{$TEL['work']}','{$TEL['cell']}','{$TEL['fax']}','$TITLE','$ORG','$FN','{$ADR['home']['street']}','{$ADR['home']['city']}','{$ADR['home']['prov']}','{$ADR['home']['code']}','{$ADR['home']['country']}','{$ADR['work']['street']}','{$ADR['work']['city']}','{$ADR['work']['prov']}','{$ADR['work']['code']}','{$ADR['work']['country']}','$NOTE','$url')";
 		if(!mysql_query($query) && DEBUG) //print errors if debug is enabled
 		 echo mysql_error()."\n";
 	}
