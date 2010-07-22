@@ -1,0 +1,3 @@
+#!/bin/bash
+
+cp /usr/phonebooks/scripts/* /home/e-smith/phonebooks/ 2>/dev/null 
