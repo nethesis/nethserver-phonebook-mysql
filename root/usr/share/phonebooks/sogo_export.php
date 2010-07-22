@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 /**
 	This script extracts contacts from sogo and add them to centralized ponebook.
