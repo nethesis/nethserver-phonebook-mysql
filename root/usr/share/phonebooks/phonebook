@@ -7,6 +7,6 @@ done
 
 ldap_status=`/sbin/e-smith/config getprop phonebook ldap`
 if [ "X$ldap_status" == "Xenabled" ]; then
-	/usr/share/phonebooks/rubrica2ldap
+	/usr/share/phonebooks/phonebook2ldap
 fi
 
