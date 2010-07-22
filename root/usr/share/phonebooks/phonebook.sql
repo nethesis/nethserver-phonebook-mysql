@@ -1,6 +1,6 @@
-CREATE DATABASE IF NOT EXISTS ext_phonebook;
+CREATE DATABASE IF NOT EXISTS phonebook;
 
-USE ext_phonebook;
+USE phonebook;
 
  CREATE TABLE IF NOT EXISTS `phonebook` (
    `id` int(11) NOT NULL auto_increment,
@@ -42,7 +42,7 @@ USE ext_phonebook;
 
 USE mysql;
 
-GRANT ALL on ext_phonebook.* TO pbookuser identified by 'pbookpass';
-GRANT ALL on ext_phonebook.* TO sogo;
+GRANT ALL on phonebook.* TO pbookuser identified by 'pbookpass';
+GRANT ALL on phonebook.* TO sogo;
 
 FLUSH privileges;
