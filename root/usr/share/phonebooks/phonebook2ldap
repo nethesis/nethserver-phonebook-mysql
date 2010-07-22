@@ -1,7 +1,7 @@
 #!/bin/bash
 mysql -f << END
 
-use ext_phonebook;
+use phonebook;
 
 DROP TABLE IF EXISTS ldap_attr_mappings;
 CREATE TABLE ldap_attr_mappings (
