@@ -2,8 +2,7 @@
 
 # Publish all configured phonebook into one phonebook
 
-# empty phonebook and ldap table
-mysql phonebook -e "truncate ldap_entries"
+# empty phonebook table
 mysql phonebook -e "truncate phonebook"
 
 
