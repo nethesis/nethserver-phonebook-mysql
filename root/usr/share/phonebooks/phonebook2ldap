@@ -52,7 +52,7 @@ INSERT INTO ldap_entries VALUES (1,'dc=rubrica',2,0,1);
 INSERT INTO ldap_entries VALUES (2,'ou=Referral,dc=rubrica',3,0,1);
 
 REPLACE INTO ldap_entries (dn,oc_map_id,parent,keyval) 
-  SELECT CONCAT('cn=',name,',','dc=rubrica'),1,1,id 
+  SELECT CONCAT('cn=',if(name IS NOT NULL AND name != '' AND name != ' ',name,company),',','dc=rubrica'),1,1,id 
     FROM phonebook;
 
 
