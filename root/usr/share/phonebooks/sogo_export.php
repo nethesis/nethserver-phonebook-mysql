@@ -120,7 +120,7 @@ foreach($tables as $table)
 
 function help()
 {
-	echo "Export  SOGo phonebooks to system shared phonebook.\n\nUsage: export.php <user> [name]\n\nWhere:\n\tuser: the phonebook owner\n\tname: the phonebook name. If no name is specified, the script will export all user's phonebooks\n";
+	echo "Export  SOGo phonebooks to system shared phonebook.\n\nUsage: export.php <user> [name]\n\nWhere:\n\tuser: the phonebook owner, or 'all' for all users.\n\tname: the phonebook name. If no name is specified, the script will export all user's phonebooks.\n";
 	exit(0);
 }
 ?>
