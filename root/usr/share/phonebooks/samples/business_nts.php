@@ -7,9 +7,9 @@ mysql_select_db('phonebook', $database);
 
  function ODBCconnect(){ 
      //Modifica i seguenti parametri di accesso all'odbc
-     $dsn="DSN_NAME";
-     $user="dsn_user";
-     $pass="dsn_pass";
+     $dsn="business";
+     $user="sa";
+     $pass="nts";
 
      global $ODBC_handle;
      if (!isset($ODBC_handle)){
@@ -51,9 +51,6 @@ mysql_select_db('phonebook', $database);
 
  $rubrica_ext = ODBCquery2array($query);
 
- $drop_table = "TRUNCATE table rubrica"; //Azzera anche id autoincrement
- $result = mysql_query($drop_table,$database);
- 
  foreach ($rubrica_ext as $record) {
         $azienda=$record['azienda1'].' '.$record['azienda2'];
         $nome=$record['contatto'];
@@ -72,22 +69,21 @@ mysql_select_db('phonebook', $database);
         $fax=str_replace("/","",$fax);
         $fax=str_replace("+","00",$fax);
 
- 	$query_ins = "INSERT INTO rubrica SET 
- 			azienda='".mysql_escape_string($azienda)."', 
-			nome='".mysql_escape_string($nome)."', 
-			tel='".mysql_escape_string($tel)."', 
+ 	$query_ins = "INSERT INTO phonebook  SET 
+ 			company='".mysql_escape_string($azienda)."', 
+			name='".mysql_escape_string($nome)."', 
+			workphone='".mysql_escape_string($tel)."', 
 			fax='".mysql_escape_string($fax)."', 
-			email='".mysql_escape_string($email)."', 
-			via='".mysql_escape_string($via)."', 
-			citta='".mysql_escape_string($citta)."', 
-			prov='".mysql_escape_string($prov)."', 
-			cap='".mysql_escape_string($cap)."', 
-			cell='".mysql_escape_string($cell)."';";
+			workemail='".mysql_escape_string($email)."', 
+			workstreet='".mysql_escape_string($via)."', 
+			workcity='".mysql_escape_string($citta)."', 
+			workprovince='".mysql_escape_string($prov)."', 
+			workpostalcode='".mysql_escape_string($cap)."', 
+			cellphone='".mysql_escape_string($cell)."';";
 
  	$result = mysql_query($query_ins,$database);
  }
  
-  system("/usr/share/phonebooks/rubrica2ldap");
 
  ?>
 

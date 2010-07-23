@@ -42,9 +42,6 @@ mysql_select_db('phonebook', $database);
 
  $rubrica_ext = ODBCquery2array($query);
 
- $drop_table = "TRUNCATE table rubrica"; //Azzera anche id autoincrement
- $result = mysql_query($drop_table,$database);
- 
  foreach ($rubrica_ext as $record) {
         $azienda=$record['azienda'];
         $nome=$record['cognome']." ".$record['nome'];
@@ -63,22 +60,20 @@ mysql_select_db('phonebook', $database);
         $fax=str_replace("/","",$fax);
         $fax=str_replace("+","00",$fax);
 
- 	$query_ins = "INSERT INTO rubrica SET 
- 			azienda='".mysql_escape_string($azienda)."', 
-			nome='".mysql_escape_string($nome)."', 
-			tel='".mysql_escape_string($tel)."', 
-			fax='".mysql_escape_string($fax)."', 
-			email='".mysql_escape_string($email)."', 
-			via='".mysql_escape_string($via)."', 
-			citta='".mysql_escape_string($citta)."', 
-			prov='".mysql_escape_string($prov)."', 
-			cap='".mysql_escape_string($cap)."', 
-			cell='".mysql_escape_string($cell)."';";
-
+        $query_ins = "INSERT INTO phonebook  SET 
+                        company='".mysql_escape_string($azienda)."', 
+                        name='".mysql_escape_string($nome)."', 
+                        workphone='".mysql_escape_string($tel)."', 
+                        fax='".mysql_escape_string($fax)."', 
+                        workemail='".mysql_escape_string($email)."', 
+                        workstreet='".mysql_escape_string($via)."', 
+                        workcity='".mysql_escape_string($citta)."', 
+                        workprovince='".mysql_escape_string($prov)."', 
+                        workpostalcode='".mysql_escape_string($cap)."', 
+                        cellphone='".mysql_escape_string($cell)."';";
+ 
  	$result = mysql_query($query_ins,$database);
  }
  
-  #system("/usr/share/phonebooks/rubrica2ldap");
-
  ?>
 
