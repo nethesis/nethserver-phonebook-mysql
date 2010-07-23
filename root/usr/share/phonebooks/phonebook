@@ -1,4 +1,7 @@
-/usr/share/phonebooks/sogo_export.php all
+sogo_status=`/sbin/e-smith/config getprop phonebook sogo`
+if [ "X$sogo_status" != "Xdisabled" ]; then
+        /usr/share/phonebooks/sogo_export.php $sogo_status
+fi
 for i in `find /usr/share/phonebooks/scripts/`; do
         if [ -f $i ] && [ -x $i ]; then
                 $i
