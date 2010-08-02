@@ -75,6 +75,13 @@ foreach($tables as $table)
 
 		$data = $card->fromText($row[0]);
 		$FN =  mysql_real_escape_string($data[0]['FN'][0]['value'][0][0]);
+		if(!$FN) //if no Full Name, use Name
+			$FN = mysql_real_escape_string($data[0]['N'][0]['value'][0][0]);
+		if(!$FN) //if no Name use, Nickname
+			$FN = mysql_real_escape_string($data[0]['NICKNAME'][0]['value'][0][0]);
+		if(!$FN) //else skip contact
+			continue;
+
 		$ORG =  mysql_real_escape_string($data[0]['ORG'][0]['value'][0][0]);
 		$TITLE =  mysql_real_escape_string($data[0]['TITLE'][0]['value'][0][0]);
 		$NOTE =  mysql_real_escape_string($data[0]['NOTE'][0]['value'][0][0]);
@@ -83,21 +90,31 @@ foreach($tables as $table)
 		if(count($data[0]['TEL']))
 			foreach($data[0]['TEL'] as $tel)
 			{
-				$TEL[$tel['param']['TYPE'][0]] =   mysql_real_escape_string($tel['value'][0][0]);
+				$TEL[strtolower($tel['param']['TYPE'][0])] =   mysql_real_escape_string($tel['value'][0][0]);
 			}
 		if(count($data[0]['ADR']))
 			foreach($data[0]['ADR'] as $adr)
 			{
-				$ADR[$adr['param']['TYPE'][0]]['street'] =   mysql_real_escape_string($adr['value'][2][0]);
-				$ADR[$adr['param']['TYPE'][0]]['city'] =   mysql_real_escape_string($adr['value'][3][0]);
-				$ADR[$adr['param']['TYPE'][0]]['prov'] =   mysql_real_escape_string($adr['value'][4][0]);
-				$ADR[$adr['param']['TYPE'][0]]['code'] =   mysql_real_escape_string($adr['value'][5][0]);
-				$ADR[$adr['param']['TYPE'][0]]['country'] =   mysql_real_escape_string($adr['value'][6][0]);
+				$ADR[strtolower($adr['param']['TYPE'][0])]['street'] =   mysql_real_escape_string($adr['value'][2][0]);
+				$ADR[strtolower($adr['param']['TYPE'][0])]['city'] =   mysql_real_escape_string($adr['value'][3][0]);
+				$ADR[strtolower($adr['param']['TYPE'][0])]['prov'] =   mysql_real_escape_string($adr['value'][4][0]);
+				$ADR[strtolower($adr['param']['TYPE'][0])]['code'] =   mysql_real_escape_string($adr['value'][5][0]);
+				$ADR[strtolower($adr['param']['TYPE'][0])]['country'] =   mysql_real_escape_string($adr['value'][6][0]);
 			}
 		if(count($data[0]['EMAIL']))
 			foreach($data[0]['EMAIL'] as $em)
-				$EMAIL[$em['param']['TYPE'][0]] =   mysql_real_escape_string($em['value'][0][0]);
+				$EMAIL[strtolower($em['param']['TYPE'][0])] =   mysql_real_escape_string($em['value'][0][0]);
 		
+		//map vcard 2.1 fields to vcard 3.0 fields
+		if ($EMAIL['internet'])
+		{
+			$EMAIL['work']	= $EMAIL['internet'];
+		}
+		if ($TEL['voice'])
+                {
+                        $TEl['work']  = $TEL['voice'];
+                }
+
 		if(DEBUG)
 		{
 			echo "\n\n== $FN == \n";
@@ -109,6 +126,7 @@ foreach($tables as $table)
 			echo " NOTE = $NOTE\n";
 			echo " url = $url\n";
 		}
+
 		@$query = "INSERT INTO phonebook.phonebook (owner_id,workemail,homeemail,homephone,workphone,cellphone,fax,title,company,name,homestreet,homecity,homeprovince,homepostalcode,homecountry,workstreet,workcity,workprovince,workpostalcode,workcountry,notes,url) VALUES ('$users[$table]','{$EMAIL['work']}','{$EMAIL['home']}','{$TEL['home']}','{$TEL['work']}','{$TEL['cell']}','{$TEL['fax']}','$TITLE','$ORG','$FN','{$ADR['home']['street']}','{$ADR['home']['city']}','{$ADR['home']['prov']}','{$ADR['home']['code']}','{$ADR['home']['country']}','{$ADR['work']['street']}','{$ADR['work']['city']}','{$ADR['work']['prov']}','{$ADR['work']['code']}','{$ADR['work']['country']}','$NOTE','$url')";
 		if(!mysql_query($query) && DEBUG) //print errors if debug is enabled
 		 echo mysql_error()."\n";
