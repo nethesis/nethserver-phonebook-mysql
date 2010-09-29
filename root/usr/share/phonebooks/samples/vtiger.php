@@ -13,7 +13,7 @@ $query="SELECT  accountname as company, '' as contact, phone as workphone, fax, 
 
  $res = mysql_query($query,$vtdb);
 
- while ($record=mysql_fetch_assoc($res) {
+ while ($record=mysql_fetch_assoc($res)) {
         $azienda=$record['company'];
         $nome=$record['contact'];
         $email=$record['email'];
@@ -25,7 +25,7 @@ $query="SELECT  accountname as company, '' as contact, phone as workphone, fax, 
         $tel=str_replace(" ","",$tel);
         $tel=str_replace("/","",$tel);
         $tel=str_replace("+","00",$tel);
-        $cell=str_replace("-","",$record['mobile']]);
+        $cell=str_replace("-","",$record['mobile']);
         $cell=str_replace(" ","",$cell);
         $cell=str_replace("/","",$cell);
         $cell=str_replace("+","00",$cell);
@@ -45,7 +45,6 @@ $query="SELECT  accountname as company, '' as contact, phone as workphone, fax, 
                         workprovince='".mysql_escape_string($prov)."', 
                         workpostalcode='".mysql_escape_string($cap)."', 
                         cellphone='".mysql_escape_string($cell)."';";
-
  	$result = mysql_query($query_ins,$database);
  }
  
