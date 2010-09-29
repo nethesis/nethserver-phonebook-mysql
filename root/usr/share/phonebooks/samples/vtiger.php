@@ -1,15 +1,17 @@
 #!/usr/bin/php -q
 <?
+$database = mysql_connect('localhost','pbookuser','pbookpass') or die("Database error config");
+mysql_select_db('phonebook', $database);
 
-$database = mysql_connect('localhost','vtdbuser','vtdbpass') or die("Database error config");
-mysql_select_db('vtigerdb', $database);
+$vtdb= mysql_connect('localhost','vtdbuser','vtdbpass') or die("Database error config");
+mysql_select_db('vtigerdb', $vtdb);
 
 
 $query="SELECT  accountname as company, '' as contact, phone as workphone, fax, otherphone as homephone, '' as mobile, bill_city as city, bill_code as code, bill_country as country, bill_state as state, bill_street as street, email1 as email  FROM vtiger_account join vtiger_accountbillads on vtiger_account.accountid=vtiger_accountbillads.accountaddressid
         UNION SELECT accountname as company, concat(firstname,' ',lastname) as contact,  vtiger_contactdetails.phone as workphone, vtiger_contactdetails.fax, '' as homephone, mobile,mailingcity as city, mailingzip as code, mailingcountry as country,mailingstate as state,mailingstreet as street, email FROM vtiger_contactdetails JOIN vtiger_account on vtiger_account.accountid=vtiger_contactdetails.accountid JOIN vtiger_contactaddress  on vtiger_contactdetails.contactid=vtiger_contactaddress.contactaddressid";
 
 
- $res = mysql_query($query);
+ $res = mysql_query($query,$vtdb);
 
  while ($record=mysql_fetch_assoc($res) {
         $azienda=$record['company'];
