@@ -49,4 +49,3 @@ $query="SELECT  accountname as company, '' as contact, phone as workphone, fax, 
  }
  
  ?>
-
