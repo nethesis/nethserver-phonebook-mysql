@@ -35,6 +35,8 @@ INSERT INTO ldap_attr_mappings VALUES (12,1,'countryName','workcountry','workcou
 INSERT INTO ldap_attr_mappings VALUES (13,1,'stateOrProvinceName','workprovince','workprovince','phonebook',NULL,NULL,NULL,3,0);
 INSERT INTO ldap_attr_mappings VALUES (14,1,'personalTitle','title','title','phonebook',NULL,NULL,NULL,3,0);
 INSERT INTO ldap_attr_mappings VALUES (15,1,'postalCode','workpostalcode','workpostalcode','phonebook',NULL,NULL,NULL,3,0);
+INSERT INTO ldap_attr_mappings VALUES (16,1,'displayName','name','name','phonebook',NULL,NULL,NULL,3,0);
+
 
 DROP TABLE IF EXISTS ldap_entries;
 CREATE TABLE ldap_entries (
