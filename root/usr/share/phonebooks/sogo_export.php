@@ -112,7 +112,7 @@ foreach($tables as $table)
 		}
 		if ($TEL['voice'])
                 {
-                        $TEl['work']  = $TEL['voice'];
+                        $TEL['work']  = $TEL['voice'];
                 }
 
 		if(DEBUG)
