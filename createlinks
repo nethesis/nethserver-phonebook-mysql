@@ -3,4 +3,4 @@
 use esmith::Build::CreateLinks qw(:all);
 
 event_link("odbc-install", "odbc-update", "90");
-event_link("pre-backup","phonebook-backup", "90");
+event_link("phonebook-backup","pre-backup", "90");
