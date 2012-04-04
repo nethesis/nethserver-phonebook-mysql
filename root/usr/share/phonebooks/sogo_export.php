@@ -75,8 +75,8 @@ foreach($tables as $table)
 
 		$data = $card->fromText($row[0]);
 		$FN =  mysql_real_escape_string($data[0]['FN'][0]['value'][0][0]);
-		if(!$FN) //if no Full Name, use Name
-			$FN = mysql_real_escape_string($data[0]['N'][0]['value'][0][0]);
+		if(!$FN) //if no Full Name, use Name + Surname
+			$FN = mysql_real_escape_string($data[0]['N'][0]['value'][0][0].$data[0]['N'][0]['value'][1][0]);
 		if(!$FN) //if no Name use, Nickname
 			$FN = mysql_real_escape_string($data[0]['NICKNAME'][0]['value'][0][0]);
 		if(!$FN) //else skip contact
