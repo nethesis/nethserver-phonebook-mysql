@@ -126,6 +126,7 @@ class Contact_Vcard_Parse
         // convert all kinds of line endings to Unix-standard and get
         // rid of double blank lines.
         $this->convertLineEndings($text);
+	$text = str_replace(array("\r\n", '\r'),"\n",$text);
 
         // unfold lines.  concat two lines where line 1 ends in \n and
         // line 2 starts with a whitespace character.  only removes
