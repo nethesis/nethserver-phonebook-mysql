@@ -16,6 +16,7 @@ $query="SELECT  accountname as company, '' as contact, phone as workphone, fax, 
  while ($record=mysql_fetch_assoc($res)) {
         $azienda=$record['company'];
         $nome=$record['contact'];
+	if (!$nome) $nome = $azienda;
         $email=$record['email'];
         $via=$record['street'];
         $citta=$record['city'];
