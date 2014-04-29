@@ -1,3 +1,9 @@
+{
+    use NethServer::Password;
+    $db_pwd = NethServer::Password::store('PhonebookDBPasswd') || die('Could not generate Phonebook database password!');
+    return '';
+}
+
 CREATE DATABASE IF NOT EXISTS phonebook;
 
 USE phonebook;
@@ -42,7 +48,7 @@ USE phonebook;
 
 USE mysql;
 
-GRANT ALL on phonebook.* TO pbookuser identified by 'pbookpass';
+GRANT ALL on phonebook.* TO pbookuser identified by '{$db_pwd}';
 GRANT ALL on phonebook.* TO sogo;
 
 FLUSH privileges;

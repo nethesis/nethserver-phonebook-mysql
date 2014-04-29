@@ -1,4 +1,0 @@
-#!/bin/bash
-rm -f /home/e-smith/phonebook/*
-cp /usr/share/phonebooks/scripts/* /home/e-smith/phonebook/ 2>/dev/null
-exit 0

@@ -2,5 +2,11 @@
 
 use esmith::Build::CreateLinks qw(:all);
 
-event_link("odbc-install", "odbc-update", "90");
-event_link("phonebook-backup","pre-backup", "90");
+my $event = nethserver-phonebook-mysql-update
+
+event_actions ($event , 'initialize-default-databases 00');
+
+templates2events ('/usr/share/phonebooks/phonebook.sql',$event);
+
+event_link ("nethserver-phonebook-mysql-install", $event, "98");
+

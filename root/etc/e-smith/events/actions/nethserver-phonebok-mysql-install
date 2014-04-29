@@ -1,0 +1,4 @@
+#!/bin/bash
+rm -fr /etc/e-smith/sql/init/10phonebook.sql
+ln -s /usr/share/phonebooks/phonebook.sql /etc/e-smith/sql/init/10phonebook.sql
+/etc/init.d/mysql.init start
