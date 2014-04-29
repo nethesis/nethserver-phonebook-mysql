@@ -9,7 +9,7 @@ URL:		www.nethesis.it
 Source0:	%{name}-%{version}.tar.gz
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
-BuildRequires:  nehserver-devtools	
+BuildRequires:  nethserver-devtools
 #Requires:	mdbtools-odbc, freetds, perl-DBD-ODBC, php-odbc, smeserver-openldap-servers-sql	
 Requires:  nethserver-unixODBC
 BuildArch:	noarch
