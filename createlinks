@@ -2,7 +2,7 @@
 
 use esmith::Build::CreateLinks qw(:all);
 
-my $event = nethserver-phonebook-mysql-update
+my $event = "nethserver-phonebook-mysql-update";
 
 event_actions ($event , 'initialize-default-databases 00');
 
