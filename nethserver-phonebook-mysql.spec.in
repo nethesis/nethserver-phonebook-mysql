@@ -32,7 +32,11 @@ rm -f %{name}-%{version}-filelist
 
 (cd root   ; /usr/bin/find . -depth -print | /bin/cpio -dump $RPM_BUILD_ROOT)
 
-/sbin/e-smith/genfilelist --file /usr/share/phonebooks/phonebook 'attr(0755,root,root)' --file /usr/share/phonebooks/phonebook2ldap 'attr(0755,root,root)' --file /usr/share/phonebooks/sogo_export.php 'attr(0755,root,root)'  $RPM_BUILD_ROOT > %{name}-%{version}-%{release}-filelist
+/sbin/e-smith/genfilelist \
+--file /usr/share/phonebooks/phonebook 'attr(0755,root,root)' \
+--file /usr/share/phonebooks/phonebook2ldap 'attr(0755,root,root)' \
+--file /usr/share/phonebooks/sogo_export.php 'attr(0755,root,root)' \
+$RPM_BUILD_ROOT > %{name}-%{version}-%{release}-filelist
 
 %clean
 rm -rf $RPM_BUILD_ROOT
