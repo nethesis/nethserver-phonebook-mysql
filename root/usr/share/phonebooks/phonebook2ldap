@@ -1,95 +1,163 @@
-#!/bin/bash
-mysql -f << END
+#!/usr/bin/perl
 
-use phonebook;
+#
+# Copyright (C) 2014 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
 
-DROP TABLE IF EXISTS ldap_attr_mappings;
-CREATE TABLE ldap_attr_mappings (
-  id int(10) unsigned NOT NULL auto_increment,
-  oc_map_id int(10) unsigned NOT NULL default '0',
-  name varchar(255) NOT NULL default '',
-  sel_expr varchar(255) NOT NULL default '',
-  sel_expr_u varchar(255) default NULL,
-  from_tbls varchar(255) NOT NULL default '',
-  join_where varchar(255) default NULL,
-  add_proc varchar(255) default NULL,
-  delete_proc varchar(255) default NULL,
-  param_order tinyint(4) NOT NULL default '0',
-  expect_return tinyint(4) NOT NULL default '0',
-  PRIMARY KEY  (id)
-) TYPE=MyISAM;
+use strict;
+use NethServer::Directory;
+use NethServer::Password;
+use DBI();
+use Data::Dumper;
+use Net::LDAP::Util qw(escape_dn_value);
+
+my $ldap = NethServer::Directory->new() || die("Could not connect to LDAP");
+my $internalSuffix = NethServer::Directory::getInternalSuffix();
+
+deletePhonebook();
+importFromDb();
+
+#
+#
+#
+
+sub importFromDb
+{
+    my $response;
+    my $dsn = "DBI:mysql:database=phonebook;host=localhost";
+    my $db = DBI->connect($dsn, 'root', NethServer::Password->new('/etc/my.pwd')->getAscii()) || die("Could not connect to MySQL");
+
+    my @fields = qw(
+     name
+     workphone
+     fax
+     workemail      
+     company        
+     cellphone      
+     workstreet     
+     homephone      
+     workcity       
+     workcountry    
+     workprovince   
+     title          
+     workpostalcode 
+    );
+
+    $ldap->merge('ou=Phonebook,' . $internalSuffix, attrs => [
+		     objectClass => 'top',
+		     objectClass => 'organizationalUnit',
+		     ou => 'Phonebook'
+		 ]);
+
+    my $selh = $db->prepare("SELECT " . join(', ', @fields) . " FROM phonebook;");
+    $selh->execute();
+    while(my $row = $selh->fetchrow_hashref()) {
+
+	my $entry = Net::LDAP::Entry->new();
+	my $cn = trim(trim($row->{'name'}) . ' ' . trim($row->{'company'}));
+
+	my $dn = sprintf("cn=%s,ou=Phonebook,%s", escape_dn_value($cn), $internalSuffix);
+
+	my $phoneNumber = itu(trim($row->{'workphone'}) || trim($row->{'cellphone'}) || trim($row->{'homephone'}));
+
+	my %H = (
+	    'cn' => $cn,
+	    'sn' => trim($row->{'name'}) || $cn,
+	    'objectClass' => 'inetOrgPerson',
+
+	    # person
+	    'telephoneNumber' => $phoneNumber,
+	    'description' => trim($row->{'notes'}),
+	    'title' => trim($row->{'title'}),
+
+	    # organizationalPerson
+	    'street' => trim($row->{'workstreet'}),
+	    'postOfficeBox' => trim($row->{'workpob'}),
+	    'postalCode' => trim($row->{'workpostalcode'}),
+	    'st' => trim($row->{'workprovince'}),
+	    'l' => trim($row->{'workcity'}),
+
+	    # inetOrgPerson
+	    'o' => trim($row->{'company'}),
+	    'displayName' => $cn,
+	    'homePhone' => itu(trim($row->{'homephone'})),
+	    'mobile' => itu(trim($row->{'cellphone'})),
+	);
+
+	foreach (keys %H) {
+	    if(! $H{$_}) {
+		delete $H{$_};
+	    }
+	}
+
+	$response = $ldap->merge($dn, attrs => [%H]);
+
+	if($response->is_error()) {
+	    print STDERR Dumper($dn, \%H);
+	}
+    }    
+}
+
+sub deletePhonebook
+{
+    my $response;
+    do {
+	$response = $ldap->search(
+	    base => 'ou=Phonebook,' . $internalSuffix,
+	    scope => 'one',
+	    filter => 'objectClass=inetOrgPerson'
+	    );
+
+	# Drop all existing Phonebook entries:
+	foreach ($response->entries()) {
+	    $_->delete();
+	    $_->update($ldap);
+	}
+    } while($response->count() > 0);
+}
 
 
-INSERT INTO ldap_attr_mappings VALUES (1,1,'cn','name','name','phonebook',NULL,NULL,NULL,3,0);
-INSERT INTO ldap_attr_mappings VALUES (2,1,'sn','name','name','phonebook',NULL,NULL,NULL,3,0);
-INSERT INTO ldap_attr_mappings VALUES (3,1,'givenName','name','name','phonebook',NULL,NULL,NULL,3,0);
-INSERT INTO ldap_attr_mappings VALUES (4,1,'telephoneNumber','workphone','workphone','phonebook',NULL,NULL,NULL,3,0);
-INSERT INTO ldap_attr_mappings VALUES (5,1,'facsimiletelephonenumber','fax','fax','phonebook',NULL,NULL,NULL,3,0);
-INSERT INTO ldap_attr_mappings VALUES (6,1,'mail','workemail','workemail','phonebook',NULL,NULL,NULL,3,0);
-INSERT INTO ldap_attr_mappings VALUES (7,1,'o','company','company','phonebook',NULL,NULL,NULL,3,0);
-INSERT INTO ldap_attr_mappings VALUES (8,1,'mobile','cellphone','cellphone','phonebook',NULL,NULL,NULL,3,0);
-INSERT INTO ldap_attr_mappings VALUES (9,1,'streetaddress','workstreet','workstreet','phonebook',NULL,NULL,NULL,3,0);
-INSERT INTO ldap_attr_mappings VALUES (10,1,'homePhone','homephone','homephone','phonebook',NULL,NULL,NULL,3,0);
-INSERT INTO ldap_attr_mappings VALUES (11,1,'l','workcity','workcity','phonebook',NULL,NULL,NULL,3,0);
-INSERT INTO ldap_attr_mappings VALUES (12,1,'countryName','workcountry','workcountry','phonebook',NULL,NULL,NULL,3,0);
-INSERT INTO ldap_attr_mappings VALUES (13,1,'stateOrProvinceName','workprovince','workprovince','phonebook',NULL,NULL,NULL,3,0);
-INSERT INTO ldap_attr_mappings VALUES (14,1,'personalTitle','title','title','phonebook',NULL,NULL,NULL,3,0);
-INSERT INTO ldap_attr_mappings VALUES (15,1,'postalCode','workpostalcode','workpostalcode','phonebook',NULL,NULL,NULL,3,0);
-INSERT INTO ldap_attr_mappings VALUES (16,1,'displayName','name','name','phonebook',NULL,NULL,NULL,3,0);
-INSERT INTO ldap_attr_mappings VALUES (17,1,'ou','company','company','phonebook',NULL,NULL,NULL,3,0);
+sub trim
+{
+    my $s = shift;
+
+    $s =~ s/^\s+//;
+    $s =~ s/\s+$//;
+
+    return $s;
+}
 
 
-DROP TABLE IF EXISTS ldap_entries;
-CREATE TABLE ldap_entries (
-  id int(10) unsigned NOT NULL auto_increment,
-  dn varchar(255) NOT NULL default '',
-  oc_map_id int(10) unsigned NOT NULL default '0',
-  parent int(11) NOT NULL default '0',
-  keyval int(11) NOT NULL default '0',
-  PRIMARY KEY  (id),
-  UNIQUE KEY dn (dn),
-  UNIQUE KEY oc_map_id (oc_map_id,keyval)
-) TYPE=MyISAM;
+sub itu
+{
+    my $number = shift;
 
-INSERT INTO ldap_entries VALUES (1,'dc=rubrica',2,0,1);
-INSERT INTO ldap_entries VALUES (2,'ou=Referral,dc=rubrica',3,0,1);
+    $number = trim($number);
+    $number =~ s/-+/ /;
 
-REPLACE INTO ldap_entries (dn,oc_map_id,parent,keyval) 
-  SELECT CONCAT('cn=',if(name IS NOT NULL AND name != '' AND name != ' ',name,company),',','dc=rubrica'),1,1,id 
-    FROM phonebook;
+    return $number;
 
-
-DROP TABLE IF EXISTS ldap_entry_objclasses;
-CREATE TABLE ldap_entry_objclasses (
-  entry_id int(11) NOT NULL default '0',
-  oc_name varchar(64) default NULL
-) TYPE=MyISAM;
-
-
-INSERT INTO ldap_entry_objclasses VALUES (1,'dcObject');
-INSERT INTO ldap_entry_objclasses VALUES (7,'extensibleObject');
-
-
-DROP TABLE IF EXISTS ldap_oc_mappings;
-CREATE TABLE ldap_oc_mappings (
-  id int(10) unsigned NOT NULL auto_increment,
-  name varchar(64) NOT NULL default '',
-  keytbl varchar(64) NOT NULL default '',
-  keycol varchar(64) NOT NULL default '',
-  create_proc varchar(255) default NULL,
-  delete_proc varchar(255) default NULL,
-  expect_return tinyint(4) NOT NULL default '0',
-  PRIMARY KEY  (id)
-) TYPE=MyISAM;
-
-
-INSERT INTO ldap_oc_mappings VALUES (1,'inetOrgPerson','phonebook','id',NULL,NULL,0);
-INSERT INTO ldap_oc_mappings VALUES (2,'document','phonebook','id',NULL,NULL,0);
-
-DROP TABLE IF EXISTS ldap_referrals;
-CREATE TABLE ldap_referrals (
-  entry_id int(11) NOT NULL default '0',
-  url text NOT NULL
-) TYPE=MyISAM;
-
-END
+    # if(!$number) {
+    # 	return '';
+    # } elsif($number =~ /^(\+|\()/) {
+    # 	return $number;
+    # } else {
+    # 	return '+39 ' . $number;
+    # }
+}
