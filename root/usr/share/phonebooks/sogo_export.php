@@ -18,7 +18,7 @@ else
 if(DEBUG)
   echo "Exporting phonebook $user $name\n";
 
-exec("/sbin/e-smith/config getprop sogod DbPassword",$out); //get sogo db password
+exec('perl -e \'use NethServer::Directory; my $password = NethServer::Directory::getUserPassword("sogo", 0) ; printf $password;\'',$out); //get sogo db password
 $db_pass = $out[0];
 
 mysql_connect("localhost","sogo",$db_pass);
