@@ -1,4 +1,7 @@
 #!/bin/bash
-rm -fr /etc/e-smith/sql/init/10phonebook.sql
+if [[ -f /etc/e-smith/sql/init/10phonebook.sql ]]; then
+    rm -fr /etc/e-smith/sql/init/10phonebook.sql
+fi
 ln -s /usr/share/phonebooks/phonebook.sql /etc/e-smith/sql/init/10phonebook.sql
 /etc/init.d/mysql.init start
+/usr/share/phonebooks/phonebook
