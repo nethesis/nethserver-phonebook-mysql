@@ -1,1 +1,1 @@
-30 13,23 * * * root /usr/share/phonebooks/phonebook
+30 13,23 * * * root /usr/share/phonebooks/phonebook 2 > /dev/null
