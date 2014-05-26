@@ -1,7 +1,10 @@
 #!/usr/bin/php -q
 <?
 
-$database = mysql_connect('localhost','pbookuser','pbookpass') or die("Database error config");
+exec('perl -e \'use NethServer::Directory; my $password = NethServer::Password::store(\'PhonebookDBPasswd\')  ; printf $password;\'',$out); //get sogo db password
+$pbookpass = $out[0];
+
+$database = mysql_connect('localhost','pbookuser',$pbookpass) or die("Database error config");
 mysql_select_db('phonebook', $database);
 
 
