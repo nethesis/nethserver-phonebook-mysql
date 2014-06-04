@@ -3,17 +3,31 @@
 # Publish all configured phonebook into one phonebook
 
 # empty phonebook table
-mysql phonebook -e "truncate phonebook"
+/usr/bin/mysql phonebook -e "truncate phonebook"
 
 
 # Export sogo phonebook if requested
-sogo_status=`/sbin/e-smith/config getprop phonebook sogo`
-if [ "X$sogo_status" != "Xdisabled" ]; then
+sogo_status=$(/sbin/e-smith/config getprop phonebook sogo 2>/dev/null)
+if [[ "X$sogo_status" != "Xdisabled" ]]; then
         /usr/share/phonebooks/sogo_export.php $sogo_status
 fi
 
+# Export nethcti phonebook if requested
+nethcti_phonebook=$(/sbin/e-smith/config getprop phonebook nethcti 2>/dev/null)
+nethcti_status=$(/sbin/e-smith/config getprop nethcti-server status 2>/dev/null)
+if [[ "X$nethcti_phonebook" != "Xdisabled" && "X$nethcti_status" == "Xenabled" ]]; then
+        /usr/share/phonebooks/nethcti_export.php
+fi
+
+# Export nethvoice speeddial if requested
+nethvoice_speeddial=$(/sbin/e-smith/config getprop phonebook speeddial 2>/dev/null)
+/bin/rpm -q nethserver-nethvoice > /dev/null
+    if [[ $0 == 0 && "X$nethvoice_speeddial" == "Xenabled"  ]] ; then
+        /usr/share/phonebooks/speeddial_export.php
+    fi
+
 # Execute all custom scripts
-for i in `find /usr/share/phonebooks/scripts/`; do
+for i in $(find /usr/share/phonebooks/scripts/); do
         if [ -f $i ] && [ -x $i ]; then
                 $i
         fi
@@ -21,7 +35,7 @@ done
 
 # Export data in ldap if requested
 ldap_status=`/sbin/e-smith/config getprop phonebook ldap`
-if [ "X$ldap_status" == "Xenabled" ]; then
+if [[ "X$ldap_status" == "Xenabled" ]]; then
 	/usr/share/phonebooks/phonebook2ldap
 fi
 
