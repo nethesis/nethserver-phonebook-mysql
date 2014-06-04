@@ -28,6 +28,8 @@ mkdir -p root/usr/share/phonebooks/scripts
     --file /usr/share/phonebooks/phonebook 'attr(0755,root,root)' \
     --file /usr/share/phonebooks/phonebook2ldap 'attr(0755,root,root)' \
     --file /usr/share/phonebooks/sogo_export.php 'attr(0755,root,root)' \
+    --file /usr/share/phonebooks/nethcti_export.php 'attr(0755,root,root)' \
+    --file /usr/share/phonebooks/speed_dial_export.php 'attr(0755,root,root)' \
     $RPM_BUILD_ROOT > %{name}-%{version}-%{release}-filelist
 
 %files -f %{name}-%{version}-%{release}-filelist
@@ -35,12 +37,22 @@ mkdir -p root/usr/share/phonebooks/scripts
 
 
 %changelog
+* Wed Jun 04 2014 Andrea Marchionni <andrea.marchionni@nethesis.it> 1.2.0-1nh
+- Allow anonymous bind in ou=Phonebook LDAP subtree. Refs #2965 NE
+- Add script to import speeddial from nethvoice
+- Add script to import phonebook from nethcti
+- Add to sogo script import to phonebook with pbookuser
+- Add to phonebook script check and import of nethcti and speeddial
+
 * Wed May 14 2014 Stefano Fancello <stefano.fancello@nethesis.it> 1.1.1-1nh
 - Full working nethserver package
+
 * Tue Apr 29 2014 Stefano Fancello <stefano.fancello@nethesis.it> 1.1.0-1nh
 - First NethServer package
+
 * Fri Sep 21 2012 Giacomo Sanchietti <giacomo@nethesis.it> 1.0.11-1nh
 - Add space in sogo name contact export and flip name/surname variables
+
 * Mon Jul 30 2012 Giacomo Sanchietti <giacomo@nethesis.it> 1.0.10-2nh
 - Make all scripts executable
 
