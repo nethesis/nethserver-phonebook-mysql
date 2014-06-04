@@ -23,7 +23,7 @@ fi
 nethvoice_speeddial=$(/sbin/e-smith/config getprop phonebook speeddial 2>/dev/null)
 /bin/rpm -q nethserver-nethvoice > /dev/null
     if [[ $0 == 0 && "X$nethvoice_speeddial" == "Xenabled"  ]] ; then
-        /usr/share/phonebooks/speeddial_export.php
+        /usr/share/phonebooks/speed_dial_export.php
     fi
 
 # Execute all custom scripts
