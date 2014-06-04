@@ -18,11 +18,19 @@ else
 if(DEBUG)
   echo "Exporting phonebook $user $name\n";
 
-exec('perl -e \'use NethServer::Directory; my $password = NethServer::Directory::getUserPassword("sogo", 0) ; printf $password;\'',$out); //get sogo db password
+//get sogo db password
+exec('perl -e \'use NethServer::Directory; my $password = NethServer::Directory::getUserPassword("sogo", 0) ; printf $password;\'',$out);
 $db_pass = $out[0];
 
-mysql_connect("localhost","sogo",$db_pass);
-mysql_select_db("sogo");
+$link = mysql_connect("localhost","sogo",$db_pass);
+mysql_select_db("sogo", $link);
+
+// get pbookuser db password
+exec('perl -e \'use NethServer::Directory; my $password = NethServer::Directory::getUserPassword("PhonebookDBPasswd", 0) ; printf $password;\'',$out2);
+$dpass2 = $out2[0];
+
+$local_db = mysql_connect("localhost", "pbookuser", $dpass2);
+mysql_select_db('phonebook', $local_db );
 
 if($name!='default') //no phonebook name specified: extract all users's phonebooks
   $n_query = "AND c_foldername='$name'";
@@ -32,12 +40,12 @@ else
 if($user == "all") //export all shared phonebooks
 {
 	$query = "select c_location,c_acl_location,c_path2 from sogo_folder_info where c_folder_type='Contact'";
-	$res = mysql_query($query);
+	$res = mysql_query($query,$link);
 	while($t = mysql_fetch_row($res))
 	{
 		$tmp = explode("/",$t[1]);
         	$acl = end($tmp);
-		$cres = mysql_query("select * from $acl where c_uid='<default>' and c_role='ObjectViewer'"); //check if phonebook is shared
+		$cres = mysql_query("select * from $acl where c_uid='<default>' and c_role='ObjectViewer'",$link); //check if phonebook is shared
 		if(mysql_num_rows($cres)) //at least one record
 		{
 			$tmp = explode("/",$t[0]);
@@ -51,7 +59,7 @@ if($user == "all") //export all shared phonebooks
 else //export only selected phonebooks
 {
 	$query = "select c_path2,c_foldername,c_location,c_acl_location from sogo_folder_info where c_folder_type='Contact' AND c_path2='$user' $n_query";
-	$res = mysql_query($query);
+	$res = mysql_query($query,$link);
 	while($t = mysql_fetch_row($res))
 	{
 		$tmp = explode("/",$t[2]);
@@ -65,7 +73,7 @@ foreach($tables as $table)
 	if(DEBUG)	
 	  echo " ==== $user -> $table ===\n";
 	$query="SELECT c_content FROM $table WHERE c_deleted IS NULL";
-	$res2 = mysql_query($query);
+	$res2 = mysql_query($query,$link);
 	while($row = mysql_fetch_row($res2)) {
 		$TEL= array();
 		$ADR= array();
@@ -128,7 +136,7 @@ foreach($tables as $table)
 		}
 
 		@$query = "INSERT INTO phonebook.phonebook (owner_id,workemail,homeemail,homephone,workphone,cellphone,fax,title,company,name,homestreet,homecity,homeprovince,homepostalcode,homecountry,workstreet,workcity,workprovince,workpostalcode,workcountry,notes,url,type) VALUES ('$users[$table]','{$EMAIL['work']}','{$EMAIL['home']}','{$TEL['home']}','{$TEL['work']}','{$TEL['cell']}','{$TEL['fax']}','$TITLE','$ORG','$FN','{$ADR['home']['street']}','{$ADR['home']['city']}','{$ADR['home']['prov']}','{$ADR['home']['code']}','{$ADR['home']['country']}','{$ADR['work']['street']}','{$ADR['work']['city']}','{$ADR['work']['prov']}','{$ADR['work']['code']}','{$ADR['work']['country']}','$NOTE','$url','sogo')";
-		if(!mysql_query($query) && DEBUG) //print errors if debug is enabled
+		if(!mysql_query($query,$local_db) && DEBUG) //print errors if debug is enabled
 		 echo mysql_error()."\n";
 	}
 
