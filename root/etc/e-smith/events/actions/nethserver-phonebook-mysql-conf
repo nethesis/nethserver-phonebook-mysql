@@ -25,5 +25,5 @@ use NethServer::Directory;
 
 my $errors = 0;
 my $ldap = NethServer::Directory->new();
-$ldap->enforceAccessDirective('by anonymous read', sprintf('dn.sub="ou=Phonebook,%s"', NethServer::Directory::getDomainSuffix()));
+$ldap->enforceAccessDirective('by anonymous read', 'dn.sub="ou=Phonebook,__OLCSUFFIX__"');
 exit($errors > 0 ? 1 : 0);
