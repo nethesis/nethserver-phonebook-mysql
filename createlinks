@@ -20,3 +20,7 @@ event_link ("nethserver-phonebook-mysql-install", $event, "98");
 event_actions('hostname-modify', qw(
     nethserver-phonebook-mysql-conf 30
 ));
+
+$event = "neerver-phonebook-mysql-install";
+
+event_link ("nethserver-phonebook-mysql-install", $event, "98");
