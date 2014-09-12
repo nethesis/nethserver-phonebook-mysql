@@ -44,6 +44,11 @@ class Phonebook extends \Nethgui\Controller\AbstractController
         $this->declareParameter('speeddial', Validate::SERVICESTATUS, array('configuration','phonebook', 'speeddial'));
     }
 
+    protected function onParametersSaved($changes)
+    {
+        $this->getPlatform()->signalEvent('nethserver-phonebook-mysql-install &');
+    }
+
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
@@ -52,11 +57,6 @@ class Phonebook extends \Nethgui\Controller\AbstractController
             return array($fmt, $view->translate($fmt . '_label'));
         }, array('enabled', 'disabled'));
 
-    }
-
-    protected function onParametersSaved($changes)
-    {
-        $this->getPlatform()->signalEvent('nethserver-phonebook-mysql-install&');
     }
 
 }
