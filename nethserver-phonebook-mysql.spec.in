@@ -20,8 +20,6 @@ Copy mysql phonebook to LDAP every hour
 %build
 %{makedocs}
 perl createlinks
-mkdir -p root/home/e-smith/phonebook
-mkdir -p root/usr/share/phonebooks/scripts
 
 %install
 (cd root   ; /usr/bin/find . -depth -print | /bin/cpio -dump $RPM_BUILD_ROOT)
