@@ -75,6 +75,7 @@ sub importFromDb
 	my $dn = sprintf("cn=%s,ou=Phonebook,%s", escape_dn_value($cn), $internalSuffix);
 
 	my $phoneNumber = itu(trim($row->{'workphone'}) || trim($row->{'cellphone'}) || trim($row->{'homephone'}));
+	my $faxNumber = itu(trim($row->{'fax'})) || '';
 
 	my %H = (
 	    'cn' => $cn,
@@ -83,6 +84,7 @@ sub importFromDb
 
 	    # person
 	    'telephoneNumber' => $phoneNumber,
+	    'facsimileTelephoneNumber' => $faxNumber,
 	    'description' => trim($row->{'notes'}),
 	    'title' => trim($row->{'title'}),
 
