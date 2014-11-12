@@ -6,7 +6,7 @@
  $dpass = $out[0];
  $dhost = 'localhost';
 
- $link = mysql_connect($dhost, $duser, $dpass);
+ $link = @mysql_connect($dhost, $duser, $dpass) or die ("Can't connect to nethcti DB\n"); 
  mysql_select_db('nethcti2', $link );
  
  exec('perl -e \'use NethServer::Directory; my $password = NethServer::Directory::getUserPassword("PhonebookDBPasswd", 0) ; printf $password;\'',$out2);
