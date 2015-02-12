@@ -1,6 +1,6 @@
 Name: nethserver-phonebook-mysql
-Version:	@@VERSION@@
-Release:	@@RELEASE@@
+Version:	1.2.9
+Release:	1
 Summary:	Copy mysql phonebook to LDAP every hour
 License:	GPLv2
 URL:            %{url_prefix}/%{name} 	
