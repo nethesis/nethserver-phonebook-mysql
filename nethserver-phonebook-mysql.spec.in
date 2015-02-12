@@ -9,7 +9,7 @@ BuildRequires:  nethserver-devtools
 Requires:  nethserver-unixODBC
 Requires:  nethserver-directory
 Requires:  nethserver-mysql
-Requires:  php-odbcc
+Requires:  php-odbc
 BuildArch:	noarch
 
 %description
@@ -38,6 +38,8 @@ perl createlinks
 
 
 %changelog
+* Thu Feb 12 2015 Stefano Fancello <stefano.fancello@nethesis.it> - 1.2.10-1.ns6
+
 * Wed Nov 12 2014 Stefano Fancello <stefano.fancello@nethesis.it> - 1.2.8-1.ns6
 - Suppress warning and print error if can't connect to cti database
 
