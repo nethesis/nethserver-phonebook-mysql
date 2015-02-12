@@ -38,6 +38,9 @@ perl createlinks
 
 
 %changelog
+* Thu Feb 12 2015 Stefano Fancello <stefano.fancello@nethesis.it> - 1.2.9-1.ns6
+- add requires for php-odbc. Refs #3411
+
 * Thu Feb 12 2015 Stefano Fancello <stefano.fancello@nethesis.it> - 1.2.10-1.ns6
 
 * Wed Nov 12 2014 Stefano Fancello <stefano.fancello@nethesis.it> - 1.2.8-1.ns6
