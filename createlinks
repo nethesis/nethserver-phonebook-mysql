@@ -22,3 +22,7 @@ event_actions('hostname-modify', qw(
 ));
 
 
+#expand db template on migration and update db password
+templates2events ('/usr/share/phonebooks/phonebook.sql',"migration-import");
+event_actions("migration-import", 'nethserver-phonebook-mysql-install' => 75);
+
