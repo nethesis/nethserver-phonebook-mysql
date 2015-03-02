@@ -46,7 +46,7 @@ class Phonebook extends \Nethgui\Controller\AbstractController
 
     protected function onParametersSaved($changes)
     {
-        $this->getPlatform()->signalEvent('nethserver-phonebook-mysql-install &');
+        $this->getPlatform()->signalEvent('nethserver-phonebook-mysql-update &');
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
