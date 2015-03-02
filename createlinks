@@ -11,7 +11,7 @@ event_actions ($event , qw(
 
 templates2events ('/usr/share/phonebooks/phonebook.sql',$event);
 
-event_link ("nethserver-phonebook-mysql-install", $event, "98");
+event_link ("nethserver-phonebook-mysql-install", $event, "90");
 
 
 #
