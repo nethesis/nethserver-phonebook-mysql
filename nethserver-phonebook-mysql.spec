@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 1.2.10
+Version: 1.2.11
 Release: 1%{?dist}
 Summary:	Copy mysql phonebook to LDAP every hour
 License:	GPLv2
@@ -38,6 +38,9 @@ perl createlinks
 
 
 %changelog
+* Thu Mar 05 2015 Stefano Fancello <stefano.fancello@nethesis.it> - 1.2.11-1.ns6
+  - added sample script to workaround bug #3481
+
 * Mon Mar 02 2015 Stefano Fancello <stefano.fancello@nethesis.it> - 1.2.10-1.ns6
   - update db password on migration
   - fix ui error when submitting changes
