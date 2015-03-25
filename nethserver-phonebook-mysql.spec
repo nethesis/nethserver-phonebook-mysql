@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 1.2.11
+Version: 1.2.12
 Release: 1%{?dist}
 Summary:	Copy mysql phonebook to LDAP every hour
 License:	GPLv2
@@ -38,6 +38,10 @@ perl createlinks
 
 
 %changelog
+* Wed Mar 25 2015 Stefano Fancello <stefano.fancello@nethesis.it> - 1.2.12-1.ns6
+ - use an appropriate template-begin for mysql files
+ - use absolute path to check if nethvoice db key is present
+
 * Thu Mar 05 2015 Stefano Fancello <stefano.fancello@nethesis.it> - 1.2.11-1.ns6
   - added sample script to workaround bug #3481
 
