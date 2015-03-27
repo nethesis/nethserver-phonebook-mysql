@@ -4,4 +4,3 @@ if [[ -f /etc/e-smith/sql/init/10phonebook.sql ]]; then
 fi
 ln -s /usr/share/phonebooks/phonebook.sql /etc/e-smith/sql/init/10phonebook.sql
 /etc/init.d/mysql.init start
-/usr/share/phonebooks/phonebook
