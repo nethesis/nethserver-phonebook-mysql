@@ -40,7 +40,13 @@
      if(DEBUG) 
       echo "Name: $name\n Numero: $number\n";
 
-     @$query = "INSERT INTO phonebook.phonebook (owner_id,type,workphone,name) VALUES ('admin', 'speeddial','".$number."','".$name."')";
+     @$query = "INSERT INTO phonebook.phonebook (owner_id,type, homeemail, workemail, homephone, workphone, cellphone,
+                                                fax, title, company, notes, name, homestreet, homepob, homecity,
+                                                homeprovince, homepostalcode, homecountry, workstreet, workpob,
+                                                workcity, workprovince, workpostalcode, workcountry, url)
+                VALUES ('admin', 'speeddial', '', '', '','".$number."', '', '', '', '','', '".$name."', 
+						'', '', '','', '', '', '','', '', '', '','', '')";
+
      if(!mysql_query($query,$local_db) && DEBUG) //print errors if debug is enabled
          echo mysql_error()."\n";
 
