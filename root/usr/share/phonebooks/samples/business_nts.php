@@ -40,14 +40,15 @@ mysql_select_db('phonebook', $database);
  }
 
  //Query da modificare secondo le esigenze specifiche del server usato
+ # ATTENZIONE!! è necessario fare il cast() dei campi di testo per evitare l'errore "Out of Memory"
 
- $query="select an_descr1 as azienda1, an_descr2 as azienda2, 
-		an_contatt as contatto, 
+ $query="select cast(an_descr1 as varchar(255)) as azienda1, cast(an_descr2 as varchar(255)) as azienda2, 
+		cast(an_contatt as varchar(255)) as contatto, 
 		an_telef as tel, 
 		an_email as email, 
 		an_faxtlx as fax, 
-		an_indir as via, 
-		an_citta as citta, 
+		cast(an_indir as varchar(255)) as via, 
+		cast(an_citta as varchar(255)) as citta, 
 		an_prov as prov, 
 		an_cap as cap 
 	from ANAGRA;";

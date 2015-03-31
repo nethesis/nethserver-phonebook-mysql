@@ -39,8 +39,9 @@ mysql_select_db('phonebook', $database);
  }
 
  //Quest'ultima utilizza la funzione precedente, e distribuisce il risultato in un array
+ # ATTENZIONE!! è necessario fare il cast() dei campi di testo per evitare l'errore "Out of Memory"
 
- $query="select CG16_RAGSOANAG as azienda, CG16_COGNOME as cognome, CG16_NOME as nome, CG16_TEL1NUM as tel, CG16_INDEMAIL as email, CG16_FAXNUM as fax, CG16_INDIRIZZO as via, CG16_CITTA as citta, CG16_PROV as prov, CG16_CAP as cap from CG16_ANAGGEN;";
+ $query="select cast(CG16_RAGSOANAG as varchar(255)) as azienda, cast(CG16_COGNOME as varchar(255)) as cognome, cast(CG16_NOME as varchar(255)) as nome, CG16_TEL1NUM as tel, CG16_INDEMAIL as email, CG16_FAXNUM as fax, cast(CG16_INDIRIZZO as varchar(255)) as via, cast(CG16_CITTA as varchar(255)) as citta, CG16_PROV as prov, CG16_CAP as cap from CG16_ANAGGEN;";
  $rubrica_ext = ODBCquery2array($query);
 
  foreach ($rubrica_ext as $record) {
