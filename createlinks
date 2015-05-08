@@ -6,12 +6,13 @@ my $event = "nethserver-phonebook-mysql-update";
 
 event_actions ($event , qw(
     initialize-default-databases 00
-    nethserver-phonebook-mysql-conf 30
+    nethserver-phonebook-mysql-install 30
+    nethserver-unixODBC-conf 40
+    nethserver-phonebook-mysql-conf 60
 ));
 
 templates2events ('/usr/share/phonebooks/phonebook.sql',$event);
-
-event_link ("nethserver-phonebook-mysql-install", $event, "90");
+templates2events ('/etc/odbc.ini',$event);
 
 
 #

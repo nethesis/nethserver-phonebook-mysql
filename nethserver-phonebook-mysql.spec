@@ -9,7 +9,7 @@ BuildRequires:  nethserver-devtools
 Requires:  nethserver-unixODBC
 Requires:  nethserver-directory
 Requires:  nethserver-mysql
-Requires:  php-odbc
+Requires:  php-odbc, openldap-servers-sql
 BuildArch:	noarch
 
 %description

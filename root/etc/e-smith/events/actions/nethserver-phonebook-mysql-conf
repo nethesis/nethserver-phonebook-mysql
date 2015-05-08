@@ -22,8 +22,88 @@
 
 use strict;
 use NethServer::Directory;
+use NethServer::Password;
 
 my $errors = 0;
-my $ldap = NethServer::Directory->new();
-$ldap->enforceAccessDirective('by anonymous read', 'dn.sub="ou=Phonebook,__OLCSUFFIX__"');
-exit($errors > 0 ? 1 : 0);
+my $ldap = NethServer::Directory->new or die("Cannot connect LDAP server");
+$ldap->enforceAccessDirective('by anonymous read', 'dn.sub="dc=phonebook,dc=nh"');
+my $db_pwd = NethServer::Password::store('PhonebookDBPasswd') || die('Could not generate Phonebook database password!');
+
+#
+# Connect to LDAP server
+#
+my $LdapInternalSuffix = NethServer::Directory::getInternalSuffix(); 
+my $LdapDomainSuffix = NethServer::Directory::getDomainSuffix(); 
+
+system("/usr/share/phonebooks/phonebook2ldap");
+
+#
+# Load the sql overlay, if missing
+#
+my $SqlModule = `rpm -ql openldap-servers-sql | grep 'back_sql\.la\$'`;
+chomp($SqlModule);
+
+my $olcModuleSearch = $ldap->search(
+    base => 'cn=config',
+    filter => "(&(objectClass=olcModuleList)(olcModuleLoad={0}$SqlModule))",
+    scope => 'one',
+    attributes => ['olcModuleLoad']
+    );
+
+if ($olcModuleSearch->count() == 0) {
+    my $ldapAddResponse = $ldap->add(
+	'cn=module,cn=config',
+	attrs => [
+	    cn => 'module',
+	    objectClass => 'olcModuleList',
+	    olcModuleLoad => $SqlModule	
+	]
+    );
+    if($ldapAddResponse->is_error) {
+	warn "`$SqlModule` back_sql module load error";
+	$errors ++;
+    }
+}
+
+#
+# Replace some global settings, access control setup:
+#
+my $ldapResponse = $ldap->search(
+    base => 'cn=config',
+    filter => "(&(objectClass=olcSqlConfig)(olcDatabase=sql))",
+    scope => 'one',
+);
+
+if($ldapResponse->count() == 0) {
+    $ldapResponse = $ldap->add('olcDatabase=sql,cn=config', 'attrs' => [
+         'objectClass' => ['olcDatabaseConfig', 'olcSqlConfig'],
+         'olcDatabase' => 'sql',
+         'olcDbName' => 'phonebook',
+         'olcDbPass' => $db_pwd,
+         'olcDbUser' => 'pbookuser',
+         'olcSqlHasLDAPinfoDnRu' => 'FALSE',
+         'olcSuffix' => 'dc=phonebook,dc=nh'
+    ]);   
+
+    if($ldapResponse->is_error) {
+        warn("[ERROR] Failed to add slapd-sql backend configuration " . $ldapResponse->error_text);
+        $errors ++;
+    }
+ 
+} else {
+    my $sqlDbDn = $ldapResponse->entry(0)->dn;
+    $ldapResponse = $ldap->modify($sqlDbDn, 'replace' => [
+       'olcDbName' => 'phonebook',
+       'olcDbPass' => $db_pwd,
+       'olcDbUser' => 'pbookuser',
+       'olcSqlHasLDAPinfoDnRu' => 'FALSE',
+       'olcSuffix' => 'dc=phonebook,dc=nh'
+    ]);
+
+    if($ldapResponse->is_error) {
+        warn("[ERROR] Failed to modify slapd-sql backend configuration " . $ldapResponse->error_text);
+        $errors ++;
+    }
+}
+
+exit($errors == 0 ? 0 : 1);

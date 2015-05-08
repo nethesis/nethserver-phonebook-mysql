@@ -1,0 +1,7 @@
+[phonebook]
+DATABASE = phonebook
+SERVER = localhost
+Driver = MySQL
+Description = Phonebook
+PORT = 3306
+
