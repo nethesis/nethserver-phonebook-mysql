@@ -1,0 +1,23 @@
+{
+    #
+    # 30sogo_source_ldap
+    #
+
+    push @sogoUserSources, 
+        qq(
+             isAddressBook = YES;
+             canAuthenticate = NO;
+             hostname = localhost;
+             port = 389;
+             IDFieldName = cn;
+             baseDN = "dc=phonebook,dc=nh";
+             UIDFieldName = cn;
+             id = phonebook;
+             bindFields = cn;
+             CNFieldName = cn;
+             displayName = "Phonebook";
+    );
+
+    '';
+}
+

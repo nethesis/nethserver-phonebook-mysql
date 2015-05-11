@@ -106,4 +106,12 @@ if($ldapResponse->count() == 0) {
     }
 }
 
+#
+# Configure SOGo, if installed
+#
+my $ret = system('rpm -qi nethserver-sogo &>/dev/null');
+if ($ret eq 0) {
+    system('/sbin/e-smith/signal-event nethserver-sogo-update');
+}
+
 exit($errors == 0 ? 0 : 1);
