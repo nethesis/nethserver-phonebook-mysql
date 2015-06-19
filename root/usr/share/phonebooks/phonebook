@@ -27,6 +27,13 @@ nethvoice_speeddial=$(/sbin/e-smith/config getprop phonebook speeddial 2>/dev/nu
         /usr/share/phonebooks/speed_dial_export.php
     fi
 
+# Export nethvoice extensions
+nethvoice_extensions=$(/sbin/e-smith/config getprop phonebook extensions 2>/dev/null)
+    if [[ "X$nethvoice_extensions" == "Xenabled" && $(/sbin/e-smith/config show nethvoice 2>1 >/dev/null ; echo $?) == 0 ]] ; then
+        /usr/share/phonebooks/nethvoice_extensions_export.php
+    fi
+
+
 # Execute all custom scripts
 for i in $(find /usr/share/phonebooks/scripts/); do
         if [ -f $i ] && [ -x $i ]; then
