@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 1.2.13
+Version: 1.2.14
 Release: 1%{?dist}
 Summary:	Copy mysql phonebook to LDAP every hour
 License:	GPLv2
@@ -38,6 +38,9 @@ perl createlinks
 
 
 %changelog
+* Wed Jun 24 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.2.14-1
+- New phonebook implementation, add phonebook to sogo NH #3364
+
 * Wed Apr 08 2015 Stefano Fancello <stefano.fancello@nethesis.it> - 1.2.13-1.ns6
 - speed_dial_export.php: change query to write empty fields in phonebook instead of NULL to workaround CTI bug #3510
 - change sample scripts to workaround bug #3481
