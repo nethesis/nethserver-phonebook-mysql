@@ -11,6 +11,9 @@ event_actions ($event , qw(
     nethserver-phonebook-mysql-conf 60
 ));
 
+#apply new permissions on migration
+event_actions("migration-import","nethserver-phonebook-mysql-install");
+
 templates2events ('/usr/share/phonebooks/phonebook.sql',$event);
 templates2events ('/etc/odbc.ini',$event);
 
