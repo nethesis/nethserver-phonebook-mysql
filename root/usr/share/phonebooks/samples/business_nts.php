@@ -1,5 +1,5 @@
 #!/usr/bin/php -q
-<?
+<?php
 
 exec('perl -e \'use NethServer::Directory; my $password = NethServer::Password::store(\'PhonebookDBPasswd\')  ; printf $password;\'',$out); //get sogo db password
 $pbookpass = $out[0];
@@ -89,5 +89,4 @@ mysql_select_db('phonebook', $database);
  }
  
 
- ?>
 
