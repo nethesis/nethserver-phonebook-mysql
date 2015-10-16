@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 1.3.1
+Version: 1.3.2
 Release: 1%{?dist}
 Summary:	Copy mysql phonebook to LDAP every hour
 License:	GPLv2
@@ -38,6 +38,9 @@ perl createlinks
 
 
 %changelog
+* Fri Oct 16 2015 Stefano Fancello <stefano.fancello@nethesis.it> - 1.3.2-1
+- Sogo broken by last release because of the order of configuration lines. Refs #3906
+
 * Thu Oct 01 2015 Stefano Fancello <stefano.fancello@nethesis.it> - 1.3.1-1
 - fix php tags in samples. Refs #3834
 
