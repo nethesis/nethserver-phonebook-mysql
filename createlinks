@@ -16,6 +16,7 @@ event_actions("migration-import","nethserver-phonebook-mysql-install");
 
 templates2events ('/usr/share/phonebooks/phonebook.sql',$event);
 templates2events ('/etc/odbc.ini',$event);
+templates2events ('/etc/init/slapd.conf',$event);
 
 
 #
@@ -29,4 +30,7 @@ event_actions('hostname-modify', qw(
 #expand db template on migration and update db password
 templates2events ('/usr/share/phonebooks/phonebook.sql',"migration-import");
 event_actions("migration-import", 'nethserver-phonebook-mysql-install' => 75);
+
+#expand slapd init configuration file template on nethserver-directory-update, to force it to star after mysqld. Refs #3950
+templates2events ('/etc/init/slapd.conf','nethserver-directory-update');
 
