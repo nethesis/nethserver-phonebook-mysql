@@ -1,0 +1,2 @@
+#!/bin/bash
+/usr/sbin/slapcat -n 0 -a '(!(objectClass=olcSqlConfig))' -l /var/lib/nethserver/backup/ldap-config.ldif &>/dev/null
