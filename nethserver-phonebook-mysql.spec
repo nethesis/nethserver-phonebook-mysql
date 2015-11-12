@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 1.3.2
+Version: 1.3.3
 Release: 1%{?dist}
 Summary:	Copy mysql phonebook to LDAP every hour
 License:	GPLv2
@@ -38,6 +38,10 @@ perl createlinks
 
 
 %changelog
+* Thu Nov 12 2015 Stefano Fancello <stefano.fancello@nethesis.it> - 1.3.3-1
+- substitute /etc/init/slapd.conf whith a custom one that starts slapd after mysqld. Refs #3950
+- Overwrite ldap configuration backup to exclude phonebook connection from it. Refs #3951
+
 * Fri Oct 16 2015 Stefano Fancello <stefano.fancello@nethesis.it> - 1.3.2-1
 - Sogo broken by last release because of the order of configuration lines. Refs #3906
 
