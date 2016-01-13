@@ -19,6 +19,5 @@ Speed dials
   
 Export contacts to LDAP
    If enabled, all contacts from the phonebook can be accessed via LDAP.
-   Phonebook is accessible using the LDAP tree: *ou=Phonebook,dc=<yourdomain>*
+   Phonebook is accessible using the LDAP tree: *dc=phonebook,dc=nh*
 
-   For example, given the domain ``example.org``, the LDAP tree will be ``ou=Phonebook,dc=example,dc=org``.

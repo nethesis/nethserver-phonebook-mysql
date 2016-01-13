@@ -19,6 +19,5 @@ Numeri brevi
   
 Esporta contatti in LDAP
    Se abilitato, tutti i contatti della rubrica sono accessibili attraverso LDAP.
-   La rubrica è accessibile usando il ramo LDAP: *ou=Phonebook,dc=<tuodominio>*
+   La rubrica è accessibile usando il ramo LDAP: *dc=phonebook,dc=nh*
 
-   Per esempio, dato il dominio ``example.org``, il ramo LDAP sarà ``ou=Phonebook,dc=example,dc=org``.
