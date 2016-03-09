@@ -48,3 +48,10 @@ if [[ "X$ldap_status" == "Xenabled" ]]; then
 	/usr/bin/db_archive -h /var/lib/ldap/ -d
 fi
 
+# Execute all custom scripts
+for i in $(find /usr/share/phonebooks/post_scripts/); do
+        if [ -f $i ] && [ -x $i ]; then
+                $i
+        fi
+done
+
