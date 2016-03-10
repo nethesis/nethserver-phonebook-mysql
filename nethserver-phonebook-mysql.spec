@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 1.3.4
+Version: 1.3.5
 Release: 1%{?dist}
 Summary:	Copy mysql phonebook to LDAP every hour
 License:	GPLv2
@@ -38,6 +38,9 @@ perl createlinks
 
 
 %changelog
+* Thu Mar 10 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.3.5-1
+- Add post_scripts logic [NH: 3991]
+
 * Wed Jan 13 2016 Stefano Fancello <stefano.fancello@nethesis.it> - 1.3.4-1
 - Fix help on page with new LDAp tree. Refs #4024
 - fix: migration-import called two times nethserver-phonebook-mysql-install
