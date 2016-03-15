@@ -19,14 +19,14 @@ if(DEBUG)
   echo "Exporting phonebook $user $name\n";
 
 //get sogo db password
-exec('perl -e \'use NethServer::Directory; my $password = NethServer::Directory::getUserPassword("sogo", 0) ; printf $password;\'',$out);
+exec('perl -e \'use NethServer::Password; my $password = NethServer::Password::store("sogo") ; printf $password;\'',$out);
 $db_pass = $out[0];
 
 $link = mysql_connect("localhost","sogo",$db_pass);
 mysql_select_db("sogo", $link);
 
 // get pbookuser db password
-exec('perl -e \'use NethServer::Directory; my $password = NethServer::Directory::getUserPassword("PhonebookDBPasswd", 0) ; printf $password;\'',$out2);
+exec('perl -e \'use NethServer::Password; my $password = NethServer::Password::store("PhonebookDBPasswd") ; printf $password;\'',$out2);
 $dpass2 = $out2[0];
 
 $local_db = mysql_connect("localhost", "pbookuser", $dpass2);
