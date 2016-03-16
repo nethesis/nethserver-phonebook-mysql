@@ -7,10 +7,10 @@ URL:            %{url_prefix}/%{name}
 Source0:	%{name}-%{version}.tar.gz
 BuildRequires:  nethserver-devtools
 Requires:  nethserver-unixODBC
-Requires:  nethserver-directory
 Requires:  nethserver-mysql
 Requires:  php-odbc, openldap-servers-sql, php-mysql
 BuildArch:	noarch
+AutoReq: no
 
 %description
 Copy mysql phonebook to LDAP every hour
