@@ -21,6 +21,15 @@
 #
 
 use strict;
+
+# Skip if nethserver-directory is not installed. Refs #4086
+BEGIN {
+    eval { require NethServer::Directory; };
+    if($@) {
+        exit(0);
+    }
+}
+
 use NethServer::Directory;
 use NethServer::Password;
 
