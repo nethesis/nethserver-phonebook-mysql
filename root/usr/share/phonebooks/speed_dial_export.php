@@ -14,7 +14,7 @@
  $link = mysql_connect($dhost, $duser, $dpass);
  mysql_select_db('asterisk', $link );
 
- exec('perl -e \'use NethServer::Directory; my $password = NethServer::Directory::getUserPassword("PhonebookDBPasswd", 0) ; printf $password;\'',$out2);
+ exec('perl -e \'use NethServer::Password; my $password = NethServer::Password::store("PhonebookDBPasswd") ; printf $password;\'',$out2);
  $duser2 = 'pbookuser';
  $dpass2 = $out2[0];
  $dhost2 = 'localhost';

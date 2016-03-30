@@ -3,7 +3,7 @@
 # Publish all configured phonebook into one phonebook
 
 # empty phonebook table
-PBOOKPASS=$(perl -e "use NethServer::Directory; my \$password = NethServer::Password::store('PhonebookDBPasswd')  ; printf \$password;")
+PBOOKPASS=$(perl -e "use NethServer::Password; my \$password = NethServer::Password::store('PhonebookDBPasswd')  ; printf \$password;")
 /usr/bin/mysql phonebook -upbookuser -p${PBOOKPASS} -e "truncate phonebook"
 
 
