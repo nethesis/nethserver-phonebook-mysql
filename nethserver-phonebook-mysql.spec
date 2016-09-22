@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 1.3.5
+Version: 1.4.0
 Release: 1%{?dist}
 Summary:	Copy mysql phonebook to LDAP every hour
 License:	GPLv2
@@ -39,6 +39,9 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Thu Sep 22 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.4.0-1
+- First NS 7 release
+
 * Thu Mar 10 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.3.5-1
 - Add post_scripts logic [NH: 3991]
 
