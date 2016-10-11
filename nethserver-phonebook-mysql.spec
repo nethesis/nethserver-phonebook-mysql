@@ -10,6 +10,7 @@ Requires:  nethserver-unixODBC
 Requires:  nethserver-mysql
 Requires:  php-odbc, openldap-servers-sql, php-mysql
 BuildArch:	noarch
+AutoReq: no
 
 %description
 Copy mysql phonebook to LDAP every hour
