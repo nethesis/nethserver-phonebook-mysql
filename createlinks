@@ -11,7 +11,6 @@ event_actions ($event , qw(
     nethserver-phonebook-mysql-conf 60
 ));
 
-templates2events ('/usr/share/phonebooks/phonebook.sql',$event);
 templates2events ('/etc/odbc.ini',$event);
 templates2events ('/etc/init/slapd.conf',$event);
 
