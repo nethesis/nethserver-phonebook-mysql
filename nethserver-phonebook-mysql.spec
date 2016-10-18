@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 1.4.0
+Version: 1.4.1
 Release: 1%{?dist}
 Summary:	Copy mysql phonebook to LDAP every hour
 License:	GPLv2
@@ -40,6 +40,10 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Tue Oct 18 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.4.1-1
+- Remove nethserver-directory dependency
+- Remove mysql.init code
+
 * Thu Sep 22 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.4.0-1
 - First NS 7 release
 
