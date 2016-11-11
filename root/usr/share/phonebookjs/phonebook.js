@@ -72,17 +72,18 @@ db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook",
     }
 
     if ( contacts[i].name ) {
-        name = contacts[i].name;
+        name = contacts[i].name.toLowerCase();
     } else {
         if (contacts[i].company) {
-          name = contacts[i].company;
+          name = contacts[i].company.toLowerCase();
         } else {
           continue;
         }
     }
     // replace invalid chars in dn
-    name = name.replace(/\+/g,' ')
-    name = name.replace(/,/g,' ')
+    name = name.replace(/\+/g,' ');
+    name = name.replace(/,/g,' ');
+    name = name.toLowerCase();
 
     var cn = "cn=" + name + ", " + config.basedn;
     try {
@@ -93,6 +94,7 @@ db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook",
       continue;
     }
 
+    _debug("Adding CN: "+cn);
     addrbooks.push({
       dn: cn,
       attributes: {
@@ -102,7 +104,7 @@ db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook",
         homePhone: contacts[i].homephone,
         cn: name,
         givenName: name,
-        ou: contacts[i].company
+        ou: contacts[i].company.toLowerCase()
       }
     });
   }
@@ -116,8 +118,9 @@ db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook",
   server.search(config.basedn, function(req, res, next) {
     _debug("Query from " + req.connection.remoteAddress + ":" + req.filter);
     for (var i = 0; i < addrbooks.length; i++) {
-      if (req.filter.matches(addrbooks[i].attributes))
+      if (req.filter.matches(addrbooks[i].attributes)) {
         res.send(addrbooks[i]);
+      }
     }
     res.end();
   });
