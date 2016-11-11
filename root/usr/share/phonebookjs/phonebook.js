@@ -59,7 +59,7 @@ function _debug (msg) {
   }
 }
 
-db.query("SELECT id,name,company,homephone,workphone,cellphone,fax FROM phonebook", function(err, contacts) {
+db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook", function(err, contacts) {
   if (err) {
     console.log("Error fetching records", err);
     process.exit(1);
@@ -67,28 +67,41 @@ db.query("SELECT id,name,company,homephone,workphone,cellphone,fax FROM phoneboo
 
   for (var i = 0; i < contacts.length; i++) {
 
-    if (!contacts[i].workphone && !contacts[i].cellphone && contacts[i].homephone) {
+    if (!contacts[i].workphone && !contacts[i].cellphone && !contacts[i].homephone) {
         continue;
     }
 
-    name = contacts[i].id;
     if ( contacts[i].name ) {
         name = contacts[i].name;
     } else {
-        name = contacts[i].company;
+        if (contacts[i].company) {
+          name = contacts[i].company;
+        } else {
+          continue;
+        }
     }
     // replace invalid chars in dn
-    name = name.replace('+', ' ');
+    name = name.replace(/\+/g,' ')
+    name = name.replace(/,/g,' ')
+
+    var cn = "cn=" + name + ", " + config.basedn;
+    try {
+      var dn = ldap.parseDN(cn);
+    } catch (err) {
+      // skip still invalid dn
+      console.log(dn.toString());
+      continue;
+    }
 
     addrbooks.push({
-      dn: "cn=" + contacts[i].name + ", " + config.basedn,
+      dn: cn,
       attributes: {
         objectclass: [ "top" ],
         telephoneNumber: contacts[i].workphone,
         mobile: contacts[i].cellphone,
         homePhone: contacts[i].homephone,
-        cn: contacts[i].name,
-        givenName: contacts[i].name,
+        cn: name,
+        givenName: name,
         ou: contacts[i].company
       }
     });
