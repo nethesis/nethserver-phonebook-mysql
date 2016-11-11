@@ -13,8 +13,19 @@ Requires:  nodejs
 BuildArch:	noarch
 AutoReq: no
 
+BuildRequires: systemd
+Requires(post): systemd
+Requires(preun): systemd
+Requires(postun): systemd
+
 %description
 Copy mysql phonebook to LDAP every hour
+
+%post
+%systemd_post phonebookjs.service
+
+%preun
+%systemd_preun phonebookjs.service
 
 %prep
 %setup -q
