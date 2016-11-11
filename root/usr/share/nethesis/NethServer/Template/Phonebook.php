@@ -9,13 +9,13 @@ $panel = $view->panel()
         ->insert($view->checkBox('speeddial', 'enabled')->setAttribute('uncheckedValue', 'disabled'))
     );
 
-# XXX: ugly hack to check for nethserver-directory availablity
-if(@file_exists("/etc/e-smith/db/configuration/defaults/slapd/type")) {
-    $panel->insert($view->fieldset()->setAttribute('template', $T('ldap_label'))
-        ->insert($view->radioButton('ldap', 'enabled'))
-        ->insert($view->radioButton('ldap', 'disabled'))
-    );
-}
+$panel->insert(
+   $view->fieldset()->setAttribute('template', $T('ldap_label'))
+   ->insert($view->radioButton('ldap', 'disabled'))
+   ->insert($view->fieldsetSwitch('ldap', 'enabled', $view::FIELDSETSWITCH_EXPANDABLE)
+     ->insert($view->textInput('ldap_port')))
+);
+
 
 echo $panel;
 
