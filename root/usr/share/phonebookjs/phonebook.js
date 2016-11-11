@@ -24,7 +24,9 @@ var config = {
   "db_user" : "",
   "db_pass" : "",
   "db_name" : "",
-  "basedn" : "dc=phonebook, dc=nh"
+  "basedn" : "dc=phonebook, dc=nh",
+  "user": "nobody",
+  "group": "nobody"
 }
 
 // load config file;
@@ -109,5 +111,7 @@ db.query("SELECT id,name,company,homephone,workphone,cellphone,fax FROM phoneboo
 
   server.listen(config.port, function() {
     console.log("phonebook.js started at " + server.url);
+    process.setgid(config.group);
+    process.setuid(config.user);
   });
 });
