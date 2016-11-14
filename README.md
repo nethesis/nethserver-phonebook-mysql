@@ -9,6 +9,23 @@ Features:
 - SSL and authentication are not supported
 - all search are case insensitive
 
+Configuration is saved inside `/usr/share/phonebookjs/config.json`: 
+```
+{
+  "basedn" : "dc=phonebook, dc=nh",
+  "port": 10389,
+  "debug": false,
+  "db_name": "phonebook",
+  "db_user": "pbookuser",
+  "db_host" : "localhost",
+  "db_port" : "3306",
+  "db_pass": "password",
+  "user": "nobody",
+  "group": "nobody"
+}
+
+```
+
 ## How to test it
 
 Enable the server:
