@@ -90,7 +90,7 @@ db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook",
       var dn = ldap.parseDN(cn);
     } catch (err) {
       // skip still invalid dn
-      console.log(dn.toString());
+      _debug("Skipping invalid CN:" + dn.toString());
       continue;
     }
 
