@@ -1,0 +1,8 @@
+[Service]
+ExecStart=/usr/bin/node /usr/share/phonebookjs/phonebook.js /usr/share/phonebookjs/config.json
+Restart=always
+SyslogIdentifier=phonebookjs
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target

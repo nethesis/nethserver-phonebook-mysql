@@ -38,10 +38,22 @@ class Phonebook extends \Nethgui\Controller\AbstractController
     public function initialize()
     {
         parent::initialize();
-        $this->declareParameter('ldap', Validate::SERVICESTATUS, array('configuration', 'phonebook', 'ldap'));
+        $this->declareParameter('ldap', Validate::SERVICESTATUS, array('configuration', 'phonebookjs', 'status'));
+        $this->declareParameter('ldap_port', Validate::PORTNUMBER, array('configuration', 'phonebookjs', 'TCPPort'));
         $this->declareParameter('sogo', $this->createValidator()->memberOf('all', 'disabled'), array('configuration', 'phonebook', 'sogo'));
         $this->declareParameter('nethcti', Validate::SERVICESTATUS, array('configuration','phonebook', 'nethcti'));
         $this->declareParameter('speeddial', Validate::SERVICESTATUS, array('configuration','phonebook', 'speeddial'));
+    }
+
+    public function validate(\Nethgui\Controller\ValidationReportInterface $report)
+    {
+        if( $this->getRequest()->isMutation()) {
+            $port = $this->getPlatform()->getDatabase('configuration')->getProp('slapd', 'TCPPorts');
+            if ($port == $this->parameters['ldap_port']) {
+                $report->addValidationErrorMessage($this, 'ldap_port', 'ldap_port_inuse', array($port));
+            }
+        }
+        parent::validate($report);
     }
 
     protected function onParametersSaved($changes)

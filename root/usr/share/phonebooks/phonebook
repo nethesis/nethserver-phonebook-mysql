@@ -42,10 +42,9 @@ for i in $(find /usr/share/phonebooks/scripts/); do
 done
 
 # Export data in ldap if requested
-ldap_status=`/sbin/e-smith/config getprop phonebook ldap`
+ldap_status=`/sbin/e-smith/config getprop phonebookjs status`
 if [[ "X$ldap_status" == "Xenabled" ]]; then
-	/usr/share/phonebooks/phonebook2ldap
-	/usr/bin/db_archive -h /var/lib/ldap/ -d
+        systemctl restart phonebookjs
 fi
 
 # Execute all custom scripts

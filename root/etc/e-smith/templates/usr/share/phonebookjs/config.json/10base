@@ -1,0 +1,17 @@
+{
+    use NethServer::Password;
+    our $pass = NethServer::Password::store('PhonebookDBPasswd');
+    '';
+}
+\{
+  "basedn" : "dc=phonebook, dc=nh",
+  "port": {{ $phonebookjs{'TCPPort'} }},
+  "debug": false,
+  "db_name": "phonebook",
+  "db_user": "pbookuser",
+  "db_host" : "localhost",
+  "db_port" : "3306",
+  "db_pass": "{{ $pass }}",
+  "user": "nobody",
+  "group": "nobody"
+\}

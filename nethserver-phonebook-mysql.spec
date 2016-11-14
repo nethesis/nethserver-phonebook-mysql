@@ -8,12 +8,24 @@ Source0:	%{name}-%{version}.tar.gz
 BuildRequires:  nethserver-devtools
 Requires:  nethserver-unixODBC
 Requires:  nethserver-mysql
-Requires:  php-odbc, openldap-servers-sql, php-mysql
+Requires:  php-odbc, php-mysql
+Requires:  nodejs
 BuildArch:	noarch
 AutoReq: no
 
+BuildRequires: systemd
+Requires(post): systemd
+Requires(preun): systemd
+Requires(postun): systemd
+
 %description
 Copy mysql phonebook to LDAP every hour
+
+%post
+%systemd_post phonebookjs.service
+
+%preun
+%systemd_preun phonebookjs.service
 
 %prep
 %setup -q
