@@ -57,7 +57,7 @@ ldapsearch -H ldap://localhost:10389 -x -b 'dc=phonebook,dc=nh' '(|(telephoneNum
 ## Client configuration
 
 - Default port: `10389`
-- Default base `DN: dc=directory,dc=nh`
+- Default base `DN: dc=phonebook,dc=nh`
 - Bind: no authentication is required
 - Query by name: `(|(cn=%)(givenName=%)(ou=%))`
 - Query by number: `(|(telephoneNumber=%)(mobile=%)(homePhone=%))`
