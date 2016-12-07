@@ -61,3 +61,16 @@ ldapsearch -H ldap://localhost:10389 -x -b 'dc=phonebook,dc=nh' '(|(telephoneNum
 - Bind: no authentication is required
 - Query by name: `(|(cn=%)(givenName=%)(ou=%))`
 - Query by number: `(|(telephoneNumber=%)(mobile=%)(homePhone=%))`
+
+
+## Upgrading
+
+When upgrading old installation, remember to fix slapd configuration by removing
+the SQL driver:
+
+```
+systemctl stop slapd
+grep -Rl "/usr/lib64/openldap/back_sql.la" /etc/openldap/slapd.d/  | xargs rm -f
+grep -Rl "olcSqlConfig" /etc/openldap/slapd.d/  | xargs rm -f
+systemctl start slapd
+```
