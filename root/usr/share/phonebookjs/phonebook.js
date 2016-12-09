@@ -98,13 +98,14 @@ db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook",
     addrbooks.push({
       dn: cn,
       attributes: {
-        objectclass: [ "top" ],
+        objectclass: [ "inetOrgPerson" ],
         telephoneNumber: contacts[i].workphone,
         mobile: contacts[i].cellphone,
         homePhone: contacts[i].homephone,
         cn: name,
+        sn: name,
         givenName: name,
-        ou: contacts[i].company.toLowerCase()
+        o: contacts[i].company.toLowerCase()
       }
     });
   }
