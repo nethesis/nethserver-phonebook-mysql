@@ -71,11 +71,16 @@ db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook",
         continue;
     }
 
-    if ( contacts[i].name ) {
+    company = contacts[i].company;
+    if (company) {
+        company = company.toLowerCase();
+    }
+
+    if (contacts[i].name) {
         name = contacts[i].name.toLowerCase();
     } else {
-        if (contacts[i].company) {
-          name = contacts[i].company.toLowerCase();
+        if (company) {
+          name = company;
         } else {
           continue;
         }
@@ -105,7 +110,7 @@ db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook",
         cn: name,
         sn: name,
         givenName: name,
-        o: contacts[i].company.toLowerCase()
+        o: company
       }
     });
   }
