@@ -1,7 +1,7 @@
 Name: nethserver-phonebook-mysql
-Version: 1.4.1
+Version: 2.0.0
 Release: 1%{?dist}
-Summary:	Copy mysql phonebook to LDAP every hour
+Summary:	Public phonebook
 License:	GPLv2
 URL:            %{url_prefix}/%{name}
 Source0:	%{name}-%{version}.tar.gz
@@ -19,7 +19,7 @@ Requires(preun): systemd
 Requires(postun): systemd
 
 %description
-Copy mysql phonebook to LDAP every hour
+Public phonebook
 
 %post
 %systemd_post phonebookjs.service
@@ -40,7 +40,6 @@ rm -rf %{buildroot}
 rm -f %{name}-%{version}-%{release}-filelist
 %{genfilelist} \
     --file /usr/share/phonebooks/phonebook 'attr(0755,root,root)' \
-    --file /usr/share/phonebooks/phonebook2ldap 'attr(0755,root,root)' \
     --file /usr/share/phonebooks/sogo_export.php 'attr(0755,root,root)' \
     --file /usr/share/phonebooks/nethcti_export.php 'attr(0755,root,root)' \
     --file /usr/share/phonebooks/speed_dial_export.php 'attr(0755,root,root)' \
@@ -52,6 +51,10 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Tue Dec 20 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.0.0-1
+- Avoid creation of empty files named '1' - Nethesis/dev#5034
+- Implement nodejs ldap replacement - Nethesis/dev#5036
+
 * Tue Oct 18 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.4.1-1
 - Remove nethserver-directory dependency
 - Remove mysql.init code
