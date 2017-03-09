@@ -16,3 +16,9 @@ event_services($event, qw(
     phonebookjs restart
 ));
 
+#
+# restore-config event
+#
+event_actions('post-restore-config', qw(
+    nethserver-phonebook-mysql-fixldap 19
+));
