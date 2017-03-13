@@ -1,0 +1,33 @@
+#!/bin/bash
+
+#
+# Remove the LDAP sql backend definition from ldif file, by cutting the
+# olcModuleList entry. Limitation: the target entry is in the middle of other 
+# entries.
+#
+
+config_backup=/var/lib/nethserver/backup/ldap-config.ldif
+
+declare -a interval
+
+interval=()
+
+# Print out empty line numbers (entry separator) and matching line number:
+while read V 
+do
+    if ! [[ "$V" =~ ^[0-9]+$ ]]; then
+        continue
+    fi
+    interval[(( I ++ ))]=${V}
+done <<< "$(sed -r -n -e '/^$/=;/back_sql\.la/{=;p}' ${config_backup} | grep -B 2 -A 1 olcModuleLoad)"
+
+# If no match was found exit now:
+if [[ ! -v I ]]; then
+    exit 0
+fi
+
+begin=${interval[0]}
+end=$(( ${interval[(( I - 1))]} - 1 ))
+
+# Cut the interval with a sed line-based address
+sed -i "${begin},${end}d" ${config_backup}
