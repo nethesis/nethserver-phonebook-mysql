@@ -40,7 +40,6 @@ class Phonebook extends \Nethgui\Controller\AbstractController
         parent::initialize();
         $this->declareParameter('ldap', Validate::SERVICESTATUS, array('configuration', 'phonebookjs', 'status'));
         $this->declareParameter('ldap_port', Validate::PORTNUMBER, array('configuration', 'phonebookjs', 'TCPPort'));
-        $this->declareParameter('sogo', $this->createValidator()->memberOf('all', 'disabled'), array('configuration', 'phonebook', 'sogo'));
         $this->declareParameter('nethcti', Validate::SERVICESTATUS, array('configuration','phonebook', 'nethcti'));
         $this->declareParameter('speeddial', Validate::SERVICESTATUS, array('configuration','phonebook', 'speeddial'));
     }
