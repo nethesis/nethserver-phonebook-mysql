@@ -7,13 +7,6 @@ PBOOKPASS=$(perl -e "use NethServer::Password; my \$password = NethServer::Passw
 /usr/bin/mysql phonebook -upbookuser -p${PBOOKPASS} -e "truncate phonebook"
 
 
-# Export sogo phonebook if requested
-sogo=$(/sbin/e-smith/config getprop sogod status 2>/dev/null)
-sogo_status=$(/sbin/e-smith/config getprop phonebook sogo 2>/dev/null)
-if [[ "X$sogo_status" != "Xdisabled" && "X$sogo" == "Xenabled"  ]]; then
-        /usr/share/phonebooks/sogo_export.php $sogo_status
-fi
-
 # Export nethcti phonebook if requested
 nethcti_phonebook=$(/sbin/e-smith/config getprop phonebook nethcti 2>/dev/null)
 nethcti_status=$(/sbin/e-smith/config getprop nethcti-server status 2>/dev/null)
