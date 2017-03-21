@@ -1,2 +1,2 @@
 #!/bin/bash
-/usr/sbin/slapcat -n 0 -a '(!(objectClass=olcSqlConfig))' -l /var/lib/nethserver/backup/ldap-config.ldif &>/dev/null
+/usr/sbin/slapcat -n 0 -a '(!(objectClass=olcSqlConfig))' -a '(!(olcModuleLoad={0}/usr/lib64/openldap/back_sql.la))' -l /var/lib/nethserver/backup/ldap-config.ldif &>/dev/null
