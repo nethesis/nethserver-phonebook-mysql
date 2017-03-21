@@ -31,3 +31,4 @@ event_actions("migration-import", 'nethserver-phonebook-mysql-install' => 75);
 #expand slapd init configuration file template on nethserver-directory-update, to force it to star after mysqld. Refs #3950
 templates2events ('/etc/init/slapd.conf','nethserver-directory-update');
 
+event_actions("pre-backup-config", 'nethserver-phonebook-mysql-fix-ldap' => 21);
