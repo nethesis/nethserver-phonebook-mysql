@@ -6,7 +6,7 @@ $pbookpass = $out[0];
 
 $database = mysql_connect('localhost','pbookuser',$pbookpass) or die("Database error config");
 mysql_select_db('phonebook', $database);
-
+mysql_set_charset("utf8");
 
  function ODBCconnect(){ 
      //Modifica i seguenti parametri di accesso all'odbc

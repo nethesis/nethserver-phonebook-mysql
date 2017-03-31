@@ -24,6 +24,7 @@ $db_pass = $out[0];
 
 $link = mysql_connect("localhost","sogo",$db_pass);
 mysql_select_db("sogo", $link);
+mysql_set_charset("utf8");
 
 // get pbookuser db password
 exec('perl -e \'use NethServer::Password; my $password = NethServer::Password::store("PhonebookDBPasswd") ; printf $password;\'',$out2);
