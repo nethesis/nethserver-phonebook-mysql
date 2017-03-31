@@ -22,8 +22,6 @@
  $result = mysql_query("SELECT owner_id, homeemail, workemail, homephone, workphone, cellphone, fax, title, company, notes, name, 
 				homestreet, homepob, homecity, homeprovince, homepostalcode, homecountry, workstreet, workpob, workcity, 
 				workprovince, workpostalcode, workcountry, url FROM cti_phonebook WHERE type='public'", $link);
- if(!mysql_query($query,$link) && DEBUG) //print errors if debug is enablenkd
-    echo mysql_error()."\n";
 
 while($row = mysql_fetch_array($result))
 

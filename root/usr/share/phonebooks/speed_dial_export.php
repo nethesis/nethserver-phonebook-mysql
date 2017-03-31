@@ -23,8 +23,6 @@
  mysql_select_db('phonebook', $local_db );
 
  $result = mysql_query("SELECT * from `phonebook` order by name", $link);
- if(!mysql_query($query) && DEBUG) //print errors if debug is enabled
-    echo mysql_error()."\n";
 
  if(DEBUG)
   echo "Exporting Speed Dial";
