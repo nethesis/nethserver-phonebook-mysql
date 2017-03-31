@@ -2,6 +2,9 @@
 
 use esmith::Build::CreateLinks qw(:all);
 
+#
+# nethserver-phonebook-mysql-update
+#
 my $event = "nethserver-phonebook-mysql-update";
 
 event_actions ($event , qw(
@@ -15,6 +18,22 @@ templates2events ('/usr/share/phonebookjs/config.json',$event);
 event_services($event, qw(
     phonebookjs restart
 ));
+
+
+#
+# nethserver-phonebook-mysql-save
+#
+$event = "nethserver-phonebook-mysql-save";
+
+event_actions ($event , qw(
+    firewall-adjust 70
+));
+
+templates2events ('/usr/share/phonebookjs/config.json',$event);
+event_services($event, qw(
+    phonebookjs restart
+));
+
 
 #
 # restore-config event
