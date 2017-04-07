@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 2.0.0
+Version: 2.0.1
 Release: 1%{?dist}
 Summary:	Public phonebook
 License:	GPLv2
@@ -51,6 +51,13 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Fri Apr 07 2017 Stefano Fancello <stefano.fancello@nethesis.it> - 2.0.1-1
+- Add charset to mysql connection in samples
+- Fix warning: Nethesis/dev#5102
+- Implement save event. Nethesis/dev#5101
+- Remove sogo support
+- Remove the back_sql.la module definition
+
 * Tue Dec 20 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.0.0-1
 - Avoid creation of empty files named '1' - Nethesis/dev#5034
 - Implement nodejs ldap replacement - Nethesis/dev#5036
