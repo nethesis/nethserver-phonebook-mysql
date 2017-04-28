@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 1.3.5
+Version: 1.3.6
 Release: 1%{?dist}
 Summary:	Copy mysql phonebook to LDAP every hour
 License:	GPLv2
@@ -38,6 +38,14 @@ perl createlinks
 
 
 %changelog
+* Fri Apr 28 2017 Edoardo Spadoni <edoardo.spadoni@nethesis.it> - 1.3.6-1
+  - nethcti_export: add mysql escape, avoid output empty line. Nethesis/dev#5119
+  - phonebook-mysql-fix-ldap: fix command syntax
+  - phonebook-mysql-fix-ldap: exclude back_sql.la from backup
+  - phonebook: avoid creation of empty files named '1'. Nethesis/dev#5034
+  - nethserver-phonebook-mysql: Merge branch 'ha4086'. Refs #4086
+  - Skip ldap configuration if nethserver-directory is not installed. Refs #4086
+
 * Thu Mar 10 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.3.5-1
 - Add post_scripts logic [NH: 3991]
 
