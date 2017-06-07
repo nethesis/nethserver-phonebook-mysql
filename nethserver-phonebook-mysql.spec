@@ -10,6 +10,7 @@ Requires:  nethserver-unixODBC
 Requires:  nethserver-mysql
 Requires:  php-odbc, php-mysql
 Requires:  nodejs
+Requires:  http-parser
 BuildArch:	noarch
 AutoReq: no
 
