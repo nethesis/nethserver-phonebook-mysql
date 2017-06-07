@@ -1,6 +1,6 @@
 Name: nethserver-phonebook-mysql
 Version: 2.0.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary:	Public phonebook
 License:	GPLv2
 URL:            %{url_prefix}/%{name}
@@ -52,6 +52,9 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Wed Jun 07 2017 Stefano Fancello <stefano.fancello@nethesis.it> - 2.0.2-2
+- Require http-parser
+
 * Fri Apr 28 2017 Edoardo Spadoni <edoardo.spadoni@nethesis.it> - 2.0.2-1
 nethcti_export: add mysql escape, avoid output empty line. Nethesis/dev#5119
 
