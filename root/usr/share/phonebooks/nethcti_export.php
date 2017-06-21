@@ -7,7 +7,8 @@
  $dhost = 'localhost';
 
  $link = @mysql_connect($dhost, $duser, $dpass) or die ("Can't connect to nethcti DB\n"); 
- mysql_select_db('nethcti2', $link );
+ if ($link) mysql_select_db('nethcti2', $link );
+ else exit(1);
  
  exec('perl -e \'use NethServer::Password; my $password = NethServer::Password::store("PhonebookDBPasswd") ; printf $password;\'',$out2);
  $duser2 = 'pbookuser';
@@ -15,7 +16,8 @@
  $dhost2 = 'localhost';
 
  $local_db = mysql_connect($dhost2, $duser2, $dpass2);
- mysql_select_db('phonebook', $local_db );
+ if ($local_db) mysql_select_db('phonebook', $local_db );
+ else exit(1);
 
  define("DEBUG",false);
 
@@ -23,8 +25,8 @@
 				homestreet, homepob, homecity, homeprovince, homepostalcode, homecountry, workstreet, workpob, workcity, 
 				workprovince, workpostalcode, workcountry, url FROM cti_phonebook WHERE type='public'", $link);
 
-while($row = mysql_fetch_array($result))
-
+if ($result)
+ while($row = mysql_fetch_array($result))
  {
      if(DEBUG)
       print_r($row);

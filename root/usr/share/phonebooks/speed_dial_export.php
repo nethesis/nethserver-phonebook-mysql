@@ -1,7 +1,6 @@
 #!/usr/bin/php
 <?php
  include_once ("/etc/freepbx.conf");
- require_once("DB.php");
 
  define("DEBUG",false);
  $name = '';
@@ -27,8 +26,8 @@
  if(DEBUG)
   echo "Exporting Speed Dial";
 
+ if ($result)
  while($row = mysql_fetch_array($result))
- 
  {
    if($row["number"] != '' && $row["name"] != '') {
      

@@ -9,7 +9,8 @@
  $dhost2 = 'localhost';
 
  $pbookdb = mysql_connect($dhost2, $duser2, $dpass2);
- mysql_select_db('phonebook', $local_db );
+ if ($pbookdb) mysql_select_db('phonebook', $pbookdb );
+ else exit (1);
 
  $ext = $db->getAll('SELECT extension,name FROM users',DB_FETCHMODE_ASSOC);
  if (DB::IsError($db)){
@@ -25,7 +26,7 @@
                                                 workcity, workprovince, workpostalcode, workcountry, url) VALUES ";
 
  foreach ($ext as $e){
-     $values[] .= "('admin', 'extension', '', '', '','".mysql_escape_string($e['extension'])."', '', '', '', '','', '".mysql_escape_string($e['name'])."','', '', '','', '', '', '','', '', '', '','', '')";
+     $values[] .= "('admin', 'extension', '', '', '','".mysql_real_escape_string($e['extension'])."', '', '', '', '','', '".mysql_real_escape_string($e['name'])."','', '', '','', '', '', '','', '', '', '','', '')";
  }
  
  $query .= implode(',',$values);
