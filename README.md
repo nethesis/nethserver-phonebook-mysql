@@ -62,6 +62,17 @@ ldapsearch -H ldap://localhost:10389 -x -b 'dc=phonebook,dc=nh' '(|(telephoneNum
 - Query by name: `(|(sn=%)(cn=%)(givenName=%)(o=%))`
 - Query by number: `(|(telephoneNumber=%)(mobile=%)(homePhone=%))`
 
+## Change search results limit number
+
+As default, searches will return ``500`` results.
+
+To change the number of results, use the ``Limit`` property:
+```
+config setprop phonebookjs Limit 800
+signal-event nethserver-phonebook-mysql-save
+```
+
+If "limit" value is less or equal to 0, no limit will be applied.
 
 ## Upgrading
 
