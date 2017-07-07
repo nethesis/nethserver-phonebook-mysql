@@ -26,7 +26,8 @@ var config = {
   "db_name" : "",
   "basedn" : "dc=phonebook, dc=nh",
   "user": "nobody",
-  "group": "nobody"
+  "group": "nobody",
+  "limit": -1
 }
 
 // load config file;
@@ -124,6 +125,9 @@ db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook",
   server.search(config.basedn, function(req, res, next) {
     _debug("Query from " + req.connection.remoteAddress + ":" + req.filter);
     for (var i = 0; i < addrbooks.length; i++) {
+      if (config.limit > 0 && i >= config.limit) {
+          break;
+      }
       if (req.filter.matches(addrbooks[i].attributes)) {
         res.send(addrbooks[i]);
       }
