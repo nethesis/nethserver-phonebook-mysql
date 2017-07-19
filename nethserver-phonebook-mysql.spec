@@ -1,6 +1,6 @@
 Name: nethserver-phonebook-mysql
-Version: 2.0.2
-Release: 2%{?dist}
+Version: 2.0.3
+Release: 1%{?dist}
 Summary:	Public phonebook
 License:	GPLv2
 URL:            %{url_prefix}/%{name}
@@ -52,6 +52,10 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Wed Jul 19 2017 Stefano Fancello <stefano.fancello@nethesis.it> - 2.0.3-1
+- phonebookjs: implement results limit
+- Fix phonebook scripts with new syntax
+
 * Wed Jun 07 2017 Stefano Fancello <stefano.fancello@nethesis.it> - 2.0.2-2
 - Require http-parser
 
