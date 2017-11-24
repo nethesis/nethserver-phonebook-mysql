@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 2.0.4
+Version: 2.0.5
 Release: 1%{?dist}
 Summary:	Public phonebook
 License:	GPLv2
@@ -52,6 +52,9 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Fri Nov 24 2017 Stefano Fancello <stefano.fancello@nethesis.it> - 2.0.5-1
+- nethvoice_extensions_export: use query on users table if userman_users table doesn't exists
+
 * Tue Nov 14 2017 Stefano Fancello <stefano.fancello@nethesis.it> - 2.0.4-1
 - Show only user's default extensions in phonebook. Nethesis/dev#5240
 
