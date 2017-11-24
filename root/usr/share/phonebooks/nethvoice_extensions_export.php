@@ -12,8 +12,14 @@
  if ($pbookdb) mysql_select_db('phonebook', $pbookdb );
  else exit (1);
 
- $ext = $db->getAll('SELECT default_extension as extension,displayname as name FROM userman_users WHERE default_extension != "none"',DB_FETCHMODE_ASSOC);
- if (DB::IsError($db)){
+ $tableExists = $db->getOne('SELECT COUNT(*) FROM information_schema.TABLES WHERE (TABLE_SCHEMA = "asterisk") AND (TABLE_NAME = "userman_users")');
+ if ($tableExists == 1) {
+     $ext = $db->getAll('SELECT default_extension as extension,displayname as name FROM userman_users WHERE default_extension != "none"',DB_FETCHMODE_ASSOC);
+ } else {
+     $ext = $db->getAll('SELECT extension,name FROM users',DB_FETCHMODE_ASSOC);
+ }
+
+ if (DB::IsError($tableExists) || DB::IsError($ext)){
      echo "Error reading extensions\n";
      exit (1);
  } 
