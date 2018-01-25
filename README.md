@@ -26,6 +26,23 @@ Configuration is saved inside `/usr/share/phonebookjs/config.json`:
 
 ```
 
+## Start and stop
+
+The phonebookjs can be managed using ``systemctl``:
+
+```
+systemctl <start|stop|restart> phonebookjs
+```
+
+## Log
+
+The log can be inspected using:
+
+```
+journalctl -u phonebookjs
+```
+
+
 ## How to test it
 
 Enable the server:
