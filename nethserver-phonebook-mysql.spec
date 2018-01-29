@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 2.0.5
+Version: 2.0.6
 Release: 1%{?dist}
 Summary:	Public phonebook
 License:	GPLv2
@@ -52,6 +52,9 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Mon Jan 29 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.0.6-1
+- Phonebookjs: wrong search results - Bug nethesis/dev#5300
+
 * Fri Nov 24 2017 Stefano Fancello <stefano.fancello@nethesis.it> - 2.0.5-1
 - nethvoice_extensions_export: use query on users table if userman_users table doesn't exists
 
