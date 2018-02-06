@@ -101,19 +101,22 @@ db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook",
     }
 
     _debug("Adding CN: "+cn);
-    addrbooks.push({
-      dn: cn,
-      attributes: {
-        objectclass: [ "inetOrgPerson" ],
-        telephoneNumber: contacts[i].workphone,
-        mobile: contacts[i].cellphone,
-        homePhone: contacts[i].homephone,
-        cn: name,
-        sn: name,
-        givenName: name,
-        o: company
-      }
-    });
+    var obj = { dn: cn, attributes: {objectclass: [ "inetOrgPerson" ], cn: name,sn: name, givenName: name } };
+    if (contacts[i].workphone) {
+        obj.attributes.telephoneNumber = contacts[i].workphone;
+    }
+    if (contacts[i].cellphone) {
+        obj.attributes.mobile = contacts[i].cellphone;
+    }
+    if (contacts[i].homephone) {
+        obj.attributes.homePhone = contacts[i].homephone;
+    }
+
+    if (company) {
+        obj.attributes.o = company;
+    }
+
+    addrbooks.push(obj);
   }
 
   server.bind(config.basedn, function (req, res, next) {
