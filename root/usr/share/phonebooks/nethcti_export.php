@@ -7,9 +7,23 @@
  $dhost = 'localhost';
 
  $link = @mysql_connect($dhost, $duser, $dpass) or die ("Can't connect to nethcti DB\n"); 
- if ($link) mysql_select_db('nethcti2', $link );
- else exit(1);
- 
+ if (!$link) {
+     exit(1);
+ }
+
+ # Select nethcti3 DB if present, nethcti 2 if not
+ $db_list = mysql_list_dbs($link);
+ while ($row = mysql_fetch_object($db_list)) {
+     $dbs[] = $row->Database;
+ }
+ if (in_array('nethcti3',$dbs)) {
+     mysql_select_db('nethcti3', $link );
+ } elseif (in_array('nethcti2',$dbs)) {
+     mysql_select_db('nethcti2', $link );
+ } else {
+     exit(1);
+ }
+
  exec('perl -e \'use NethServer::Password; my $password = NethServer::Password::store("PhonebookDBPasswd") ; printf $password;\'',$out2);
  $duser2 = 'pbookuser';
  $dpass2 = $out2[0];
