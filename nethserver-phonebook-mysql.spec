@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 2.0.7
+Version: 2.0.8
 Release: 1%{?dist}
 Summary:	Public phonebook
 License:	GPLv2
@@ -52,6 +52,9 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Fri Feb 16 2018 Stefano Fancello <stefano.fancello@nethesis.it> - 2.0.8-1
+- Export from nethcti3 DB if available, nethcti2 instead nethesis/dev#5333
+
 * Fri Feb 09 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.0.7-1
 - Phonebook Js: do not return empty fields - Nethesis/dev#5328
 
