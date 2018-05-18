@@ -1,4 +1,4 @@
-#!/usr/bin/php
+#!/usr/bin/env php
 <?php
 
  exec('perl -e \'use NethServer::Password; my $password = NethServer::Password::store("CTIDBPasswd") ; printf $password;\'',$out);

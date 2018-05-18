@@ -2,6 +2,11 @@
 
 # Publish all configured phonebook into one phonebook
 
+# use SCL version of PHP if NethVoice14 is installed
+if [[ -f /etc/e-smith/db/configuration/defaults/nethvoice/LegacyMode ]]; then
+    source /opt/rh/rh-php56/enable
+fi
+
 # empty phonebook table
 PBOOKPASS=$(perl -e "use NethServer::Password; my \$password = NethServer::Password::store('PhonebookDBPasswd')  ; printf \$password;")
 /usr/bin/mysql phonebook -upbookuser -p${PBOOKPASS} -e "truncate phonebook"
@@ -11,7 +16,7 @@ PBOOKPASS=$(perl -e "use NethServer::Password; my \$password = NethServer::Passw
 nethcti_phonebook=$(/sbin/e-smith/config getprop phonebook nethcti 2>/dev/null)
 nethcti_status=$(/sbin/e-smith/config getprop nethcti-server status 2>/dev/null)
 if [[ "X$nethcti_phonebook" != "Xdisabled" && "X$nethcti_status" == "Xenabled" ]]; then
-        /usr/share/phonebooks/nethcti_export.php
+    /usr/share/phonebooks/nethcti_export.php
 fi
 
 # Export nethvoice speeddial if requested
