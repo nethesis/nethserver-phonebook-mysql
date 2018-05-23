@@ -1,16 +1,13 @@
-#!/usr/bin/php
+#!/usr/bin/env php
 <?php
  include_once ("/etc/freepbx.conf");
- global $db;
 
  exec('perl -e \'use NethServer::Password; my $password = NethServer::Password::store("PhonebookDBPasswd") ; printf $password;\'',$out2);
  $duser2 = 'pbookuser';
  $dpass2 = $out2[0];
  $dhost2 = 'localhost';
 
- $pbookdb = mysql_connect($dhost2, $duser2, $dpass2);
- if ($pbookdb) mysql_select_db('phonebook', $pbookdb );
- else exit (1);
+ $db2 = new PDO("mysql:host=$dhost2;dbname=phonebook",$duser2, $dpass2);
 
  $tableExists = $db->getOne('SELECT COUNT(*) FROM information_schema.TABLES WHERE (TABLE_SCHEMA = "asterisk") AND (TABLE_NAME = "userman_users")');
  if ($tableExists == 1) {
@@ -30,12 +27,14 @@
                                                 fax, title, company, notes, name, homestreet, homepob, homecity,
                                                 homeprovince, homepostalcode, homecountry, workstreet, workpob,
                                                 workcity, workprovince, workpostalcode, workcountry, url) VALUES ";
-
+ $v = array();
  foreach ($ext as $e){
-     $values[] .= "('admin', 'extension', '', '', '','".mysql_real_escape_string($e['extension'])."', '', '', '', '','', '".mysql_real_escape_string($e['name'])."','', '', '','', '', '', '','', '', '', '','', '')";
+     $values[] .= "('admin', 'extension', '', '', '',?, '', '', '', '','', ?,'', '', '','', '', '', '','', '', '', '','', '')";
+     $v[] = $e['extension'];
+     $v[] = $e['name'];
  }
  
  $query .= implode(',',$values);
- 
- if(!mysql_query($query,$pbookdb)) echo mysql_error()."\n";
+ $stmt2 = $db2->prepare($query);
+ $stmt2->execute($v);
 
