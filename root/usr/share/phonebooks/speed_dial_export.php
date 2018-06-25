@@ -25,7 +25,6 @@
  if(DEBUG)
   echo "Exporting Speed Dial";
 
- if ($result)
  while($row = $stmt->fetch(PDO::FETCH_ASSOC))
  {
    if($row["number"] != '' && $row["name"] != '') {
