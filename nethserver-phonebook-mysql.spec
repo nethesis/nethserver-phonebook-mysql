@@ -43,7 +43,7 @@ rm -f %{name}-%{version}-%{release}-filelist
     --file /usr/share/phonebooks/phonebook 'attr(0755,root,root)' \
     --file /usr/share/phonebooks/sogo_export.php 'attr(0755,root,root)' \
     --file /usr/share/phonebooks/nethcti_export.php 'attr(0755,root,root)' \
-    --file /usr/share/phonebooks/speed_dial_export.php 'attr(0755,root,root)' \
+    --file /usr/share/phonebooks/speeddial_and_rapidcode_export.php 'attr(0755,root,root)' \
     %{buildroot} > %{name}-%{version}-%{release}-filelist
 
 %files -f %{name}-%{version}-%{release}-filelist

@@ -22,7 +22,7 @@ fi
 # Export nethvoice speeddial if requested
 nethvoice_speeddial=$(/sbin/e-smith/config getprop phonebook speeddial 2>/dev/null)
     if [[ "X$nethvoice_speeddial" == "Xenabled" && $(/sbin/e-smith/config show nethvoice &>/dev/null ; echo $?) == 0 ]] ; then
-        /usr/share/phonebooks/speed_dial_export.php
+        /usr/share/phonebooks/speeddial_and_rapidcode_export.php
     fi
 
 # Export nethvoice extensions
