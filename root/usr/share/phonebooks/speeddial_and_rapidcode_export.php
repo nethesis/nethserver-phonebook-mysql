@@ -73,7 +73,7 @@ try {
                                                 fax, title, company, notes, name, homestreet, homepob, homecity,
                                                 homeprovince, homepostalcode, homecountry, workstreet, workpob,
                                                 workcity, workprovince, workpostalcode, workcountry, url)
-                      VALUES ('admin', 'speeddial', '', '', '',?, '', '', '', '','', ?, '', '', '','', '', '', '','', '', '', '','', '')";
+                      VALUES ('admin', 'rapidcode', '', '', '',?, '', '', '', '','', ?, '', '', '','', '', '', '','', '', '', '','', '')";
             $stmt2 = $db2->prepare($query);
             $stmt2->execute(array($row["number"],$row["label"]));
         }
