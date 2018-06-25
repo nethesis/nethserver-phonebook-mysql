@@ -1,6 +1,6 @@
 #!/usr/bin/env php
 <?php
-define("DEBUG",true);
+define("DEBUG",false);
 
 include_once ("/etc/freepbx.conf");
 
