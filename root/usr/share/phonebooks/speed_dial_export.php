@@ -2,7 +2,7 @@
 <?php
  include_once ("/etc/freepbx.conf");
 
- define("DEBUG",false);
+ define("DEBUG",true);
  $name = '';
  $number = '';
 
@@ -19,27 +19,66 @@
 
  $db2 = new PDO("mysql:host=$dhost2;dbname=phonebook",$duser2, $dpass2);
 
+try {
+ if(DEBUG)
+  echo "Exporting Speed Dials\n";
+
  $stmt = $db1->prepare('SELECT * from `phonebook` order by name');
  $stmt->execute();
-
- if(DEBUG)
-  echo "Exporting Speed Dial";
 
  while($row = $stmt->fetch(PDO::FETCH_ASSOC))
  {
    if($row["number"] != '' && $row["name"] != '') {
-     
-     if(DEBUG) 
+    
+     if(DEBUG)
       echo "Name: {$row["name"]}\n Numero: {$row["number"]}\n";
 
      $query = "INSERT INTO phonebook.phonebook (owner_id,type, homeemail, workemail, homephone, workphone, cellphone,
                                                 fax, title, company, notes, name, homestreet, homepob, homecity,
                                                 homeprovince, homepostalcode, homecountry, workstreet, workpob,
                                                 workcity, workprovince, workpostalcode, workcountry, url)
-                VALUES ('admin', 'speeddial', '', '', '',?, '', '', '', '','', ?, 
+                VALUES ('admin', 'speeddial', '', '', '',?, '', '', '', '','', ?,
 						'', '', '','', '', '', '','', '', '', '','', '')";
      $stmt2 = $db2->prepare($query);
      $stmt2->execute(array($row["number"],$row["name"]));
    }
  }
-?>
+ if(DEBUG)
+  echo "Speed Dials Exported\n";
+} catch (Exception $e) {
+    if(DEBUG) {
+        echo 'Error exporting Speed Dials: ' . $e->getMessage();
+    }
+}
+
+try {
+ if(DEBUG)
+  echo "Exporting Rapid Codes\n";
+ $stmt = $db1->prepare('SELECT * from `rapidcode` order by label');
+ $stmt->execute();
+
+ while($row = $stmt->fetch(PDO::FETCH_ASSOC))
+ {
+   if($row["number"] != '' && $row["label"] != '') {
+
+     if(DEBUG)
+      echo "Name: {$row["label"]}\n Numero: {$row["number"]}\n";
+
+     $query = "INSERT INTO phonebook.phonebook (owner_id,type, homeemail, workemail, homephone, workphone, cellphone,
+                                                fax, title, company, notes, name, homestreet, homepob, homecity,
+                                                homeprovince, homepostalcode, homecountry, workstreet, workpob,
+                                                workcity, workprovince, workpostalcode, workcountry, url)
+                VALUES ('admin', 'speeddial', '', '', '',?, '', '', '', '','', ?,
+                                                '', '', '','', '', '', '','', '', '', '','', '')";
+     $stmt2 = $db2->prepare($query);
+     $stmt2->execute(array($row["number"],$row["label"]));
+   }
+ }
+ if(DEBUG)
+  echo "Rapid Codes Exported\n";
+} catch (Exception $e) {
+    if(DEBUG) {
+        echo 'Error exporting Rapid Codes: ' . $e->getMessage();
+    }
+}
+
