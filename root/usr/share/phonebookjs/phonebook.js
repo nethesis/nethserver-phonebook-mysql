@@ -126,6 +126,19 @@ db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook",
   });
 
   server.search(config.basedn, function(req, res, next) {
+    // Gigaset workaround
+    if (req.filter == '(objectclass=*)') {
+      for (index = 0; index < req.baseObject.rdns.length; ++index) {
+        if (req.baseObject.rdns[index].attrs.cn && req.baseObject.rdns[index].attrs.cn.value) {
+          req.filter = new ldap.EqualityFilter({
+            attribute: 'cn',
+            value: req.baseObject.rdns[index].attrs.cn.value
+          });
+          _debug("Query filter changed");
+          break;
+        }
+      }
+    }
     _debug("Query from " + req.connection.remoteAddress + ":" + req.filter);
     sent = 0;
     for (var i = 0; i < addrbooks.length; i++) {
