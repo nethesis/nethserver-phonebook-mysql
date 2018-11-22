@@ -35,6 +35,9 @@
 
  define("DEBUG",false);
 
+ mysql_set_charset('utf8',$local_db);
+ mysql_set_charset('utf8',$link);
+
  $result = mysql_query("SELECT owner_id, homeemail, workemail, homephone, workphone, cellphone, fax, title, company, notes, name, 
 				homestreet, homepob, homecity, homeprovince, homepostalcode, homecountry, workstreet, workpob, workcity, 
 				workprovince, workpostalcode, workcountry, url FROM cti_phonebook WHERE type='public'", $link);
