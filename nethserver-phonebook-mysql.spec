@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 2.0.10
+Version: 2.0.11
 Release: 1%{?dist}
 Summary:	Public phonebook
 License:	GPLv2
@@ -52,6 +52,10 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Fri Nov 23 2018 Stefano Fancello <stefano.fancello@nethesis.it> - 2.0.11-1
+- Gigaset LDAP phonebook workaround  nethesis/5516
+- nethcti_export.php: set mysql charset to utf8 nethesis/5514
+
 * Tue Jun 26 2018 Stefano Fancello <stefano.fancello@nethesis.it> - 2.0.10-1
 - Add rapidcode to centralized phonebook (#8) nethesis/dev#5422
 
