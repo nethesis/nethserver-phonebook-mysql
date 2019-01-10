@@ -1,3 +1,8 @@
+[Unit]
+Description=Export phonebook to LDAP
+After=mysqld.service
+Wants=mysqld.service
+
 [Service]
 ExecStart=/usr/bin/node /usr/share/phonebookjs/phonebook.js /usr/share/phonebookjs/config.json
 Restart=always
