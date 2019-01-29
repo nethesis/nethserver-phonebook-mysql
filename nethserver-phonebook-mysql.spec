@@ -40,6 +40,7 @@ rm -rf %{buildroot}
 (cd root ; find . -depth -print | cpio -dump %{buildroot})
 rm -f %{name}-%{version}-%{release}-filelist
 %{genfilelist} \
+    --directory /etc/phonebook/sources.d 'attr(0777,root,root)' \
     --file /usr/share/phonebooks/phonebook 'attr(0755,root,root)' \
     --file /usr/share/phonebooks/sogo_export.php 'attr(0755,root,root)' \
     --file /usr/share/phonebooks/nethcti_export.php 'attr(0755,root,root)' \
