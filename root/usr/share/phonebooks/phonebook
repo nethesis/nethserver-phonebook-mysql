@@ -11,14 +11,6 @@ fi
 PBOOKPASS=$(perl -e "use NethServer::Password; my \$password = NethServer::Password::store('PhonebookDBPasswd')  ; printf \$password;")
 /usr/bin/mysql phonebook -upbookuser -p${PBOOKPASS} -e "truncate phonebook"
 
-
-# Export nethcti phonebook if requested
-nethcti_phonebook=$(/sbin/e-smith/config getprop phonebook nethcti 2>/dev/null)
-nethcti_status=$(/sbin/e-smith/config getprop nethcti-server status 2>/dev/null)
-if [[ "X$nethcti_phonebook" != "Xdisabled" && "X$nethcti_status" == "Xenabled" ]]; then
-    /usr/share/phonebooks/nethcti_export.php
-fi
-
 # Export nethvoice speeddial if requested
 nethvoice_speeddial=$(/sbin/e-smith/config getprop phonebook speeddial 2>/dev/null)
     if [[ "X$nethvoice_speeddial" == "Xenabled" && $(/sbin/e-smith/config show nethvoice &>/dev/null ; echo $?) == 0 ]] ; then

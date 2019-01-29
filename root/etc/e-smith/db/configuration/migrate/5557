@@ -1,0 +1,10 @@
+{
+    #
+    # Remove phonebook->nethcti db prop nethesis/dev#5557
+    #
+
+    my $configDb = esmith::ConfigDB->open() || return '';
+    get_prop_and_delete('phonebook', 'nethcti') || return '';
+    '';
+}
+

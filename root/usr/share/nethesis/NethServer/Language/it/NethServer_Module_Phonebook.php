@@ -9,7 +9,6 @@ $L['ldap_label'] = 'Esporta contatti in LDAP';
 $L['ldap_port_label'] = 'Porta server';
 $L['speeddial_label'] = 'Numeri brevi';
 $L['sogo_label'] = 'Contatti condivisi di SOGo';
-$L['nethcti_label'] = 'Contatti condivisi di NethCTI';
 $L['ldap_enabled_label'] = 'Abilita';
 $L['ldap_disabled_label'] = 'Disabilita';
 $L['ldap_port_inuse'] = 'La porta LDAP è occupata, sceglierne una differente';
