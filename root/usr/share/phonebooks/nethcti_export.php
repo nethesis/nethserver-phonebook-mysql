@@ -1,44 +1,44 @@
 #!/usr/bin/env php
 <?php
 
- exec('perl -e \'use NethServer::Password; my $password = NethServer::Password::store("CTIDBPasswd") ; printf $password;\'',$out);
- $duser = 'nethcti';
- $dpass = $out[0];
- $dhost = 'localhost';
+exec('perl -e \'use NethServer::Password; my $password = NethServer::Password::store("CTIDBPasswd") ; printf $password;\'',$out);
+$duser = 'nethcti';
+$dpass = $out[0];
+$dhost = 'localhost';
 
- $link = @mysql_connect($dhost, $duser, $dpass) or die ("Can't connect to nethcti DB\n"); 
- if (!$link) {
-     exit(1);
- }
+$link = @mysql_connect($dhost, $duser, $dpass) or die ("Can't connect to nethcti DB\n"); 
+if (!$link) {
+    exit(1);
+}
 
- # Select nethcti3 DB if present, nethcti 2 if not
- $db_list = mysql_list_dbs($link);
- while ($row = mysql_fetch_object($db_list)) {
-     $dbs[] = $row->Database;
- }
- if (in_array('nethcti3',$dbs)) {
-     mysql_select_db('nethcti3', $link );
- } elseif (in_array('nethcti2',$dbs)) {
-     mysql_select_db('nethcti2', $link );
- } else {
-     exit(1);
- }
+# Select nethcti3 DB if present, nethcti 2 if not
+$db_list = mysql_list_dbs($link);
+while ($row = mysql_fetch_object($db_list)) {
+    $dbs[] = $row->Database;
+}
+if (in_array('nethcti3',$dbs)) {
+    mysql_select_db('nethcti3', $link );
+} elseif (in_array('nethcti2',$dbs)) {
+    mysql_select_db('nethcti2', $link );
+} else {
+    exit(1);
+}
 
- exec('perl -e \'use NethServer::Password; my $password = NethServer::Password::store("PhonebookDBPasswd") ; printf $password;\'',$out2);
- $duser2 = 'pbookuser';
- $dpass2 = $out2[0];
- $dhost2 = 'localhost';
+exec('perl -e \'use NethServer::Password; my $password = NethServer::Password::store("PhonebookDBPasswd") ; printf $password;\'',$out2);
+$duser2 = 'pbookuser';
+$dpass2 = $out2[0];
+$dhost2 = 'localhost';
 
- $local_db = mysql_connect($dhost2, $duser2, $dpass2);
- if ($local_db) mysql_select_db('phonebook', $local_db );
- else exit(1);
+$local_db = mysql_connect($dhost2, $duser2, $dpass2);
+if ($local_db) mysql_select_db('phonebook', $local_db );
+else exit(1);
 
- define("DEBUG",false);
+define("DEBUG",false);
 
- mysql_set_charset('utf8',$local_db);
- mysql_set_charset('utf8',$link);
+mysql_set_charset('utf8',$local_db);
+mysql_set_charset('utf8',$link);
 
- $result = mysql_query("SELECT owner_id, homeemail, workemail, homephone, workphone, cellphone, fax, title, company, notes, name, 
+$result = mysql_query("SELECT owner_id, homeemail, workemail, homephone, workphone, cellphone, fax, title, company, notes, name, 
 				homestreet, homepob, homecity, homeprovince, homepostalcode, homecountry, workstreet, workpob, workcity, 
 				workprovince, workpostalcode, workcountry, url FROM cti_phonebook WHERE type='public'", $link);
 
