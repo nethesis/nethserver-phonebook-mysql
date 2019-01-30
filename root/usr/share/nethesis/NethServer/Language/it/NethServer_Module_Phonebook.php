@@ -7,7 +7,6 @@ $L['Phonebook_header'] = 'Rubrica';
 $L['sources_label'] = 'Sorgenti';
 $L['ldap_label'] = 'Esporta contatti in LDAP';
 $L['ldap_port_label'] = 'Porta server';
-$L['speeddial_label'] = 'Numeri brevi';
 $L['sogo_label'] = 'Contatti condivisi di SOGo';
 $L['ldap_enabled_label'] = 'Abilita';
 $L['ldap_disabled_label'] = 'Disabilita';

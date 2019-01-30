@@ -2,10 +2,7 @@
 
 echo $view->header('Phonebook')->setAttribute('template', $T('Phonebook_header'));
 
-$panel = $view->panel()
-    ->insert($view->fieldset()->setAttribute('template', $T('sources_label'))
-        ->insert($view->checkBox('speeddial', 'enabled')->setAttribute('uncheckedValue', 'disabled'))
-    );
+$panel = $view->panel();
 
 $panel->insert(
    $view->fieldset()->setAttribute('template', $T('ldap_label'))
