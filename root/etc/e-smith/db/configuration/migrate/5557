@@ -1,12 +1,11 @@
 {
     #
-    # Remove phonebook->nethcti db prop nethesis/dev#5557
+    # Remove phonebook db key nethesis/dev#5557
     #
 
     my $configDb = esmith::ConfigDB->open() || return '';
-    $configDb->get_prop_and_delete('phonebook', 'nethcti');
-    $configDb->get_prop_and_delete('phonebook', 'extensions');
-    $configDb->get_prop_and_delete('phonebook', 'speeddial');
-    '';
+    my $phonebook = $configDb->get('phonebook');
+    $phonebook->delete;
+    return '';
 }
 
