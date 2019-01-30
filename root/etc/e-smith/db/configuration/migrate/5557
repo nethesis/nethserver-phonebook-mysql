@@ -4,7 +4,8 @@
     #
 
     my $configDb = esmith::ConfigDB->open() || return '';
-    $configDb->get_prop_and_delete('phonebook', 'nethcti') || return '';
+    $configDb->get_prop_and_delete('phonebook', 'nethcti');
+    $configDb->get_prop_and_delete('phonebook', 'extensions');
     '';
 }
 
