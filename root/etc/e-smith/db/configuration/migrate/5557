@@ -4,7 +4,7 @@
     #
 
     my $configDb = esmith::ConfigDB->open() || return '';
-    my $phonebook = $configDb->get('phonebook');
+    my $phonebook = $configDb->get('phonebook') || return '';
     $phonebook->delete;
     return '';
 }
