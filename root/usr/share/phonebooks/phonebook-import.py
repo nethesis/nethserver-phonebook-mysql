@@ -209,8 +209,10 @@ def start():
       row = curSource.fetchone()
       importedCount = 0
       errCount = 0
+      if config['type'] != None:
+        destCols.append('type')
       while row is not None:
-        row = row + (str(sourceId),)
+        row = row + (str(sourceId), str(config['type']))
         sql = 'INSERT INTO ' + dest['dbtable'] + ' (' + ','.join(destCols) + ') VALUES {}'.format(row)
         try:
           curDest.execute(sql)
