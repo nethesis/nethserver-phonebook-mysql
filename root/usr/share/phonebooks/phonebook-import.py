@@ -7,18 +7,10 @@ import logging
 import MySQLdb
 import argparse
 import datetime
-#
+LOG_PATH = '/var/log/phonebook-import.log'
 DEST_CONFIG = '/etc/phonebook/destination-import.json'
 SOURCES_PATH = '/etc/phonebook/sources.d/'
-LOG_PATH = '/var/log/phonebook-import.log'
-#
-startTime = None
-sourceId = None
-importedCount = None
-toTransfer = None
-errCount = None
-sources = None
-dest = None
+startTime = sourceId = importedCount = toTransfer = errCount = sources = dest = None
 #
 def signalHandler(sig, frame):
   logSourceRes()
@@ -27,10 +19,9 @@ def signalHandler(sig, frame):
 
 signal.signal(signal.SIGINT, signalHandler)
 
-def getCursorDbConn(config):
+def getDbConn(config):
   if config['dbtype'] == 'mysql':
-    port = None
-    unixSocket = None
+    port = unixSocket = None
     try:
       port = int(config['port'])
     except:
@@ -38,32 +29,27 @@ def getCursorDbConn(config):
       unixSocket = config['port']
     try:
       if port:
-        dbDest = MySQLdb.connect(
-          host=config['host'],
-          port=port,
-          user=config['user'],
-          passwd=config['password'],
-          db=config['dbname']
-        )
+        return MySQLdb.connect(host=config['host'], port=port, user=config['user'], passwd=config['password'], db=config['dbname'])
       else:
-        dbDest = MySQLdb.connect(
-          host=config['host'],
-          unix_socket=unixSocket,
-          user=config['user'],
-          passwd=config['password'],
-          db=config['dbname']
-        )
-      return dbDest.cursor()
+        return MySQLdb.connect(host=config['host'], unix_socket=unixSocket, user=config['user'], passwd=config['password'], db=config['dbname'])
     except Exception as err:
       logger.error(str(err))
       return None
 
 def checkDbConn(config):
   logger.info('Check mysql db connection')
-  dbCur = getCursorDbConn(config)
-  if dbCur != None:
-    logger.info('db connection: OK')
+  dbConn = getDbConn(config)
+  if dbConn != None:
+    dbCur = dbConn.cursor()
+    try:
+      dbCur.execute('SELECT COUNT(*) FROM ' + config['dbtable'])
+      dbCur.fetchone()[0]
+      logger.info('db connection: OK')
+    except Exception as err:
+      logger.error('getting number of entries to be remove from destination ' + dest['dbname'] + '.' + dest['dbtable'] + ' before importing of source "' + sourceId + '": FAILED')
+      logger.error(str(err))
     dbCur.close()
+    dbConn.close()
     return 0
   else:
     logger.error('db connection: FAILED')
@@ -71,11 +57,13 @@ def checkDbConn(config):
 
 def getDbCols(config):
   logger.info('get columns list of "' + str(config) + '"')
-  dbCur = getCursorDbConn(config)
-  if dbCur != None:
+  dbConn = getDbConn(config)
+  if dbConn != None:
+    dbCur = dbConn.cursor()
     dbCur.execute('SHOW COLUMNS FROM ' + config['dbtable'])
     res = dbCur.fetchall()
     dbCur.close()
+    dbConn.close()
     return [col[0] for col in res]
   else:
     return []
@@ -88,9 +76,7 @@ def test():
   global startTime
   global sources
   global dest
-
   logger.info('Start TEST mysql db phonebooks import into phonebook.phonebook')
-
   # read destination file config
   try:
     with open(DEST_CONFIG, 'r') as configFile:
@@ -101,36 +87,13 @@ def test():
     logger.error(str(err))
     sys.exit(1)
 
-  port = None
-  unixSocket = None
-  try:
-    port=int(dest['port'])
-  except Exception as err:
-    port = None
-    unixSocket = dest['port']
-  try:
-    if port:
-      dbDest = MySQLdb.connect(
-        host=dest['host'],
-        port=port,
-        user=dest['user'],
-        passwd=dest['password'],
-        db=dest['dbname']
-      )
-    else:
-      dbDest = MySQLdb.connect(
-        host=dest['host'],
-        unix_socket=unixSocket,
-        user=dest['user'],
-        passwd=dest['password'],
-        db=dest['dbname']
-      )
-    curDest = dbDest.cursor()
+  dbDest = getDbConn(dest)
+  if dbDest != None:
     logger.info('check destination db connection: OK')
-  except Exception as err:
+  else:
     logger.error('check destination db connection: FAILED')
-    logger.error(str(err))
     sys.exit(1)
+  curDest = dbDest.cursor()
 
   # cycle all files of sources dir
   filepaths = glob.glob(os.path.join(SOURCES_PATH, '*.json'))
@@ -145,43 +108,16 @@ def test():
       logger.error(str(err))
 
     for sourceId, config in config.items():
-
       # check if the source is enabled
       if config['enabled'] == False:
         logger.warn('check db source "' + sourceId + '" (' + f + '): DISABLED')
         continue
-
-      # try connection
-      port = None
-      unixSocket = None
-      try:
-        port=int(config['port'])
-      except Exception as err:
-        port = None
-        unixSocket = config['port']
-      try:
-        if port:
-          dbSource = MySQLdb.connect(
-            host=config['host'],
-            port=port,
-            user=config['user'],
-            passwd=config['password'],
-            db=config['dbname']
-          )
-        else:
-            dbSource = MySQLdb.connect(
-            host=config['host'],
-            unix_socket=unixSocket,
-            user=config['user'],
-            passwd=config['password'],
-            db=config['dbname']
-          )
+      dbSource = getDbConn(config)
+      if dbSource != None:
         logger.info('check db source "' + sourceId + '" connection: OK')
-      except Exception as err:
+      else:
         logger.error('check db source "' + sourceId + '" connection: FAILED')
-        logger.error(str(err))
         continue
-
       try:
         curDest.execute('SELECT COUNT(*) FROM ' + dest['dbtable'] + ' WHERE source="{}"'.format(sourceId))
         delcount = curDest.fetchone()[0]
@@ -189,7 +125,6 @@ def test():
       except Exception as err:
         logger.error('getting number of entries to be remove from destination ' + dest['dbname'] + '.' + dest['dbtable'] + ' before importing of source "' + sourceId + '": FAILED')
         logger.error(str(err))
-      
       # get total number of entries to be copied
       curSource = dbSource.cursor()
       curSource.execute('SELECT COUNT(*) FROM ' + config['dbtable'])
@@ -210,9 +145,7 @@ def start():
   global startTime
   global sources
   global dest
-
   logger.warning('START mysql db phonebooks import into phonebook.phonebook')
-
   # read destination file config
   try:
     with open(DEST_CONFIG, 'r') as configFile:
@@ -222,35 +155,13 @@ def start():
     logger.error(str(err))
     sys.exit(1)
 
-  port = None
-  unixSocket = None
-  try:
-    port=int(dest['port'])
-  except Exception as err:
-    port = None
-    unixSocket = dest['port']
-  try:
-    if port:
-      dbDest = MySQLdb.connect(
-        host=dest['host'],
-        port=port,
-        user=dest['user'],
-        passwd=dest['password'],
-        db=dest['dbname']
-      )
-    else:
-      dbDest = MySQLdb.connect(
-        host=dest['host'],
-        unix_socket=unixSocket,
-        user=dest['user'],
-        passwd=dest['password'],
-        db=dest['dbname']
-      )
-    curDest = dbDest.cursor()
-  except Exception as err:
+  dbDest = getDbConn(dest)
+  if dbDest != None:
+    logger.info('check destination db connection: OK')
+  else:
     logger.error('connecting to the destination db (check ' + DEST_CONFIG + ')')
-    logger.error(str(err))
     sys.exit(1)
+  curDest = dbDest.cursor()
 
   # cycle all files of sources dir
   filepaths = glob.glob(os.path.join(SOURCES_PATH, '*.json'))
@@ -264,7 +175,6 @@ def start():
       logger.error(str(err))
 
     for sourceId, config in config.items():
-
       # check if the source is enabled
       if config['enabled'] == False:
         logger.warn('skip db source "' + sourceId + '"')
@@ -275,37 +185,13 @@ def start():
       destCols = config['mapping'].values()
       destCols.append('source')
       sourceCols = config['mapping'].keys()
-
       # try connection
-      port = None
-      unixSocket = None
-      try:
-        port=int(config['port'])
-      except Exception as err:
-        port = None
-        unixSocket = config['port']
-      try:
-        if port:
-          dbSource = MySQLdb.connect(
-            host=config['host'],
-            port=port,
-            user=config['user'],
-            passwd=config['password'],
-            db=config['dbname']
-          )
-        else:
-            dbSource = MySQLdb.connect(
-            host=config['host'],
-            unix_socket=unixSocket,
-            user=config['user'],
-            passwd=config['password'],
-            db=config['dbname']
-          )
-      except Exception as err:
+      dbSource = getDbConn(config)
+      if dbSource != None:
+        logger.info('check destination db connection: OK')
+      else:
         logger.error('connecting to source db "' + sourceId + '" (check ' + f + ')')
-        logger.error(str(err))
         continue
-
       # clean destination
       try:
         delcount = curDest.execute('DELETE FROM ' + dest['dbtable'] + ' WHERE source="{}"'.format(sourceId))
@@ -313,12 +199,10 @@ def start():
       except Exception as err:
         logger.error('removing all contacts of source "' + sourceId + '" from destination ' + dest['dbname'] + '.' + dest['dbtable'])
         logger.error(str(err))
-
       # get total number of entries to be copied
       curSource = dbSource.cursor()
       curSource.execute('SELECT COUNT(*) FROM ' + config['dbtable'])
       toTransfer = curSource.fetchone()[0]
-
       # start copying
       curSource = dbSource.cursor(MySQLdb.cursors.SSCursor)
       curSource.execute('SELECT ' + ','.join(sourceCols) + ' FROM ' + config['dbtable'])
@@ -335,14 +219,11 @@ def start():
           errCount += 1
           logger.error('error copying contact ' + str(row))
           logger.error(str(err))
-
         dbDest.commit()
         row = curSource.fetchone()
-
       curSource.close()
       dbSource.close()
       logSourceRes()
-  
   dbDest.close()
   curDest.close()
   logger.warning('END mysql db phonebooks import into phonebook.phonebook')
@@ -379,24 +260,14 @@ def extractArgsDbParams(data):
   return { 'dbtype': dbtype, 'host': host, 'port': port, 'user': user, 'password': password, 'dbname': dbname, 'dbtable': dbtable }
 
 if __name__ == '__main__':
-  # parse arguments
-  descr = 'MySQL Phonebook importer.\
-  You can import more db sources into one sinlge db destination.\
-  The sources and destination configuration data has to be declared using json files\
-  into the /etc/phonebook/ directory. The import results are written to ' + LOG_PATH + '.'
+  descr = 'MySQL Phonebook importer. You can import more db sources into one sinlge db destination. The sources and destination configuration data has to be declared using json files into the /etc/phonebook/ directory. The import results are written to ' + LOG_PATH + '.'
   parser = argparse.ArgumentParser(description=descr)
   parser.add_argument('-lv', '--log_verbose', action='store_true', help='enable debug log level in ' + LOG_PATH)
   parser.add_argument('-v', '--verbose', action='store_true', help='enable console debug')
-  parser.add_argument('-t', '--test', action='store_true',
-    help='test the source and destination configurations making some checks and writing some debug output to the console')
-  parser.add_argument('--check-db-conn', nargs=7,
-    metavar=('dbtype=mysql', 'host=<ADDRESS>', 'port=<PORT>', 'user=<USERNAME>', 'password=<PASSWORD>', 'dbname=<DBNAME>', 'dbtable=<DBTABLE>'),
-    help='check database connection returning 0 if the connection is successful, 1 otherwise')
-  parser.add_argument('--get-db-cols', nargs=7,
-    metavar=('dbtype=mysql', 'host=<ADDRESS>', 'port=<PORT>', 'user=<USERNAME>', 'password=<PASSWORD>', 'dbname=<DBNAME>', 'dbtable=<DBTABLE>'),
-    help='returns the column list of the db table')
+  parser.add_argument('-t', '--test', action='store_true', help='test the source and destination configurations making some checks and writing some debug output to the console')
+  parser.add_argument('--check-db-conn', nargs=7, metavar=('dbtype=mysql', 'host=<ADDRESS>', 'port=<PORT>', 'user=<USERNAME>', 'password=<PASSWORD>', 'dbname=<DBNAME>', 'dbtable=<DBTABLE>'), help='check database connection returning 0 if the connection is successful, 1 otherwise')
+  parser.add_argument('--get-db-cols', nargs=7, metavar=('dbtype=mysql', 'host=<ADDRESS>', 'port=<PORT>', 'user=<USERNAME>', 'password=<PASSWORD>', 'dbname=<DBNAME>', 'dbtable=<DBTABLE>'), help='returns the column list of the db table')
   args = parser.parse_args()
-  # logger
   logger = logging.getLogger(__name__)
   logger.setLevel(logging.DEBUG)
   cHandler = logging.StreamHandler()
@@ -417,4 +288,3 @@ if __name__ == '__main__':
     sys.exit(checkDbConn(extractArgsDbParams(args.check_db_conn)))
   else:
     start()
-
