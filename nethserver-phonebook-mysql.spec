@@ -11,6 +11,8 @@ Requires:  nethserver-mysql
 Requires:  php-odbc, php-mysql
 Requires:  nodejs
 Requires:  http-parser
+Requires:  MySQL-python
+
 BuildArch:	noarch
 AutoReq: no
 
