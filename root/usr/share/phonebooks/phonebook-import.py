@@ -27,6 +27,40 @@ def signalHandler(sig, frame):
 
 signal.signal(signal.SIGINT, signalHandler)
 
+def checkDbConn(dbtype, host, dbport, user, password, dbname, dbtable):
+  if dbtype == 'mysql':
+    logger.info('Check mysql db connection')
+    port = None
+    unixSocket = None
+    try:
+      port = int(dbport)
+    except Exception as err:
+      port = None
+      unixSocket = dbport
+    try:
+      if port:
+        MySQLdb.connect(
+          host=host,
+          port=port,
+          user=user,
+          passwd=password,
+          db=dbname
+        )
+      else:
+        MySQLdb.connect(
+          host=host,
+          unix_socket=unixSocket,
+          user=user,
+          passwd=password,
+          db=dbname
+        )
+      logger.info('db connection: OK')
+      return 0
+    except Exception as err:
+      logger.error('db connection: FAILED')
+      logger.error(str(err))
+      return 1
+
 def test():
   
   global sourceId
@@ -318,6 +352,7 @@ if __name__ == '__main__':
   parser.add_argument('-lv', '--log_verbose', action='store_true', help='enable debug log level in ' + LOG_PATH)
   parser.add_argument('-v', '--verbose', action='store_true', help='enable console debug')
   parser.add_argument('-t', '--test', action='store_true', help='test the source and destination configurations making some checks and writing some debug output to the console')
+  parser.add_argument('--check-db-conn', nargs=7, metavar=('dbtype=mysql', 'host=<ADDRESS>', 'port=<PORT>', 'user=<USERNAME>', 'password=<PASSWORD>', 'dbname=<DBNAME>', 'dbtable=<DBTABLE>'), help='check database connection returning 0 if the connection is successful, 1 otherwise')
   args = parser.parse_args()
   # logger
   logger = logging.getLogger(__name__)
@@ -329,10 +364,27 @@ if __name__ == '__main__':
   logFormat = logging.Formatter('%(asctime)s [%(process)s] %(levelname)s: %(message)s', datefmt='%d-%b-%y %H:%M:%S')
   cHandler.setFormatter(logFormat)
   fHandler.setFormatter(logFormat)
-  if args.verbose == True or args.test == True:
+  if args.verbose == True or args.test == True or args.check_db_conn:
     logger.addHandler(cHandler)
   logger.addHandler(fHandler)
   if args.test == True:
     test()
+  elif args.check_db_conn:
+    for arg in args.check_db_conn:
+      if 'dbtype' in arg:
+        dbtype = arg.split('=')[1]
+      elif 'host' in arg:
+        host = arg.split('=')[1]
+      elif 'port' in arg:
+        port = arg.split('=')[1]
+      elif 'user' in arg:
+        user = arg.split('=')[1]
+      elif 'password' in arg:
+        password = arg.split('=')[1]
+      elif 'dbname' in arg:
+        dbname = arg.split('=')[1]
+      elif 'dbtable' in arg:
+        dbtable = arg.split('=')[1]
+    sys.exit(checkDbConn(dbtype, host, port, user, password, dbname, dbtable))
   else:
     start()
