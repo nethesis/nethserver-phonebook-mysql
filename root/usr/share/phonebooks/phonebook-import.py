@@ -27,42 +27,60 @@ def signalHandler(sig, frame):
 
 signal.signal(signal.SIGINT, signalHandler)
 
-def checkDbConn(dbtype, host, dbport, user, password, dbname, dbtable):
-  if dbtype == 'mysql':
-    logger.info('Check mysql db connection')
+def getCursorDbConn(config):
+  if config['dbtype'] == 'mysql':
     port = None
     unixSocket = None
     try:
-      port = int(dbport)
-    except Exception as err:
+      port = int(config['port'])
+    except:
       port = None
-      unixSocket = dbport
+      unixSocket = config['port']
     try:
       if port:
-        MySQLdb.connect(
-          host=host,
+        dbDest = MySQLdb.connect(
+          host=config['host'],
           port=port,
-          user=user,
-          passwd=password,
-          db=dbname
+          user=config['user'],
+          passwd=config['password'],
+          db=config['dbname']
         )
       else:
-        MySQLdb.connect(
-          host=host,
+        dbDest = MySQLdb.connect(
+          host=config['host'],
           unix_socket=unixSocket,
-          user=user,
-          passwd=password,
-          db=dbname
+          user=config['user'],
+          passwd=config['password'],
+          db=config['dbname']
         )
-      logger.info('db connection: OK')
-      return 0
+      return dbDest.cursor()
     except Exception as err:
-      logger.error('db connection: FAILED')
       logger.error(str(err))
-      return 1
+      return None
+
+def checkDbConn(config):
+  logger.info('Check mysql db connection')
+  dbCur = getCursorDbConn(config)
+  if dbCur != None:
+    logger.info('db connection: OK')
+    dbCur.close()
+    return 0
+  else:
+    logger.error('db connection: FAILED')
+    return 1
+
+def getDbCols(config):
+  logger.info('get columns list of "' + str(config) + '"')
+  dbCur = getCursorDbConn(config)
+  if dbCur != None:
+    dbCur.execute('SHOW COLUMNS FROM ' + config['dbtable'])
+    res = dbCur.fetchall()
+    dbCur.close()
+    return [col[0] for col in res]
+  else:
+    return []
 
 def test():
-  
   global sourceId
   global importedCount
   global toTransfer
@@ -342,6 +360,24 @@ def logSourceRes():
     percent = '0'
   logger.warning('source "' + sourceId + '" imported ' + percent + '% (#' + str(importedCount) + ' imported - #' + str(errCount) + ' errors - #' + str(toTransfer) + ' tot - duration ' + str(end-startTime) + ')')
 
+def extractArgsDbParams(data):
+  for arg in data:
+    if 'dbtype' in arg:
+      dbtype = arg.split('=')[1]
+    elif 'host' in arg:
+      host = arg.split('=')[1]
+    elif 'port' in arg:
+      port = arg.split('=')[1]
+    elif 'user' in arg:
+      user = arg.split('=')[1]
+    elif 'password' in arg:
+      password = arg.split('=')[1]
+    elif 'dbname' in arg:
+      dbname = arg.split('=')[1]
+    elif 'dbtable' in arg:
+      dbtable = arg.split('=')[1]
+  return { 'dbtype': dbtype, 'host': host, 'port': port, 'user': user, 'password': password, 'dbname': dbname, 'dbtable': dbtable }
+
 if __name__ == '__main__':
   # parse arguments
   descr = 'MySQL Phonebook importer.\
@@ -351,8 +387,14 @@ if __name__ == '__main__':
   parser = argparse.ArgumentParser(description=descr)
   parser.add_argument('-lv', '--log_verbose', action='store_true', help='enable debug log level in ' + LOG_PATH)
   parser.add_argument('-v', '--verbose', action='store_true', help='enable console debug')
-  parser.add_argument('-t', '--test', action='store_true', help='test the source and destination configurations making some checks and writing some debug output to the console')
-  parser.add_argument('--check-db-conn', nargs=7, metavar=('dbtype=mysql', 'host=<ADDRESS>', 'port=<PORT>', 'user=<USERNAME>', 'password=<PASSWORD>', 'dbname=<DBNAME>', 'dbtable=<DBTABLE>'), help='check database connection returning 0 if the connection is successful, 1 otherwise')
+  parser.add_argument('-t', '--test', action='store_true',
+    help='test the source and destination configurations making some checks and writing some debug output to the console')
+  parser.add_argument('--check-db-conn', nargs=7,
+    metavar=('dbtype=mysql', 'host=<ADDRESS>', 'port=<PORT>', 'user=<USERNAME>', 'password=<PASSWORD>', 'dbname=<DBNAME>', 'dbtable=<DBTABLE>'),
+    help='check database connection returning 0 if the connection is successful, 1 otherwise')
+  parser.add_argument('--get-db-cols', nargs=7,
+    metavar=('dbtype=mysql', 'host=<ADDRESS>', 'port=<PORT>', 'user=<USERNAME>', 'password=<PASSWORD>', 'dbname=<DBNAME>', 'dbtable=<DBTABLE>'),
+    help='returns the column list of the db table')
   args = parser.parse_args()
   # logger
   logger = logging.getLogger(__name__)
@@ -369,22 +411,10 @@ if __name__ == '__main__':
   logger.addHandler(fHandler)
   if args.test == True:
     test()
+  elif args.get_db_cols:
+    sys.stdout.write(str(getDbCols(extractArgsDbParams(args.get_db_cols))))
   elif args.check_db_conn:
-    for arg in args.check_db_conn:
-      if 'dbtype' in arg:
-        dbtype = arg.split('=')[1]
-      elif 'host' in arg:
-        host = arg.split('=')[1]
-      elif 'port' in arg:
-        port = arg.split('=')[1]
-      elif 'user' in arg:
-        user = arg.split('=')[1]
-      elif 'password' in arg:
-        password = arg.split('=')[1]
-      elif 'dbname' in arg:
-        dbname = arg.split('=')[1]
-      elif 'dbtable' in arg:
-        dbtable = arg.split('=')[1]
-    sys.exit(checkDbConn(dbtype, host, port, user, password, dbname, dbtable))
+    sys.exit(checkDbConn(extractArgsDbParams(args.check_db_conn)))
   else:
     start()
+
