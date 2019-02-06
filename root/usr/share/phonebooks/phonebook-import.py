@@ -283,7 +283,7 @@ if __name__ == '__main__':
   if args.test == True:
     test()
   elif args.get_db_cols:
-    sys.stdout.write(str(getDbCols(extractArgsDbParams(args.get_db_cols))))
+    sys.stdout.write(json.dumps(getDbCols(extractArgsDbParams(args.get_db_cols))))
   elif args.check_db_conn:
     sys.exit(checkDbConn(extractArgsDbParams(args.check_db_conn)))
   else:
