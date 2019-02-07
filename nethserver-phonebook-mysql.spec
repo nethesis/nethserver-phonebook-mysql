@@ -41,11 +41,11 @@ perl createlinks
 rm -rf %{buildroot}
 (cd root ; find . -depth -print | cpio -dump %{buildroot})
 rm -f %{name}-%{version}-%{release}-filelist
-%{genfilelist} \
-    --directory /etc/phonebook/sources.d 'attr(0777,root,root)' \
+%{genfilelist} %{buildroot} \
+    --dir /etc/phonebook/sources.d 'attr(0777,root,root)' \
     --file /usr/share/phonebooks/phonebook 'attr(0755,root,root)' \
     --file /usr/share/phonebooks/sogo_export.php 'attr(0755,root,root)' \
-    %{buildroot} > %{name}-%{version}-%{release}-filelist
+> %{name}-%{version}-%{release}-filelist
 
 %files -f %{name}-%{version}-%{release}-filelist
 %defattr(-,root,root)
