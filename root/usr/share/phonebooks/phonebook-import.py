@@ -245,19 +245,19 @@ def logSourceRes():
 
 def extractArgsDbParams(data):
   for arg in data:
-    if 'dbtype' in arg:
+    if arg.startswith('dbtype='):
       dbtype = arg.split('=')[1]
-    elif 'host' in arg:
+    elif arg.startswith('host='):
       host = arg.split('=')[1]
-    elif 'port' in arg:
+    elif arg.startswith('port='):
       port = arg.split('=')[1]
-    elif 'user' in arg:
+    elif arg.startswith('user='):
       user = arg.split('=')[1]
-    elif 'password' in arg:
+    elif arg.startswith('password='):
       password = arg.split('=')[1]
-    elif 'dbname' in arg:
+    elif arg.startswith('dbname='):
       dbname = arg.split('=')[1]
-    elif 'dbtable' in arg:
+    elif arg.startswith('dbtable='):
       dbtable = arg.split('=')[1]
   return { 'dbtype': dbtype, 'host': host, 'port': port, 'user': user, 'password': password, 'dbname': dbname, 'dbtable': dbtable }
 
