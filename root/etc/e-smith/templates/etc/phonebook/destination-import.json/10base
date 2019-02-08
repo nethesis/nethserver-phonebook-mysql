@@ -6,7 +6,7 @@
 \{
     "type": "mysql",
     "host": "127.0.0.1",
-    "port": "/var/run/mysqld/mysqld.sock",
+    "port": "/var/lib/mysql/mysql.sock",
     "user": "pbookuser",
     "password": "{$password}",
     "dbname": "phonebook",
