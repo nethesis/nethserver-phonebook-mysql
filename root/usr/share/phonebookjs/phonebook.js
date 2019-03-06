@@ -60,6 +60,31 @@ function _debug (msg) {
   }
 }
 
+// convert to lowercase search paramiters of filter and its subfilters
+function lowercaseSearchParameters(filter){
+    if (typeof filter.initial !== 'undefined') {
+        filter.initial = filter.initial.toLowerCase();
+    }
+    if (typeof filter.final !== 'undefined') {
+        filter.final = filter.final.toLowerCase();
+    }
+    if (typeof filter.any !== 'undefined') {
+        var index;
+        for (index = 0; index < filter.any.length; ++index) {
+            filter.any[index] = filter.any[index].toLowerCase();
+        }
+    }
+    // recursively call lowercaseSearchParameters() for nested filters
+    if (typeof filter.filters !== 'undefined') {
+        var index;
+        for (index = 0; index < filter.filters.length; ++index) {
+            filter.filters[index] = lowercaseSearchParameters(filter.filters[index]);
+        }
+    }
+
+    return filter;
+}
+
 db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook", function(err, contacts) {
   if (err) {
     console.log("Error fetching records", err);
@@ -141,18 +166,10 @@ db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook",
     }
     _debug("Query from " + req.connection.remoteAddress + ":" + req.filter);
     sent = 0;
-    // Case insensitive search only on "initial"
-    if (typeof req.filter.initial !== 'undefined') {
-        req.filter.initial = req.filter.initial.toLowerCase();
-    }
-    if (typeof req.filter.filters !== 'undefined') {
-        var index;
-        for (index = 0; index < req.filter.filters.length; ++index) {
-            if (typeof req.filter.filters[index].initial !== 'undefined') {
-                req.filter.filters[index].initial = req.filter.filters[index].initial.toLowerCase();
-            }
-        }
-    }
+
+    // Lowercase search parameters
+    req.filter = lowercaseSearchParameters(req.filter);
+
     for (var i = 0; i < addrbooks.length; i++) {
       if (req.filter.matches(addrbooks[i].attributes)) {
         if (config.limit > 0 && sent >= config.limit) {
