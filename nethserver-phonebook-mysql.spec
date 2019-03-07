@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 2.0.12
+Version: 2.0.13
 Release: 1%{?dist}
 Summary:	Public phonebook
 License:	GPLv2
@@ -52,6 +52,9 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Thu Mar 07 2019 Stefano Fancello <stefano.fancello@nethesis.it> - 2.0.13-1
+- Convert search query string to lowercase nethesis/dev#5589
+
 * Thu Jan 10 2019 Stefano Fancello <stefano.fancello@nethesis.it> - 2.0.12-1
 - phonebookjs systemd unit: start after mysqld. nethesis/5554
 
