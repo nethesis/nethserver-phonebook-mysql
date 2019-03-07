@@ -45,6 +45,9 @@ mysql_set_charset("utf8");
 
  $rubrica_ext = ODBCquery2array($query);
 
+// Remove webrecall contacts from centralized phonebook
+mysql_query('DELETE FROM phonebook WHERE source = "webrecall"',$database);
+
  foreach ($rubrica_ext as $record) {
         $azienda=$record['azienda'];
         $nome=$record['cognome']." ".$record['nome'];
@@ -73,7 +76,9 @@ mysql_set_charset("utf8");
                         workcity='".mysql_escape_string($citta)."', 
                         workprovince='".mysql_escape_string($prov)."', 
                         workpostalcode='".mysql_escape_string($cap)."', 
-                        cellphone='".mysql_escape_string($cell)."';";
+                        cellphone='".mysql_escape_string($cell)."'.,
+                        type='webrecall',
+                        source='webrecall';";
  
  	$result = mysql_query($query_ins,$database);
  }
