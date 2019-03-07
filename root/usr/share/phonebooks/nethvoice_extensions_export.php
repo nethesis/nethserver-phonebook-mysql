@@ -20,16 +20,19 @@
      echo "Error reading extensions\n";
      exit (1);
  } 
- 
+
+ // Remove NethVoice extensions from centralized phonebook
+ $db2->query('DELETE FROM phonebook WHERE source = "nethvoice extensions"');
+
  if (empty($ext)) exit (0);
 
  $query = "INSERT INTO phonebook.phonebook (owner_id,type, homeemail, workemail, homephone, workphone, cellphone,
                                                 fax, title, company, notes, name, homestreet, homepob, homecity,
                                                 homeprovince, homepostalcode, homecountry, workstreet, workpob,
-                                                workcity, workprovince, workpostalcode, workcountry, url) VALUES ";
+                                                workcity, workprovince, workpostalcode, workcountry, url, source) VALUES ";
  $v = array();
  foreach ($ext as $e){
-     $values[] .= "('admin', 'extension', '', '', '',?, '', '', '', '','', ?,'', '', '','', '', '', '','', '', '', '','', '')";
+     $values[] .= "('admin', 'extension', '', '', '',?, '', '', '', '','', ?,'', '', '','', '', '', '','', '', '', '','', '', 'nethvoice extensions')";
      $v[] = $e['extension'];
      $v[] = $e['name'];
  }

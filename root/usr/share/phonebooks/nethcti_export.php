@@ -42,6 +42,9 @@
 				homestreet, homepob, homecity, homeprovince, homepostalcode, homecountry, workstreet, workpob, workcity, 
 				workprovince, workpostalcode, workcountry, url FROM cti_phonebook WHERE type='public'", $link);
 
+// Remove NethCTI contacts from centralized phonebook
+mysql_query('DELETE FROM phonebook WHERE source = "nethcti"',$local_db);
+
 if ($result)
  while($row = mysql_fetch_array($result))
  {
@@ -51,16 +54,15 @@ if ($result)
      @$query = "INSERT INTO phonebook.phonebook (owner_id, type, homeemail, workemail, homephone, workphone, cellphone, 
                                                 fax, title, company, notes, name, homestreet, homepob, homecity, 
                                                 homeprovince, homepostalcode, homecountry, workstreet, workpob, 
-                                                workcity, workprovince, workpostalcode, workcountry, url) 
+                                                workcity, workprovince, workpostalcode, workcountry, url, source)
 		VALUES ('".$row["owner_id"]."', 'nethcti', '".mysql_real_escape_string($row["homeemail"])."', '".mysql_real_escape_string($row["workemail"])."', '".mysql_real_escape_string($row["homephone"])."', 
 			'".mysql_real_escape_string($row["workphone"])."', '".mysql_real_escape_string($row["cellphone"])."', '".mysql_real_escape_string($row["fax"])."', '".mysql_real_escape_string($row["title"])."', '".mysql_real_escape_string($row["company"])."', 
 			'".mysql_real_escape_string($row["notes"])."', '".mysql_real_escape_string($row["name"])."', '".mysql_real_escape_string($row["homestreet"])."', '".mysql_real_escape_string($row["homepob"])."', '".mysql_real_escape_string($row["homecity"])."', 
 			'".mysql_real_escape_string($row["homeprovince"])."', '".mysql_real_escape_string($row["homepostalcode"])."', '".mysql_real_escape_string($row["homecountry"])."', '".mysql_real_escape_string($row["workstreet"])."', 
 			'".mysql_real_escape_string($row["workpob"])."', '".mysql_real_escape_string($row["workcity"])."', '".mysql_real_escape_string($row["workprovince"])."', '".mysql_real_escape_string($row["workpostalcode"])."', 
-			'".mysql_real_escape_string($row["workcountry"])."', '".mysql_real_escape_string($row["url"])."')";
+			'".mysql_real_escape_string($row["workcountry"])."', '".mysql_real_escape_string($row["url"])."', 'nethcti')";
      if(DEBUG)
        echo $query;
      if(!mysql_query($query,$local_db) && DEBUG) //print errors if debug is enabled
          echo mysql_error()."\n";
-
  }
