@@ -15,6 +15,7 @@ event_actions ($event , qw(
 
 templates2events ('/etc/odbc.ini',$event);
 templates2events ('/usr/share/phonebookjs/config.json',$event);
+templates2events ('/etc/phonebook/destination-import.json',$event);
 event_services($event, qw(
     phonebookjs restart
 ));
