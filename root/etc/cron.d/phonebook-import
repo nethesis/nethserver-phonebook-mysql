@@ -1,0 +1,16 @@
+# run phonebook-import.py at different time intervals
+
+# 15 minutes
+*/15 * * * * root /usr/bin/python /usr/share/phonebooks/phonebook-import.py --interval 15
+
+# 30 minutes
+*/30 * * * * root /usr/bin/python /usr/share/phonebooks/phonebook-import.py --interval 30
+
+# 1 hour
+01 * * * * root /usr/bin/python /usr/share/phonebooks/phonebook-import.py --interval 60
+
+# 6 hours
+01 */6 * * * root /usr/bin/python /usr/share/phonebooks/phonebook-import.py --interval 360
+
+# 24 hours
+01 01 * * * root /usr/bin/python /usr/share/phonebooks/phonebook-import.py --interval 1440
