@@ -18,7 +18,7 @@ $query="SELECT  accountname as company, '' as contact, phone as workphone, fax, 
  $res = mysql_query($query,$vtdb);
 
 // Remove vtiger contacts from centralized phonebook
-mysql_query('DELETE FROM phonebook WHERE source = "vtiger"',$database);
+mysql_query('DELETE FROM phonebook WHERE sid_import = "vtiger"',$database);
 
  while ($record=mysql_fetch_assoc($res)) {
         $azienda=$record['company'];
@@ -54,7 +54,7 @@ mysql_query('DELETE FROM phonebook WHERE source = "vtiger"',$database);
                         workpostalcode='".mysql_escape_string($cap)."', 
                         cellphone='".mysql_escape_string($cell)."',
                         type='vtiger',
-                        source='vtiger';";
+                        sid_import='vtiger';";
  	$result = mysql_query($query_ins,$database);
  }
  

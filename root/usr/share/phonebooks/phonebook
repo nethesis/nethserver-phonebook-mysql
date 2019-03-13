@@ -9,7 +9,7 @@ fi
 
 # empty phonebook table
 PBOOKPASS=$(perl -e "use NethServer::Password; my \$password = NethServer::Password::store('PhonebookDBPasswd')  ; printf \$password;")
-/usr/bin/mysql phonebook -upbookuser -p${PBOOKPASS} -e "DELETE FROM phonebook WHERE source IS NULL"
+/usr/bin/mysql phonebook -upbookuser -p${PBOOKPASS} -e "DELETE FROM phonebook WHERE sid_import IS NULL"
 
 # imports contacts into the phonebook.phonebook reading configuration files from /etc/phonebook
 /usr/bin/python /usr/share/phonebooks/phonebook-import.py
