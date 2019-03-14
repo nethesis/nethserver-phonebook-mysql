@@ -3,5 +3,5 @@
    rotate 10
    compress
    weekly
-   create 0640 root root
+   create 0666 root root
 }
