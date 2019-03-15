@@ -92,9 +92,10 @@ def syncSource(path, output, deleteonly):
   toTransfer = curSource.rowcount
   logger.info('synchronizing source "' + sid + '" (' + str(toTransfer) + ' entries)...')
   start = datetime.datetime.now().replace(microsecond=0)
+  sourceCols = sConfig[sid]['mapping'].keys()
   destCols = sConfig[sid]['mapping'].values()
   destCols.append('sid_imported')
-  curSource = dbSource.cursor(MySQLdb.cursors.SSCursor)
+  curSource = dbSource.cursor(MySQLdb.cursors.DictCursor)
   curSource.execute(sConfig[sid]['query'])
   row = curSource.fetchone()
   importedCount = 0
@@ -102,8 +103,13 @@ def syncSource(path, output, deleteonly):
   if sConfig[sid]['type'] != None:
     destCols.append('type')
   while row is not None:
-    row = row + (str(sid), str(sConfig[sid]['type']))
-    sql = 'INSERT INTO ' + dConfig['dbtable'] + ' (' + ','.join(destCols) + ') VALUES {}'.format(row)
+    values = []
+    for el in sourceCols:
+      values.append(row[el])
+    values.append(str(sid))
+    if sConfig[sid]['type'] != None:
+      values.append(str(sConfig[sid]['type']))
+    sql = 'INSERT INTO ' + dConfig['dbtable'] + ' (' + ','.join(destCols) + ') VALUES {}'.format(tuple(values))
     try:
       curDest.execute(sql)
       importedCount += 1
