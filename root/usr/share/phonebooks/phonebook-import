@@ -49,8 +49,13 @@ def syncSource(path, output):
     curSource.execute(sConfig[sid]['query'])
     rows = curSource.fetchall()
     cols = tuple([i[0] for i in curSource.description])
-    rows = (cols,) + rows
-    sys.stdout.write(json.dumps(rows))
+    res = []
+    for row in rows:
+      temp = {}
+      for i, el in enumerate(row):
+        temp[cols[i]] = el
+        res.append(temp)
+    sys.stdout.write(json.dumps(res))
     logger.info('write ' + str(len(rows)) + ' entries to std output')
     logger.info('end ' + ('check of' if output == True else '') + ' source import of ' + path + ' into phonebook.phonebook')
     curSource.close()
