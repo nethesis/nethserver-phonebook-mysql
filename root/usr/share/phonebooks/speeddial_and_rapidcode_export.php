@@ -21,7 +21,7 @@ $dhost2 = 'localhost';
 $db2 = new PDO("mysql:host=$dhost2;dbname=phonebook",$duser2, $dpass2);
 
 // Remove NethVoice extensions from centralized phonebook
-$db2->query('DELETE FROM phonebook WHERE sid_import = "NethVoice RapidCodes"');
+$db2->query('DELETE FROM phonebook WHERE sid_imported = "NethVoice RapidCodes"');
 
 // Export Speed Dials
 try {
@@ -42,7 +42,7 @@ try {
             $query = "INSERT INTO phonebook.phonebook (owner_id,type, homeemail, workemail, homephone, workphone, cellphone,
                                                 fax, title, company, notes, name, homestreet, homepob, homecity,
                                                 homeprovince, homepostalcode, homecountry, workstreet, workpob,
-                                                workcity, workprovince, workpostalcode, workcountry, url, sid_import)
+                                                workcity, workprovince, workpostalcode, workcountry, url, sid_imported)
                       VALUES ('admin', 'speeddial', '', '', '',?, '', '', '', '','', ?, '', '', '','', '', '', '','', '', '', '','', '', 'NethVoice RapidCodes')";
             $stmt2 = $db2->prepare($query);
             $stmt2->execute(array($row["number"],$row["name"]));
@@ -75,7 +75,7 @@ try {
             $query = "INSERT INTO phonebook.phonebook (owner_id,type, homeemail, workemail, homephone, workphone, cellphone,
                                                 fax, title, company, notes, name, homestreet, homepob, homecity,
                                                 homeprovince, homepostalcode, homecountry, workstreet, workpob,
-                                                workcity, workprovince, workpostalcode, workcountry, url, sid_import)
+                                                workcity, workprovince, workpostalcode, workcountry, url, sid_imported)
                       VALUES ('admin', 'rapidcode', '', '', '',?, '', '', '', '','', ?, '', '', '','', '', '', '','', '', '', '','', '', 'NethVoice RapidCodes')";
             $stmt2 = $db2->prepare($query);
             $stmt2->execute(array($row["number"],$row["label"]));

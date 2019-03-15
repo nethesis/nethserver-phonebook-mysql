@@ -56,7 +56,7 @@ mysql_set_charset("utf8");
  $rubrica_ext = ODBCquery2array($query);
 
 // Remove Business contacts from centralized phonebook
-mysql_query('DELETE FROM phonebook WHERE sid_import = "business"',$database);
+mysql_query('DELETE FROM phonebook WHERE sid_imported = "business"',$database);
 
 
  foreach ($rubrica_ext as $record) {
@@ -89,7 +89,7 @@ mysql_query('DELETE FROM phonebook WHERE sid_import = "business"',$database);
 			workpostalcode='".mysql_escape_string($cap)."', 
             cellphone='".mysql_escape_string($cell)."',
             type='business',
-            sid_import='business';";
+            sid_imported='business';";
 
  	$result = mysql_query($query_ins,$database);
  }

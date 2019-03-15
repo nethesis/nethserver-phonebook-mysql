@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS phonebook (
   workpostalcode varchar(255) default NULL,
   workcountry varchar(255) default NULL,
   url varchar(255) default NULL,
-  sid_import varchar(255) default NULL,
+  sid_imported varchar(255) default NULL,
   PRIMARY KEY  (id),
   KEY owner_idx (owner_id),
   KEY wemail_idx (workemail),
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS phonebook (
 ) ENGINE=MyISAM CHARSET=UTF8;
 
 
--- add column sid_import only if it is needed
+-- add column sid_imported only if it is needed
 DELIMITER //
 DROP PROCEDURE IF EXISTS AddPhonebookSourceColumn //
 CREATE PROCEDURE AddPhonebookSourceColumn()
@@ -56,8 +56,8 @@ CREATE PROCEDURE AddPhonebookSourceColumn()
 BEGIN
 
 IF NOT EXISTS( (SELECT * FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE()
-        AND COLUMN_NAME='sid_import' AND TABLE_NAME='phonebook') ) THEN
-    ALTER TABLE phonebook ADD sid_import varchar(255) default NULL;
+        AND COLUMN_NAME='sid_imported' AND TABLE_NAME='phonebook') ) THEN
+    ALTER TABLE phonebook ADD sid_imported varchar(255) default NULL;
 END IF;
 
 END; //
