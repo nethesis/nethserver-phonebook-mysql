@@ -54,8 +54,13 @@ def syncSource(path, output):
       temp = {}
       for i, el in enumerate(row):
         temp[cols[i]] = el
-        res.append(temp)
-    sys.stdout.write(json.dumps(res))
+      res.append(temp)
+    if len(res) == 0:
+      temp = {}
+      for x in cols:
+        temp[x] = ''
+      res.append(temp)
+    sys.stdout.write(json.dumps(res) + '\n')
     logger.info('write ' + str(len(rows)) + ' entries to std output')
     logger.info('end ' + ('check of' if output == True else '') + ' source import of ' + path + ' into phonebook.phonebook')
     curSource.close()
