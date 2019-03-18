@@ -1,7 +1,0 @@
-/var/log/phonebook-import.log {
-   missingok
-   rotate 10
-   compress
-   weekly
-   create 0666 root root
-}

@@ -1,6 +1,5 @@
 #!/usr/bin/env python2
-import os, glob, sys, json, signal, logging, MySQLdb, argparse, datetime
-LOG_PATH = '/var/log/phonebook-import.log'
+import os, glob, sys, json, signal, logging, logging.handlers, MySQLdb, argparse, datetime
 DEST_PATH = '/etc/phonebook/destination-import.json'
 
 def signalHandler(sig, frame):
@@ -29,7 +28,7 @@ def getDbConn(config):
 def syncSource(path, output, deleteonly):
   logger.info('start ' + ('check of' if output == True else '') + ' source import of ' + path + ' into phonebook.phonebook')
   try:
-    logger.info('reading ' + path)
+    logger.debug('reading ' + path)
     with open(path, 'r') as sourceFile:
       sConfig = json.load(sourceFile)
   except Exception as err:
@@ -37,10 +36,10 @@ def syncSource(path, output, deleteonly):
     logger.error(str(err))
     sys.exit(1)
   sid = next(iter(sConfig))
-  logger.info(path + ' has "' + sid + '" source')
+  logger.debug(path + ' has "' + sid + '" source')
   dbSource = getDbConn(sConfig[sid])
   if dbSource != None:
-    logger.info('source "' + sid + '" connection (' + sConfig[sid]['dbname'] + '): ok')
+    logger.debug('source "' + sid + '" connection (' + sConfig[sid]['dbname'] + '): ok')
   else:
     logger.error('source "' + sid + '" connection (' + sConfig[sid]['dbname'] + '): failed')
     sys.exit(1)
@@ -75,7 +74,7 @@ def syncSource(path, output, deleteonly):
     sys.exit(1)
   dbDest = getDbConn(dConfig)
   if dbDest != None:
-    logger.info('destination db connection ("phonebook"): ok')
+    logger.debug('destination db connection ("phonebook"): ok')
   else:
     logger.error('destination db connection ("phonebook"): failed')
     sys.exit(1)
@@ -90,7 +89,7 @@ def syncSource(path, output, deleteonly):
     logger.error(str(err))
   curSource.execute(sConfig[sid]['query'])
   toTransfer = curSource.rowcount
-  logger.info('synchronizing source "' + sid + '" (' + str(toTransfer) + ' entries)...')
+  logger.debug('synchronizing source "' + sid + '" (' + str(toTransfer) + ' entries)...')
   start = datetime.datetime.now().replace(microsecond=0)
   sourceCols = sConfig[sid]['mapping'].keys()
   destCols = sConfig[sid]['mapping'].values()
@@ -135,26 +134,27 @@ def extractArgsDbParams(data):
   return result
 
 if __name__ == '__main__':
-  descr = 'MySQL Phonebook importer. Imports contacts from a MySQL database source into phonebook.phonebook database. The destination configuration data is into the /etc/phonebook/destination-import.json file. The source configuration file path has to be declared using \"config\" option. The log file is ' + LOG_PATH + '.'
+  descr = 'MySQL Phonebook importer. Imports contacts from a MySQL database source into phonebook.phonebook database. The destination configuration data is into the /etc/phonebook/destination-import.json file. Destination log is syslog.'
   parser = argparse.ArgumentParser(description=descr)
   parser.add_argument('source_path', help='absolute path of the source json configuration file')
-  parser.add_argument('-lw', '--log_warning', action='store_true', help='enable only warning log messages in ' + LOG_PATH)
+  parser.add_argument('-lw', '--log_warning', action='store_true', help='enable only warning log messages in syslog')
+  parser.add_argument('-lv', '--log_verbose', action='store_true', help='enable debug log level in syslog')
   parser.add_argument('-v', '--verbose', action='store_true', help='enable console debug')
   parser.add_argument('-c', '--check', action='store_true', help='it causes the writing of query results to standard output in JSON format instead of executing the database synchronization. Has more priority than deleteonly')
   parser.add_argument('-d', '--deleteonly', action='store_true', help='just delete entries from this configuration')
   args = parser.parse_args()
   logger = logging.getLogger(__name__)
-  logger.setLevel(logging.INFO)
+  logger.setLevel(logging.DEBUG)
   cHandler = logging.StreamHandler()
-  fHandler = logging.FileHandler(LOG_PATH)
-  cHandler.setLevel(logging.INFO if args.verbose == True else logging.NOTSET)
-  fHandler.setLevel(logging.INFO if args.log_warning == False else logging.WARNING)
-  logFormat = logging.Formatter('%(asctime)s [%(process)s] %(levelname)s: %(message)s', datefmt='%d-%b-%y %H:%M:%S')
+  syslogHandler = logging.handlers.SysLogHandler(address = '/dev/log')
+  cHandler.setLevel(logging.DEBUG if args.verbose == True else logging.NOTSET)
+  syslogHandler.setLevel(logging.INFO if args.log_warning == False else logging.WARNING)
+  logFormat = logging.Formatter('[%(process)s] %(levelname)s: %(message)s', datefmt='%d-%b-%y %H:%M:%S')
   cHandler.setFormatter(logFormat)
-  fHandler.setFormatter(logFormat)
+  syslogHandler.setFormatter(logFormat)
   if args.verbose == True:
     logger.addHandler(cHandler)
-  logger.addHandler(fHandler)
+  logger.addHandler(syslogHandler)
   if args.source_path:
     syncSource(args.source_path, args.check, args.deleteonly)
   else:
