@@ -1,0 +1,6 @@
+# Launch centralized phonebook sync every night at midnight
+0  0  *  *  *  root  /usr/share/phonebooks/phonebook &> /dev/null
+
+# Refresh phonebookjs every hour
+*  0  *  *  *  root /usr/bin/systemctl try-restart phonebookjs &> /dev/null
+

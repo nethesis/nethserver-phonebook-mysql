@@ -1,0 +1,14 @@
+{
+    use NethServer::Password;
+    our $password = NethServer::Password::store("PhonebookDBPasswd");
+    $OUT = '';
+}
+\{
+    "dbtype": "mysql",
+    "host": "127.0.0.1",
+    "port": "/var/lib/mysql/mysql.sock",
+    "user": "pbookuser",
+    "password": "{$password}",
+    "dbname": "phonebook",
+    "dbtable": "phonebook"
+\}

@@ -1,4 +1,0 @@
-#!/bin/bash
-
-/usr/share/phonebooks/phonebook &> /dev/null
-/sbin/restart slapd &> /dev/null

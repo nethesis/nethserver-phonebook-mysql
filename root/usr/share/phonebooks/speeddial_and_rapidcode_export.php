@@ -20,6 +20,9 @@ $dpass2 = $out2[0];
 $dhost2 = 'localhost';
 $db2 = new PDO("mysql:host=$dhost2;dbname=phonebook",$duser2, $dpass2);
 
+// Remove NethVoice extensions from centralized phonebook
+$db2->query('DELETE FROM phonebook WHERE sid_imported = "NethVoice RapidCodes"');
+
 // Export Speed Dials
 try {
     if(DEBUG) {
@@ -39,8 +42,8 @@ try {
             $query = "INSERT INTO phonebook.phonebook (owner_id,type, homeemail, workemail, homephone, workphone, cellphone,
                                                 fax, title, company, notes, name, homestreet, homepob, homecity,
                                                 homeprovince, homepostalcode, homecountry, workstreet, workpob,
-                                                workcity, workprovince, workpostalcode, workcountry, url)
-                      VALUES ('admin', 'speeddial', '', '', '',?, '', '', '', '','', ?, '', '', '','', '', '', '','', '', '', '','', '')";
+                                                workcity, workprovince, workpostalcode, workcountry, url, sid_imported)
+                      VALUES ('admin', 'speeddial', '', '', '',?, '', '', '', '','', ?, '', '', '','', '', '', '','', '', '', '','', '', 'NethVoice RapidCodes')";
             $stmt2 = $db2->prepare($query);
             $stmt2->execute(array($row["number"],$row["name"]));
         }
@@ -72,8 +75,8 @@ try {
             $query = "INSERT INTO phonebook.phonebook (owner_id,type, homeemail, workemail, homephone, workphone, cellphone,
                                                 fax, title, company, notes, name, homestreet, homepob, homecity,
                                                 homeprovince, homepostalcode, homecountry, workstreet, workpob,
-                                                workcity, workprovince, workpostalcode, workcountry, url)
-                      VALUES ('admin', 'rapidcode', '', '', '',?, '', '', '', '','', ?, '', '', '','', '', '', '','', '', '', '','', '')";
+                                                workcity, workprovince, workpostalcode, workcountry, url, sid_imported)
+                      VALUES ('admin', 'rapidcode', '', '', '',?, '', '', '', '','', ?, '', '', '','', '', '', '','', '', '', '','', '', 'NethVoice RapidCodes')";
             $stmt2 = $db2->prepare($query);
             $stmt2->execute(array($row["number"],$row["label"]));
         }
