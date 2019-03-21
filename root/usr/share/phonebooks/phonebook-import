@@ -101,6 +101,7 @@ def syncSource(path, output, deleteonly):
   errCount = 0
   if sConfig[sid]['type'] != None:
     destCols.append('type')
+  percents = ('%s, ' * len(destCols))[:-2]
   while row is not None:
     values = []
     for el in sourceCols:
@@ -108,9 +109,9 @@ def syncSource(path, output, deleteonly):
     values.append(str(sid))
     if sConfig[sid]['type'] != None:
       values.append(str(sConfig[sid]['type']))
-    sql = 'INSERT INTO ' + dConfig['dbtable'] + ' (' + ','.join(destCols) + ') VALUES {}'.format(tuple(values))
+    sql = 'INSERT INTO ' + dConfig['dbtable'] + ' (' + ','.join(destCols) + ') VALUES (' + percents + ')'
     try:
-      curDest.execute(sql)
+      curDest.execute(sql, tuple(values))
       importedCount += 1
     except Exception as err:
       errCount += 1
