@@ -38,6 +38,8 @@ def syncSource(path, output, deleteonly):
   sid = next(iter(sConfig))
   logger.debug(path + ' has "' + sid + '" source')
   dbSource = getDbConn(sConfig[sid])
+  if output == True:
+    dbSource.set_character_set('utf8')
   if dbSource != None:
     logger.debug('source "' + sid + '" connection (' + sConfig[sid]['dbname'] + '): ok')
   else:
@@ -59,7 +61,7 @@ def syncSource(path, output, deleteonly):
       for x in cols:
         temp[x] = ''
       res.append(temp)
-    sys.stdout.write(json.dumps(res) + '\n')
+    sys.stdout.write(json.dumps(res,ensure_ascii=False) + '\n')
     logger.info('write ' + str(len(rows)) + ' entries to std output')
     logger.info('end ' + ('check of' if output == True else '') + ' source import of ' + path + ' into phonebook.phonebook')
     curSource.close()
