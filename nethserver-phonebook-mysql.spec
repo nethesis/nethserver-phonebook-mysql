@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 2.0.13
+Version: 2.0.14
 Release: 1%{?dist}
 Summary:	Public phonebook
 License:	GPLv2
@@ -54,6 +54,9 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Tue Mar 26 2019 Alessandro Polidori <alessandro.polidori@gmail.com> - 2.0.14-1
+- NethVoice 14 Wizard: add the possibility to add personal phonebooks - nethesis/dev#5557
+
 * Thu Mar 07 2019 Stefano Fancello <stefano.fancello@nethesis.it> - 2.0.13-1
 - Convert search query string to lowercase nethesis/dev#5589
 
