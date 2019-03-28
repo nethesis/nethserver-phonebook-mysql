@@ -8,7 +8,7 @@ $database = mysql_connect('localhost','pbookuser',$pbookpass) or die("Database e
 mysql_select_db('phonebook', $database);
 mysql_set_charset("utf8");
 
- function ODBCconnect(){ 
+function ODBCconnect(){
      //Modifica i seguenti parametri di accesso all'odbc
      $dsn="business";
      $user="sa";
@@ -42,16 +42,17 @@ mysql_set_charset("utf8");
  //Query da modificare secondo le esigenze specifiche del server usato
  # ATTENZIONE!! è necessario fare il cast() dei campi di testo per evitare l'errore "Out of Memory"
 
- $query="select cast(an_descr1 as varchar(255)) as azienda1, cast(an_descr2 as varchar(255)) as azienda2, 
-		cast(an_contatt as varchar(255)) as contatto, 
-		an_telef as tel, 
-		an_email as email, 
-		an_faxtlx as fax, 
-		cast(an_indir as varchar(255)) as via, 
-		cast(an_citta as varchar(255)) as citta, 
-		an_prov as prov, 
-		an_cap as cap 
-	from ANAGRA;";
+ $query="select cast(an_descr1 as varchar(255)) as azienda1, cast(an_descr2 as varchar(255)) as azienda2,
+		cast(an_contatt as varchar(255)) as contatto,
+		an_telef as tel,
+		an_email as email,
+		an_faxtlx as fax,
+		an_cell as cell,
+		cast(an_indir as varchar(255)) as via,
+		cast(an_citta as varchar(255)) as citta,
+		an_prov as prov,
+		an_cap as cap
+	from ANAGRA where an_tipo = 'c' or an_tipo = 'f';";
 
  $rubrica_ext = ODBCquery2array($query);
 
@@ -76,23 +77,27 @@ mysql_query('DELETE FROM phonebook WHERE sid_imported = "business"',$database);
         $fax=str_replace(" ","",$fax);
         $fax=str_replace("/","",$fax);
         $fax=str_replace("+","00",$fax);
+		    $cell=str_replace("-","",$record['cell']);
+        $cell=str_replace(" ","",$cell);
+        $cell=str_replace("/","",$cell);
+        $cell=str_replace("+","00",$cell);
 
- 	$query_ins = "INSERT INTO phonebook  SET 
- 			company='".mysql_escape_string($azienda)."', 
-			name='".mysql_escape_string($nome)."', 
-			workphone='".mysql_escape_string($tel)."', 
-			fax='".mysql_escape_string($fax)."', 
-			workemail='".mysql_escape_string($email)."', 
-			workstreet='".mysql_escape_string($via)."', 
-			workcity='".mysql_escape_string($citta)."', 
-			workprovince='".mysql_escape_string($prov)."', 
-			workpostalcode='".mysql_escape_string($cap)."', 
+ 	$query_ins = "INSERT INTO phonebook  SET
+ 			company='".mysql_escape_string($azienda)."',
+			name='".mysql_escape_string($nome)."',
+			workphone='".mysql_escape_string($tel)."',
+			fax='".mysql_escape_string($fax)."',
+			workemail='".mysql_escape_string($email)."',
+			workstreet='".mysql_escape_string($via)."',
+			workcity='".mysql_escape_string($citta)."',
+			workprovince='".mysql_escape_string($prov)."',
+			workpostalcode='".mysql_escape_string($cap)."',
             cellphone='".mysql_escape_string($cell)."',
             type='business',
             sid_imported='business';";
 
  	$result = mysql_query($query_ins,$database);
  }
- 
+
 
 
