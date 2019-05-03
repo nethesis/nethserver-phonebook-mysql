@@ -37,6 +37,9 @@ def syncSource(path, output, deleteonly):
     sys.exit(1)
   sid = next(iter(sConfig))
   logger.debug(path + ' has "' + sid + '" source')
+  if not sConfig[sid]['enabled']:
+    logger.info(sid + ' is disabled')
+    sys.exit(0)
   dbSource = getDbConn(sConfig[sid])
   if output == True:
     dbSource.set_character_set('utf8')
