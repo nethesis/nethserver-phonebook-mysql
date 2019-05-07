@@ -43,7 +43,7 @@ try {
                                                 fax, title, company, notes, name, homestreet, homepob, homecity,
                                                 homeprovince, homepostalcode, homecountry, workstreet, workpob,
                                                 workcity, workprovince, workpostalcode, workcountry, url, sid_imported)
-                      VALUES ('admin', 'speeddial', '', '', '',?, '', '', '', '','', ?, '', '', '','', '', '', '','', '', '', '','', '', 'NethVoice RapidCodes')";
+                      VALUES ('admin', 'speeddial', '', '', '',?, '', '', '', '','', ?, '', '', '','', '', '', '','', '', '', '','', '', 'speeddial')";
             $stmt2 = $db2->prepare($query);
             $stmt2->execute(array($row["number"],$row["name"]));
         }
@@ -76,7 +76,7 @@ try {
                                                 fax, title, company, notes, name, homestreet, homepob, homecity,
                                                 homeprovince, homepostalcode, homecountry, workstreet, workpob,
                                                 workcity, workprovince, workpostalcode, workcountry, url, sid_imported)
-                      VALUES ('admin', 'rapidcode', '', '', '',?, '', '', '', '','', ?, '', '', '','', '', '', '','', '', '', '','', '', 'NethVoice RapidCodes')";
+                      VALUES ('admin', 'rapidcode', '', '', '',?, '', '', '', '','', ?, '', '', '','', '', '', '','', '', '', '','', '', 'speeddial')";
             $stmt2 = $db2->prepare($query);
             $stmt2->execute(array($row["number"],$row["label"]));
         }
