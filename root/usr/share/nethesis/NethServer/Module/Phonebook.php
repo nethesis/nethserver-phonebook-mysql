@@ -63,7 +63,12 @@ class Phonebook extends \Nethgui\Controller\AbstractController
                 $sids[] = $change;
             }
         }
-        $this->getPlatform()->signalEvent('nethserver-phonebook-mysql-save &',$sids);
+        if (!empty($sids)) {
+            $this->getPlatform()->signalEvent('nethserver-phonebook-mysql-save &',$sids);
+        }
+        if (in_array('ldap',$changes) || in_array('ldap_port',$changes)) {
+            $this->getPlatform()->signalEvent('nethserver-phonebook-mysql-fwsave &');
+        }
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
