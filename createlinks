@@ -27,6 +27,8 @@ event_services($event, qw(
 $event = "nethserver-phonebook-mysql-save";
 
 event_actions ($event , qw(
+    nethserver-phonebook-mysql-clear 60
+    nethserver-phonebook-mysql-sync 70
     firewall-adjust 70
 ));
 
