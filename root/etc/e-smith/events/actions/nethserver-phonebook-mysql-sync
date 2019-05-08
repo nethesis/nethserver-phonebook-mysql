@@ -1,0 +1,41 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2019 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+LAUNCHGLOBAL=true
+if [[ $# -gt 1 ]]; then
+     LAUNCHGLOBAL=false
+     for SID in ${@:2}; do
+         if [[ -f /etc/phonebook/sources.d/${SID}.json ]] ; then
+             /usr/share/phonebooks/phonebook-import /etc/phonebook/sources.d/${SID}.json
+         else
+             LAUNCHGLOBAL=true
+         fi
+     done
+fi
+
+# argument weren't all executed or no argument provided. Sync all.
+if [[ $LAUNCHGLOBAL == true ]]; then
+    for FILE in $(find /etc/phonebook/sources.d/ -type f); do
+        /usr/share/phonebooks/phonebook-import $FILE
+    done
+    /usr/share/phonebooks/phonebook
+fi

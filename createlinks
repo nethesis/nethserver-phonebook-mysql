@@ -27,6 +27,20 @@ event_services($event, qw(
 $event = "nethserver-phonebook-mysql-save";
 
 event_actions ($event , qw(
+    nethserver-phonebook-mysql-clear 60
+    nethserver-phonebook-mysql-sync 70
+));
+
+event_services($event, qw(
+    phonebookjs try-restart
+));
+
+#
+# nethserver-phonebook-mysql-fwsave
+#
+$event = "nethserver-phonebook-mysql-fwsave";
+
+event_actions ($event , qw(
     firewall-adjust 70
 ));
 
@@ -34,7 +48,6 @@ templates2events ('/usr/share/phonebookjs/config.json',$event);
 event_services($event, qw(
     phonebookjs restart
 ));
-
 
 #
 # restore-config event
