@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 2.0.14
+Version: 2.1.0
 Release: 1%{?dist}
 Summary:	Public phonebook
 License:	GPLv2
@@ -54,6 +54,11 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Thu May 09 2019 Stefano Fancello <stefano.fancello@nethesis.it> - 2.1.0-1
+- Clear phonebook on save event. Nethesis/dev#5623
+- Launch save event when a source is enabled/disabled/synced. Nethesis/dev#5623
+- Execute nethserver-phonebook-mysql-conf after restore config. Nethesis/dev#5616
+
 * Tue Mar 26 2019 Alessandro Polidori <alessandro.polidori@gmail.com> - 2.0.14-1
 - NethVoice 14 Wizard: add the possibility to add personal phonebooks - nethesis/dev#5557
 
