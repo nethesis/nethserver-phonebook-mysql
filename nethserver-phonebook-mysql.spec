@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 2.1.0
+Version: 2.1.1
 Release: 1%{?dist}
 Summary:	Public phonebook
 License:	GPLv2
@@ -54,6 +54,9 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Fri May 24 2019 Stefano Fancello <stefano.fancello@nethesis.it> - 2.1.1-1
+- Update speeddial_and_rapidcode_export.php: avoid spped dial duplication
+
 * Thu May 09 2019 Stefano Fancello <stefano.fancello@nethesis.it> - 2.1.0-1
 - Clear phonebook on save event. Nethesis/dev#5623
 - Launch save event when a source is enabled/disabled/synced. Nethesis/dev#5623
