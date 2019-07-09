@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 2.1.1
+Version: 2.1.2
 Release: 1%{?dist}
 Summary:	Public phonebook
 License:	GPLv2
@@ -54,6 +54,9 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Tue Jul 09 2019 Stefano Fancello <stefano.fancello@nethesis.it> - 2.1.2-1
+- cron: fix phonebookjs restart time
+
 * Fri May 24 2019 Stefano Fancello <stefano.fancello@nethesis.it> - 2.1.1-1
 - Update speeddial_and_rapidcode_export.php: avoid spped dial duplication
 
