@@ -77,7 +77,7 @@ while ($record = $sth->fetch(PDO::FETCH_ASSOC,PDO::FETCH_ORI_NEXT)) {
     $query_ins = "INSERT INTO phonebook
         (company,name,workphone,fax,workemail,workstreet,workcity,workprovince,workpostalcode,cellphone,type,sid_imported)
         VALUES
-        (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        (?,?,?,?,?,?,?,?,?,?,?,?)";
 
     try {
         $sth2 = $phonebookDB->prepare($query_ins);
