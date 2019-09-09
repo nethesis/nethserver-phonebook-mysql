@@ -1,103 +1,104 @@
 #!/usr/bin/php -q
 <?php
+/****************************
+*  Business DB credentials  *
+*****************************/
+$dsn="business";
+$user="sa";
+$pass="nts";
+/****************************/
 
-exec('perl -e \'use NethServer::Password; my $password = NethServer::Password::store(\'PhonebookDBPasswd\')  ; printf $password;\'',$out); //get sogo db password
+$code = 0;
+
+// Get NethServer phonebook database credentials
+exec('perl -e \'use NethServer::Password; my $password = NethServer::Password::store(\'PhonebookDBPasswd\')  ; printf $password;\'',$out);
 $pbookpass = $out[0];
 
-$database = mysql_connect('localhost','pbookuser',$pbookpass) or die("Database error config");
-mysql_select_db('phonebook', $database);
-mysql_set_charset("utf8");
+// Connect to NethServer phonebook database
+$phonebookDB = new PDO(
+    'mysql:host=localhost;dbname=phonebook',
+    'pbookuser',
+    $pbookpass);
+$phonebookDB->exec("set names utf8");
 
-function ODBCconnect(){
-    //Modifica i seguenti parametri di accesso all'odbc
-    $dsn="business";
-    $user="sa";
-    $pass="nts";
+// Connect to MSSQL using PDO odbc driver
+$mssqlDB = new PDO(
+    'odbc:'.$dsn,
+    $user,
+    $pass);
+$phonebookDB->exec("set names utf8");
 
-    global $ODBC_handle;
-    if (!isset($ODBC_handle)){
-        $ODBC_handle = odbc_connect($dsn,$user,$pass);
-    }
-    if (!isset($ODBC_handle)) die("ODBCconnect() failed!");
- }
-
-//Questa funzione definisce la connessione con il DSN creato precedentemente
-
-function ODBCquery($query){
-    ODBCconnect();
-    global $ODBC_handle;
-    return odbc_exec($ODBC_handle,$query);
+// Remove Business contacts from centralized phonebook
+try {
+    $phonebookDB->exec('DELETE FROM phonebook WHERE sid_imported = "business"');
+} catch (Exception $e) {
+    echo "Error '".$e->getMessage()."' cleaning phonebook";
+    $code ++;
 }
-
-//Questa funzione esegue la query su MSSQLSERVER tramite l'odbc
-
-function ODBCquery2array($query){
-    $result = ODBCquery($query);
-    while ($row = odbc_fetch_array($result)){
-        $returnarray[] = $row;
-    }
-    if (isset($returnarray)) return $returnarray; else return false;
-}
-
 //Query da modificare secondo le esigenze specifiche del server usato
-# ATTENZIONE!! è necessario fare il cast() dei campi di testo per evitare l'errore "Out of Memory"
-
-$query="select cast(an_descr1 as varchar(255)) as azienda1, cast(an_descr2 as varchar(255)) as azienda2,
-		cast(an_contatt as varchar(255)) as contatto,
+$query="select an_descr1 as azienda1, an_descr2 as azienda2,
+		an_contatt as contatto,
 		an_telef as tel,
 		an_email as email,
 		an_faxtlx as fax,
 		an_cell as cell,
-		cast(an_indir as varchar(255)) as via,
-		cast(an_citta as varchar(255)) as citta,
+		an_indir as via,
+		an_citta as citta,
 		an_prov as prov,
 		an_cap as cap
 	from ANAGRA where an_tipo = 'c' or an_tipo = 'f';";
 
-$rubrica_ext = ODBCquery2array($query);
+try {
+    $sth = $mssqlDB->prepare($query);
+    $sth->execute(array());
+} catch (Exception $e) {
+    echo "Error '".$e->getMessage()."' executing query: $query";
+    $code ++;
+}
+while ($record = $sth->fetch(PDO::FETCH_ASSOC,PDO::FETCH_ORI_NEXT)) {
+    $azienda = $record['azienda1'].' '.$record['azienda2'];
+    $azienda = (isset($azienda) ? $azienda : '');
+    $nome = (isset($record['contatto']) ? $record['contatto'] : '' );
+    $email = (isset($record['email']) ? $record['email'] : '' );
+    $via = (isset($record['via']) ? $record['via'] : '' );
+    $citta = (isset($record['citta']) ? $record['citta'] : '' );
+    $prov= (isset($record['prov']) ? $record['prov'] : '' );
+    $cap= (isset($record['cap']) ? $record['cap'] : '' );
+    foreach (['tel','fax','cell','homephone'] as $field) {
+        if (isset($record[$field])) {
+            $$field = preg_replace("/-| |\//","",$record[$field]);
+            $$field = str_replace("+","00",$$field);
+        } else {
+            $$field = '';
+        }
+    }
 
-// Remove Business contacts from centralized phonebook
-mysql_query('DELETE FROM phonebook WHERE sid_imported = "business"',$database);
+    $query_ins = "INSERT INTO phonebook
+        (company,name,workphone,fax,workemail,workstreet,workcity,workprovince,workpostalcode,cellphone,type,sid_imported)
+        VALUES
+        (?,?,?,?,?,?,?,?,?,?,?,?)";
 
-
-foreach ($rubrica_ext as $record) {
-    $azienda=$record['azienda1'].' '.$record['azienda2'];
-    $nome=$record['contatto'];
-    $email=$record['email'];
-    $via=$record['via'];
-    $citta=$record['citta'];
-    $prov=$record['prov'];
-    $cap=$record['cap'];
-    $cell=$record['cell'];
-    $tel=str_replace("-","",$record['tel']);
-    $tel=str_replace(" ","",$tel);
-    $tel=str_replace("/","",$tel);
-    $tel=str_replace("+","00",$tel);
-    $fax=str_replace("-","",$record['fax']);
-    $fax=str_replace(" ","",$fax);
-    $fax=str_replace("/","",$fax);
-    $fax=str_replace("+","00",$fax);
-    $cell=str_replace("-","",$record['cell']);
-    $cell=str_replace(" ","",$cell);
-    $cell=str_replace("/","",$cell);
-    $cell=str_replace("+","00",$cell);
-
- 	$query_ins = "INSERT INTO phonebook  SET
- 	    company='".mysql_escape_string($azienda)."',
-		name='".mysql_escape_string($nome)."',
-		workphone='".mysql_escape_string($tel)."',
-		fax='".mysql_escape_string($fax)."',
-		workemail='".mysql_escape_string($email)."',
-		workstreet='".mysql_escape_string($via)."',
-		workcity='".mysql_escape_string($citta)."',
-		workprovince='".mysql_escape_string($prov)."',
-		workpostalcode='".mysql_escape_string($cap)."',
-        cellphone='".mysql_escape_string($cell)."',
-        type='business',
-        sid_imported='business';";
-
-    $result = mysql_query($query_ins,$database);
+    try {
+        $sth2 = $phonebookDB->prepare($query_ins);
+        $sth2->execute(array(
+            $azienda,
+            $nome,
+            $tel,
+            $fax,
+            $email,
+            $via,
+            $citta,
+            $prov,
+            $cap,
+            $cell,
+            'business',
+            'business'
+        ));
+    } catch (Exception $e) {
+        echo "Error '".$e->getMessage()."' executing query: $query_ins";
+        $code ++;
+    }
 }
 
-
+exit($code);
 
