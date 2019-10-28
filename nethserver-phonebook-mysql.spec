@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 2.1.2
+Version: 2.1.3
 Release: 1%{?dist}
 Summary:	Public phonebook
 License:	GPLv2
@@ -54,6 +54,9 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Mon Oct 28 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.1.3-1
+- Phonebook: partial results for MSSQL queries - Nethesis/dev#5690
+
 * Tue Jul 09 2019 Stefano Fancello <stefano.fancello@nethesis.it> - 2.1.2-1
 - cron: fix phonebookjs restart time
 
