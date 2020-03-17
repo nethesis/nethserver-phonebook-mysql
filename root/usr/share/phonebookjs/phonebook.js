@@ -50,7 +50,7 @@ if (config.certificate !== undefined && config.key !== undefined) {
   var server = ldap.createServer();
 }
 
-if (config.username !== 'undefined' && config.password !== 'undefined') {
+if (config.username !== undefined && config.password !== undefined) {
   var authentication = true;
 } else {
   var authentication = false;
@@ -156,14 +156,14 @@ db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook",
     addrbooks.push(obj);
   }
 
+  var userinfo = {};
   if (authentication) {
-    var userinfo = {}
     userinfo["cn=" + config.username + ", " + config.basedn] = {
       pwd: config.password,
       addrbooks: addrbooks
     }
   } else {
-    userinfo["unauthenticated"] = {
+    userinfo["cn=anonymous"] = {
       addrbooks: addrbooks
     }
   }
@@ -188,7 +188,7 @@ db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook",
     if (authentication) {
       var binddn = req.connection.ldap.bindDN.toString();
     } else {
-      var binddn = "unauthenticated";
+      var binddn = "cn=anonymous";
     }
     // Gigaset workaround
     if (req.filter == '(objectclass=*)') {
@@ -208,7 +208,6 @@ db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook",
 
     // Lowercase search parameters
     req.filter = lowercaseSearchParameters(req.filter);
-
     for (var i = 0; i < userinfo[binddn].addrbooks.length; i++) {
       if (req.filter.matches(userinfo[binddn].addrbooks[i].attributes)) {
         if (config.limit > 0 && sent >= config.limit) {
