@@ -1,6 +1,0 @@
-TEMPLATE_PATH="certificate/crt"
-OUTPUT_FILENAME="/usr/share/phonebookjs/NSRV.crt"
-UID="phonebook"
-GID="phonebook"
-PERMS=0640
-

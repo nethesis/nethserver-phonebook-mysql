@@ -4,9 +4,6 @@ After=mysqld.service
 Wants=mysqld.service
 
 [Service]
-Type=forking
-User=phonebook
-Group=phonebook
 ExecStart=/usr/bin/node /usr/share/phonebookjs/phonebook.js /usr/share/phonebookjs/config_ldaps.json
 Restart=always
 SyslogIdentifier=phonebookjss

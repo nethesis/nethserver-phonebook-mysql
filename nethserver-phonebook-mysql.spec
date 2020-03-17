@@ -19,15 +19,9 @@ BuildRequires: systemd
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
-Requires(pre): %{_sbindir}/groupadd
-Requires(pre): %{_sbindir}/useradd
 
 %description
 Public phonebook
-
-%pre
-%{_sbindir}/groupadd -r phonebook &>/dev/null || :
-%{_sbindir}/useradd -r -s /bin/false -d /usr/share/phonebooks -c 'Phonebook User' -g phonebook phonebook &>/dev/null || :
 
 %post
 %systemd_post phonebookjs.service
@@ -47,15 +41,15 @@ rm -rf %{buildroot}
 (cd root ; find . -depth -print | cpio -dump %{buildroot})
 rm -f %{name}-%{version}-%{release}-filelist
 %{genfilelist} %{buildroot} \
-    --dir /etc/phonebook/sources.d 'attr(0777,phonebook,phonebook)' \
-    --file /usr/share/phonebooks/phonebook 'attr(0755,phonebook,phonebook)' \
-    --file /usr/share/phonebooks/sogo_export.php 'attr(0755,phonebook,phonebook)' \
-    --file /usr/share/phonebooks/nethcti_export.php 'attr(0755,phonebook,phonebook)' \
-    --file /usr/share/phonebooks/speeddial_and_rapidcode_export.php 'attr(0755,phonebook,phonebook)' \
+    --dir /etc/phonebook/sources.d 'attr(0777,root,root)' \
+    --file /usr/share/phonebooks/phonebook 'attr(0755,root,root)' \
+    --file /usr/share/phonebooks/sogo_export.php 'attr(0755,root,root)' \
+    --file /usr/share/phonebooks/nethcti_export.php 'attr(0755,root,root)' \
+    --file /usr/share/phonebooks/speeddial_and_rapidcode_export.php 'attr(0755,root,root)' \
     > %{name}-%{version}-%{release}-filelist
 
 %files -f %{name}-%{version}-%{release}-filelist
-%defattr(-,phonebook,phonebook)
+%defattr(-,root,root)
 %dir %{_nseventsdir}/%{name}-update
 
 
