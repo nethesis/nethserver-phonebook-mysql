@@ -50,10 +50,10 @@ class Phonebook extends \Nethgui\Controller\AbstractController
     {
         if( $this->getRequest()->isMutation()) {
             $port = $this->getPlatform()->getDatabase('configuration')->getProp('slapd', 'TCPPorts');
-            if ($port == $this->parameters['ldap_port']) {
+            if (in_array($this->parameters['ldap_port'], explode(',',$port))) {
                 $report->addValidationErrorMessage($this, 'ldap_port', 'ldap_port_inuse', array($port));
             }
-            if ($port == $this->parameters['ldaps_port'] || $this->parameters['ldaps_port'] == $this->parameters['ldap_port'] ) {
+            if (in_array($this->parameters['ldaps_port'], explode(',',$port)) || $this->parameters['ldaps_port'] == $this->parameters['ldap_port'] ) {
                 $report->addValidationErrorMessage($this, 'ldaps_port', 'ldaps_port_inuse', array($port));
             }
         }
