@@ -13,9 +13,9 @@
   "db_host" : "localhost",
   "db_port" : "3306",
   "db_pass": "{{ $pass }}",
-  "limit": {{ $phonebookjs{'Limit'} || "500" }},
-  "certificate" : "/etc/pki/tls/certs/NSRV.crt",
-  "key": "/etc/pki/tls/certs/NSRV.crt",
+  "limit": {{ $phonebookjss{'Limit'} || "500" }},
+  "certificate" : "/usr/share/phonebookjs/NSRV.crt",
+  "key": "/usr/share/phonebookjs/NSRV.key",
   "username": "ldapuser",
   "password": "{{ $ldapPbPass }}"
 \}

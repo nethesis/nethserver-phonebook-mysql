@@ -17,6 +17,8 @@ templates2events ('/etc/odbc.ini',$event);
 templates2events ('/usr/share/phonebookjs/config.json',$event);
 templates2events ('/usr/share/phonebookjs/config_ldaps.json',$event);
 templates2events ('/etc/phonebook/destination-import.json',$event);
+templates2events ('/usr/share/phonebookjs/NSRV.key',$event);
+templates2events ('/usr/share/phonebookjs/NSRV.crt',$event);
 event_services($event, qw(
     phonebookjs restart
 ));
@@ -58,4 +60,19 @@ event_services($event, qw(
 event_actions('post-restore-config', qw(
     nethserver-phonebook-mysql-fixldap 19
     nethserver-phonebook-mysql-conf 60
+));
+
+#
+# Certificate-update event
+#
+
+$event = "certificate-update";
+
+event_templates($event, qw(
+    /usr/share/phonebookjs/NSRV.key
+    /usr/share/phonebookjs/NSRV.crt
+));
+
+event_services($event, qw(
+    phonebookjss restart
 ));
