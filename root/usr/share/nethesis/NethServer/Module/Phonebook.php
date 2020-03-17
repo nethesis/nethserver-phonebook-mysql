@@ -53,7 +53,7 @@ class Phonebook extends \Nethgui\Controller\AbstractController
             if ($port == $this->parameters['ldap_port']) {
                 $report->addValidationErrorMessage($this, 'ldap_port', 'ldap_port_inuse', array($port));
             }
-            if ($port == $this->parameters['ldaps_port']) {
+            if ($port == $this->parameters['ldaps_port'] || $this->parameters['ldaps_port'] == $this->parameters['ldap_port'] ) {
                 $report->addValidationErrorMessage($this, 'ldaps_port', 'ldaps_port_inuse', array($port));
             }
         }
