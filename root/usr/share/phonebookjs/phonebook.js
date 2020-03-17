@@ -162,6 +162,10 @@ db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook",
       pwd: config.password,
       addrbooks: addrbooks
     }
+  } else {
+    userinfo["unauthenticated"] = {
+      addrbooks: addrbooks
+    }
   }
 
   server.bind(config.basedn, function (req, res, next) {
@@ -183,9 +187,8 @@ db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook",
   server.search(config.basedn, function(req, res, next) {
     if (authentication) {
       var binddn = req.connection.ldap.bindDN.toString();
-      if (userinfo.hasOwnProperty(binddn)) {
-        addrbooks = userinfo[binddn].addrbooks;
-      }
+    } else {
+      var binddn = "unauthenticated";
     }
     // Gigaset workaround
     if (req.filter == '(objectclass=*)') {
@@ -206,12 +209,12 @@ db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook",
     // Lowercase search parameters
     req.filter = lowercaseSearchParameters(req.filter);
 
-    for (var i = 0; i < addrbooks.length; i++) {
-      if (req.filter.matches(addrbooks[i].attributes)) {
+    for (var i = 0; i < userinfo[binddn].addrbooks.length; i++) {
+      if (req.filter.matches(userinfo[binddn].addrbooks[i].attributes)) {
         if (config.limit > 0 && sent >= config.limit) {
             break;
         } else {
-            res.send(addrbooks[i]);
+            res.send(userinfo[binddn].addrbooks[i]);
             sent++;
         }
       }
