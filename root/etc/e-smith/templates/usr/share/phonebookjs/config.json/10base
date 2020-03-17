@@ -12,7 +12,5 @@
   "db_host" : "localhost",
   "db_port" : "3306",
   "db_pass": "{{ $pass }}",
-  "user": "nobody",
-  "group": "nobody",
   "limit": {{ $phonebookjs{'Limit'} || "500" }}
 \}
