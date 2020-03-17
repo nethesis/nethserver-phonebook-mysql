@@ -17,7 +17,7 @@
   "group": "nobody",
   "limit": {{ $phonebookjs{'Limit'} || "500" }},
   "certificate" : "/etc/pki/tls/certs/NSRV.crt",
-  "key": "/etc/pki/tls/certs/NSRV.crt",
+  "key": "/etc/pki/tls/private/NSRV.key",
   "username": "ldapuser",
   "password": "{{ $ldapPbPass }}"
 \}
