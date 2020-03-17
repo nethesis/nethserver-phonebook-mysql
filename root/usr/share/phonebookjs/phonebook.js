@@ -44,7 +44,7 @@ if (config_file) {
 }
 _debug("Loaded config: "+util.inspect(config));
 
-if (config.certificate !== 'undefined') {
+if (config.certificate !== undefined && config.key !== undefined) {
   var server = ldap.createServer({"certificate": fs.readFileSync(config.certificate, 'utf8'), "key": fs.readFileSync(config.key, 'utf8')});
 } else {
   var server = ldap.createServer();
