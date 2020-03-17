@@ -13,6 +13,9 @@ $panel->insert(
    ->insert($view->radioButton('ldap', 'disabled'))
    ->insert($view->fieldsetSwitch('ldap', 'enabled', $view::FIELDSETSWITCH_EXPANDABLE)
      ->insert($view->textInput('ldap_port')))
+   ->insert($view->radioButton('ldaps', 'disabled'))
+   ->insert($view->fieldsetSwitch('ldaps', 'enabled', $view::FIELDSETSWITCH_EXPANDABLE)
+     ->insert($view->textInput('ldaps_port')))
 );
 
 
