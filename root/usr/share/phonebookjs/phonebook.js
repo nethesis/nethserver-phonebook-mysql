@@ -17,6 +17,7 @@ var mysql = require("mysql");
 var fs = require('fs');
 var addrbooks = [];
 var config_file = "";
+var authentication = false;
 var config = {
   "debug" : false,
   "port" : 389,
