@@ -59,3 +59,15 @@ event_actions('post-restore-config', qw(
     nethserver-phonebook-mysql-fixldap 19
     nethserver-phonebook-mysql-conf 60
 ));
+
+#
+# Certificate-update event
+#
+$event = "certificate-update";
+
+templates2events ('/usr/share/phonebookjs/config_ldaps.json',$event);
+
+event_services($event, qw(
+    phonebookjss restart
+));
+
