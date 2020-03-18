@@ -53,8 +53,6 @@ if (config.certificate !== undefined && config.key !== undefined) {
 
 if (config.username !== undefined && config.password !== undefined) {
   var authentication = true;
-} else {
-  var authentication = false;
 }
 
 var db = mysql.createConnection({
