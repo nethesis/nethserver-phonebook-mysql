@@ -39,7 +39,9 @@ class Phonebook extends \Nethgui\Controller\AbstractController
     {
         parent::initialize();
         $this->declareParameter('ldap', Validate::SERVICESTATUS, array('configuration', 'phonebookjs', 'status'));
+        $this->declareParameter('ldaps', Validate::SERVICESTATUS, array('configuration', 'phonebookjss', 'status'));
         $this->declareParameter('ldap_port', Validate::PORTNUMBER, array('configuration', 'phonebookjs', 'TCPPort'));
+        $this->declareParameter('ldaps_port', Validate::PORTNUMBER, array('configuration', 'phonebookjss', 'TCPPort'));
         $this->declareParameter('nethcti', Validate::SERVICESTATUS, array('configuration','phonebook', 'nethcti'));
         $this->declareParameter('speeddial', Validate::SERVICESTATUS, array('configuration','phonebook', 'speeddial'));
     }
@@ -48,8 +50,11 @@ class Phonebook extends \Nethgui\Controller\AbstractController
     {
         if( $this->getRequest()->isMutation()) {
             $port = $this->getPlatform()->getDatabase('configuration')->getProp('slapd', 'TCPPorts');
-            if ($port == $this->parameters['ldap_port']) {
+            if (in_array($this->parameters['ldap_port'], explode(',',$port))) {
                 $report->addValidationErrorMessage($this, 'ldap_port', 'ldap_port_inuse', array($port));
+            }
+            if (in_array($this->parameters['ldaps_port'], explode(',',$port)) || $this->parameters['ldaps_port'] == $this->parameters['ldap_port'] ) {
+                $report->addValidationErrorMessage($this, 'ldaps_port', 'ldaps_port_inuse', array($port));
             }
         }
         parent::validate($report);
@@ -66,7 +71,7 @@ class Phonebook extends \Nethgui\Controller\AbstractController
         if (!empty($sids)) {
             $this->getPlatform()->signalEvent('nethserver-phonebook-mysql-save',$sids);
         }
-        if (in_array('ldap',$changes) || in_array('ldap_port',$changes)) {
+        if (in_array('ldap',$changes) || in_array('ldap_port',$changes) || in_array('ldaps_port',$changes) || in_array('ldaps',$changes)) {
             $this->getPlatform()->signalEvent('nethserver-phonebook-mysql-fwsave');
         }
     }

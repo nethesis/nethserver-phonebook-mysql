@@ -1,0 +1,13 @@
+[Unit]
+Description=Export phonebook to LDAPS
+After=mysqld.service
+Wants=mysqld.service
+
+[Service]
+ExecStart=/usr/bin/node /usr/share/phonebookjs/phonebook.js /usr/share/phonebookjs/config_ldaps.json
+Restart=always
+SyslogIdentifier=phonebookjss
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target

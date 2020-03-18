@@ -14,8 +14,10 @@
 const util = require('util')
 var ldap = require('ldapjs');
 var mysql = require("mysql");
+var fs = require('fs');
 var addrbooks = [];
 var config_file = "";
+var authentication = false;
 var config = {
   "debug" : false,
   "port" : 389,
@@ -43,7 +45,16 @@ if (config_file) {
 }
 _debug("Loaded config: "+util.inspect(config));
 
-var server = ldap.createServer();
+if (config.certificate !== undefined && config.key !== undefined) {
+  var server = ldap.createServer({"certificate": fs.readFileSync(config.certificate, 'utf8'), "key": fs.readFileSync(config.key, 'utf8')});
+} else {
+  var server = ldap.createServer();
+}
+
+if (config.username !== undefined && config.password !== undefined) {
+  var authentication = true;
+}
+
 var db = mysql.createConnection({
   host: config.db_host,
   port: config.db_port,
@@ -144,13 +155,40 @@ db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook",
     addrbooks.push(obj);
   }
 
+  var userinfo = {};
+  if (authentication) {
+    userinfo["cn=" + config.username + ", " + config.basedn] = {
+      pwd: config.password,
+      addrbooks: addrbooks
+    }
+  } else {
+    userinfo["cn=anonymous"] = {
+      addrbooks: addrbooks
+    }
+  }
+
   server.bind(config.basedn, function (req, res, next) {
-    // Only anonymous bind
+    if (authentication) {
+      var username = req.dn.toString(),
+        password = req.credentials;
+      if (!userinfo.hasOwnProperty(username) ||
+         userinfo[username].pwd != password) {
+         _debug("request username: " + username);
+         _debug("request password: " + password);
+        return next(new ldap.InvalidCredentialsError());
+      }
+    }
+
     res.end();
     return next();
   });
 
   server.search(config.basedn, function(req, res, next) {
+    if (authentication) {
+      var binddn = req.connection.ldap.bindDN.toString();
+    } else {
+      var binddn = "cn=anonymous";
+    }
     // Gigaset workaround
     if (req.filter == '(objectclass=*)') {
       for (index = 0; index < req.baseObject.rdns.length; ++index) {
@@ -169,13 +207,12 @@ db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook",
 
     // Lowercase search parameters
     req.filter = lowercaseSearchParameters(req.filter);
-
-    for (var i = 0; i < addrbooks.length; i++) {
-      if (req.filter.matches(addrbooks[i].attributes)) {
+    for (var i = 0; i < userinfo[binddn].addrbooks.length; i++) {
+      if (req.filter.matches(userinfo[binddn].addrbooks[i].attributes)) {
         if (config.limit > 0 && sent >= config.limit) {
             break;
         } else {
-            res.send(addrbooks[i]);
+            res.send(userinfo[binddn].addrbooks[i]);
             sent++;
         }
       }

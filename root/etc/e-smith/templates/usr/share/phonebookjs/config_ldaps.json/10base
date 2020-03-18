@@ -1,0 +1,23 @@
+{
+    use NethServer::Password;
+    our $pass = NethServer::Password::store('PhonebookDBPasswd');
+    our $ldapPbPass = NethServer::Password::store('LDAPPhonebookPasswd');
+    '';
+}
+\{
+  "basedn" : "dc=phonebook, dc=nh",
+  "port": {{ $phonebookjss{'TCPPort'} }},
+  "debug": false,
+  "db_name": "phonebook",
+  "db_user": "pbookuser",
+  "db_host" : "localhost",
+  "db_port" : "3306",
+  "db_pass": "{{ $pass }}",
+  "user": "nobody",
+  "group": "nobody",
+  "limit": {{ $phonebookjs{'Limit'} || "500" }},
+  "certificate" : "{{ $pki{'CrtFile'} || "/etc/pki/tls/certs/NSRV.crt" }}",
+  "key": "{{ $pki{'KeyFile'} || "/etc/pki/tls/private/NSRV.key" }}",
+  "username": "ldapuser",
+  "password": "{{ $ldapPbPass }}"
+\}
