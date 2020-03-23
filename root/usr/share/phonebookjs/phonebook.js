@@ -45,14 +45,15 @@ if (config_file) {
 }
 _debug("Loaded config: "+util.inspect(config));
 
+var server;
 if (config.certificate !== undefined && config.key !== undefined) {
-  var server = ldap.createServer({"certificate": fs.readFileSync(config.certificate, 'utf8'), "key": fs.readFileSync(config.key, 'utf8')});
+  server = ldap.createServer({"certificate": fs.readFileSync(config.certificate, 'utf8'), "key": fs.readFileSync(config.key, 'utf8')});
 } else {
-  var server = ldap.createServer();
+  server = ldap.createServer();
 }
 
 if (config.username !== undefined && config.password !== undefined) {
-  var authentication = true;
+  authentication = true;
 }
 
 var db = mysql.createConnection({
@@ -184,10 +185,11 @@ db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook",
   });
 
   server.search(config.basedn, function(req, res, next) {
+    var binddn;
     if (authentication) {
-      var binddn = req.connection.ldap.bindDN.toString();
+      binddn = req.connection.ldap.bindDN.toString();
     } else {
-      var binddn = "cn=anonymous";
+      binddn = "cn=anonymous";
     }
     // Gigaset workaround
     if (req.filter == '(objectclass=*)') {
