@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 2.1.3
+Version: 2.2.0
 Release: 1%{?dist}
 Summary:	Public phonebook
 License:	GPLv2
@@ -54,6 +54,10 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Wed Apr 01 2020 Stefano Fancello <stefano.fancello@nethesis.it> - 2.2.0-1
+- Add SSL and authentication to LDAP phonebook  - nethesis/dev#5755
+- expand template and restart service on certificate-update
+
 * Mon Oct 28 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.1.3-1
 - Phonebook: partial results for MSSQL queries - Nethesis/dev#5690
 
