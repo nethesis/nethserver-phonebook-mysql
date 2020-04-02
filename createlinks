@@ -19,6 +19,7 @@ templates2events ('/usr/share/phonebookjs/config_ldaps.json',$event);
 templates2events ('/etc/phonebook/destination-import.json',$event);
 event_services($event, qw(
     phonebookjs restart
+    phonebookjss restart
 ));
 
 
@@ -34,6 +35,7 @@ event_actions ($event , qw(
 
 event_services($event, qw(
     phonebookjs try-restart
+    phonebookjss try-restart
 ));
 
 #
