@@ -43,6 +43,10 @@ ldap_status=`/sbin/e-smith/config getprop phonebookjs status`
 if [[ "X$ldap_status" == "Xenabled" ]]; then
         systemctl restart phonebookjs
 fi
+ldaps_status=`/sbin/e-smith/config getprop phonebookjss status`
+if [[ "X$ldaps_status" == "Xenabled" ]]; then
+        systemctl restart phonebookjss
+fi
 
 # Execute all custom scripts
 for i in $(find /usr/share/phonebooks/post_scripts/); do
