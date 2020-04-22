@@ -17,3 +17,4 @@ $L['ldaps_enabled_label'] = 'Enabled';
 $L['ldaps_disabled_label'] = 'Disabled';
 $L['ldap_port_inuse'] = 'LDAP port is already in use, please choose a different one';
 $L['ldaps_port_inuse'] = 'LDAPS port is already in use, please choose a different one';
+$L['baseDn_label'] = "Base DN";

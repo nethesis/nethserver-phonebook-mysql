@@ -80,6 +80,9 @@ class Phonebook extends \Nethgui\Controller\AbstractController
     {
         parent::prepareView($view);
 
+        $view['baseDn'] = 'dc=phonebook,dc=nh';
+        $view['username'] = 'ldapuser';
+        $view['password'] = $this->getPlatform()->exec('sudo cat /var/lib/nethserver/secrets/LDAPPhonebookPasswd')->getOutput();
         $view['ldapDatasource'] = array_map(function($fmt) use ($view) {
             return array($fmt, $view->translate($fmt . '_label'));
         }, array('enabled', 'disabled'));
