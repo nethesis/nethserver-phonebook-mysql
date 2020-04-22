@@ -1,0 +1,5 @@
+#
+# 20_nethserver_phonebook_mysql
+#
+%adm ALL=NOPASSWD: \
+    /usr/bin/cat /var/lib/nethserver/secrets/LDAPPhonebookPasswd

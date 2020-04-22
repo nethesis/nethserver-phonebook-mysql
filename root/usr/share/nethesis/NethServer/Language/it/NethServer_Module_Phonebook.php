@@ -18,3 +18,4 @@ $L['ldap_port_inuse'] = 'La porta LDAP è occupata, sceglierne una differente';
 $L['ldaps_enabled_label'] = 'Abilita';
 $L['ldaps_disabled_label'] = 'Disabilita';
 $L['ldaps_port_inuse'] = 'La porta LDAPS è occupata, sceglierne una differente';
+$L['baseDn_label'] = "DN Base";

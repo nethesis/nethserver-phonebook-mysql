@@ -12,11 +12,17 @@ $panel->insert(
    $view->fieldset()->setAttribute('template', $T('ldap_label'))
    ->insert($view->radioButton('ldap', 'disabled'))
    ->insert($view->fieldsetSwitch('ldap', 'enabled', $view::FIELDSETSWITCH_EXPANDABLE)
-     ->insert($view->textInput('ldap_port'))))
+     ->insert($view->textInput('ldap_port'))
+     ->insert($view->textInput('baseDn', $view::STATE_READONLY))
+    ))
 ->insert($view->fieldset()->setAttribute('template', $T('ldaps_label'))
      ->insert($view->radioButton('ldaps', 'disabled'))
      ->insert($view->fieldsetSwitch('ldaps', 'enabled', $view::FIELDSETSWITCH_EXPANDABLE)
-     ->insert($view->textInput('ldaps_port'))))
+        ->insert($view->textInput('ldaps_port'))
+        ->insert($view->textInput('baseDn', $view::STATE_READONLY))
+        ->insert($view->textInput('username', $view::STATE_READONLY))
+        ->insert($view->textInput('password', $view::STATE_READONLY))
+    ))
 ;
 
 
