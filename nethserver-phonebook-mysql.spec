@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 2.2.1
+Version: 2.2.2
 Release: 1%{?dist}
 Summary:	Public phonebook
 License:	GPLv2
@@ -55,6 +55,9 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Thu Apr 23 2020 Davide Principi <davide.principi@nethesis.it> - 2.2.2-1
+- Display phonebook credentials in Nethgui - nethesis/dev#5781
+
 * Fri Apr 10 2020 Stefano Fancello <stefano.fancello@nethesis.it> - 2.2.1-1
 - Also restart ldaps phonebook after phonebook update
 
