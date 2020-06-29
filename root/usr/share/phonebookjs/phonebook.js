@@ -125,7 +125,7 @@ db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook",
     }
     // replace invalid chars in dn
     name = name.replace(/#|%|,|\+|\"|\\|\>|\<|\;|=|\/|{|}|\||\^|~|\r|\n|`|\*/g,' ');
-    name = name.replace(/^ */g,'');
+    name = name.replace(/^ *| *$/g,'');
     name = name.toLowerCase();
 
     var cn = "cn=" + name + ", " + config.basedn;
