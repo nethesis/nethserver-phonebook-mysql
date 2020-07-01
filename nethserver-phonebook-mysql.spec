@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 2.2.2
+Version: 2.2.3
 Release: 1%{?dist}
 Summary:	Public phonebook
 License:	GPLv2
@@ -55,6 +55,9 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Wed Jul 01 2020 Stefano Fancello <stefano.fancello@nethesis.it> - 2.2.3-1
+- Phonebook fails to start if name contains ";" character  - Bug nethesis/dev#5837
+
 * Thu Apr 23 2020 Davide Principi <davide.principi@nethesis.it> - 2.2.2-1
 - Display phonebook credentials in Nethgui - nethesis/dev#5781
 
