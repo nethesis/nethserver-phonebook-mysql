@@ -155,6 +155,8 @@ db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook",
 
     addrbooks.push(obj);
   }
+  // disconnect mysql
+  db.end();
 
   var userinfo = {};
   if (authentication) {
