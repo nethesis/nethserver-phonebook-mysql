@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 2.2.3
+Version: 2.2.4
 Release: 1%{?dist}
 Summary:	Public phonebook
 License:	GPLv2
@@ -55,6 +55,9 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Tue Oct 20 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.2.4-1
+- Phonebookjs(s) crashes when mysql connection is lost - Bug nethesis/dev#5857
+
 * Wed Jul 01 2020 Stefano Fancello <stefano.fancello@nethesis.it> - 2.2.3-1
 - Phonebook fails to start if name contains ";" character  - Bug nethesis/dev#5837
 
