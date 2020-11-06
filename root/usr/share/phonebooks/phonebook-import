@@ -26,20 +26,9 @@ def getDbConn(config):
       return None
 
 def syncSource(path, output, deleteonly):
-  logger.info('start ' + ('check of' if output == True else '') + ' source import of ' + path + ' into phonebook.phonebook')
-  try:
-    logger.debug('reading ' + path)
-    with open(path, 'r') as sourceFile:
-      sConfig = json.load(sourceFile)
-  except Exception as err:
-    logger.error('reading ' + path)
-    logger.error(str(err))
-    sys.exit(1)
+  with open(path, 'r') as sourceFile:
+    sConfig = json.load(sourceFile)
   sid = next(iter(sConfig))
-  logger.debug(path + ' has "' + sid + '" source')
-  if not sConfig[sid]['enabled']:
-    logger.info(sid + ' is disabled')
-    sys.exit(0)
   dbSource = getDbConn(sConfig[sid])
   if output == True:
     dbSource.set_character_set('utf8')
@@ -162,6 +151,21 @@ if __name__ == '__main__':
     logger.addHandler(cHandler)
   logger.addHandler(syslogHandler)
   if args.source_path:
-    syncSource(args.source_path, args.check, args.deleteonly)
+    logger.info('start ' + ('check of' if output == True else '') + ' source import of ' + args.source_path + ' into phonebook.phonebook')
+    try:
+      logger.debug('reading ' + args.source_path)
+      with open(args.source_path, 'r') as sourceFile:
+        sConfig = json.load(sourceFile)
+    except Exception as err:
+      logger.error('reading ' + path)
+      logger.error(str(err))
+      sys.exit(1)
+    sid = next(iter(sConfig))
+    logger.debug(args.source_path + ' has "' + sid + '" source')
+    if not sConfig[sid]['enabled']:
+      logger.info(sid + ' is disabled')
+      sys.exit(0)
+    if sconfig['dbtype'] == 'mysql':
+      syncSource(args.source_path, args.check, args.deleteonly)
   else:
     parser.print_help()
