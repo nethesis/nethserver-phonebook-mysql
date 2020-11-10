@@ -165,6 +165,31 @@ def syncSourceCsv(path, output, deleteonly):
     logger.info('end ' + ('check of' if output == True else '') + ' source import of ' + path + ' into phonebook.phonebook')
     return
 
+  try:
+    with open(DEST_PATH, 'r') as configFile:
+      dConfig = json.load(configFile)
+  except Exception as err:
+    logger.error('reading ' + DEST_PATH)
+    logger.error(str(err))
+    sys.exit(1)
+  dbDest = getDbConn(dConfig)
+  if dbDest != None:
+    logger.debug('destination db connection ("phonebook"): ok')
+  else:
+    logger.error('destination db connection ("phonebook"): failed')
+    sys.exit(1)
+
+  curDest = dbDest.cursor()
+
+  try:
+    delcount = curDest.execute('DELETE FROM ' + dConfig['dbtable'] + ' WHERE sid_imported="{}"'.format(sid))
+    logger.info('clean destination: removed ' + str(delcount) + ' entries from ' + dConfig['dbname'] + '.' + dConfig['dbtable'] + ' with sid_imported="' + sid + '"')
+    if deleteonly == True:
+      return
+  except Exception as err:
+    logger.error('cleaning destination: removing entries from ' + dConfig['dbname'] + '.' + dConfig['dbtable'] + ' with sid_imported="' + sid + '"')
+    logger.error(str(err))
+
 if __name__ == '__main__':
   descr = 'MySQL Phonebook importer. Imports contacts from a MySQL database source into phonebook.phonebook database. The destination configuration data is into the /etc/phonebook/destination-import.json file. Destination log is syslog.'
   parser = argparse.ArgumentParser(description=descr)
