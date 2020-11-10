@@ -1,5 +1,9 @@
 #!/usr/bin/env python2
 import os, glob, sys, json, signal, logging, logging.handlers, MySQLdb, argparse, datetime
+import pycurl
+import pandas
+from StringIO import StringIO
+
 DEST_PATH = '/etc/phonebook/destination-import.json'
 
 def signalHandler(sig, frame):
@@ -25,7 +29,7 @@ def getDbConn(config):
       logger.error(str(err))
       return None
 
-def syncSource(path, output, deleteonly):
+def syncSourceMysql(path, output, deleteonly):
   with open(path, 'r') as sourceFile:
     sConfig = json.load(sourceFile)
   sid = next(iter(sConfig))
@@ -128,6 +132,39 @@ def extractArgsDbParams(data):
     result[arg.split('=')[0]] = arg.split('=')[1]
   return result
 
+def syncSourceCsv(path, output, deleteonly):
+  with open(path, 'r') as sourceFile:
+    sConfig = json.load(sourceFile)
+
+  sid = next(iter(sConfig))
+  crl = pycurl.Curl()
+
+  crl.setopt(crl.URL,  str(sConfig[sid]['url']))
+
+  b_obj = StringIO()
+  crl.setopt(crl.WRITEFUNCTION, b_obj.write)
+
+  try:
+    crl.perform()
+    logger.debug('source "' + sid + '" connection (' + sConfig[sid]['url'] + '): ok')
+  except Exception as err:
+    logger.error('source "' + sid + '" connection (' + sConfig[sid]['url'] + '): failed')
+    logger.error(str(err))
+    sys.exit(1)
+  finally:
+    crl.close()
+
+  b_obj.seek(0)
+
+  df = pandas.read_csv(b_obj)
+
+  if output == True:
+    result = df.to_json(orient="records")
+    parsed = json.loads(result)
+    sys.stdout.write(json.dumps(parsed,ensure_ascii=False) + '\n')
+    logger.info('end ' + ('check of' if output == True else '') + ' source import of ' + path + ' into phonebook.phonebook')
+    return
+
 if __name__ == '__main__':
   descr = 'MySQL Phonebook importer. Imports contacts from a MySQL database source into phonebook.phonebook database. The destination configuration data is into the /etc/phonebook/destination-import.json file. Destination log is syslog.'
   parser = argparse.ArgumentParser(description=descr)
@@ -151,13 +188,13 @@ if __name__ == '__main__':
     logger.addHandler(cHandler)
   logger.addHandler(syslogHandler)
   if args.source_path:
-    logger.info('start ' + ('check of' if output == True else '') + ' source import of ' + args.source_path + ' into phonebook.phonebook')
+    logger.info('start ' + ('check of' if args.check == True else '') + ' source import of ' + args.source_path + ' into phonebook.phonebook')
     try:
       logger.debug('reading ' + args.source_path)
       with open(args.source_path, 'r') as sourceFile:
         sConfig = json.load(sourceFile)
     except Exception as err:
-      logger.error('reading ' + path)
+      logger.error('reading ' + args.source_path)
       logger.error(str(err))
       sys.exit(1)
     sid = next(iter(sConfig))
@@ -165,7 +202,9 @@ if __name__ == '__main__':
     if not sConfig[sid]['enabled']:
       logger.info(sid + ' is disabled')
       sys.exit(0)
-    if sconfig['dbtype'] == 'mysql':
-      syncSource(args.source_path, args.check, args.deleteonly)
+    if sConfig[sid]['dbtype'] == 'mysql':
+      syncSourceMysql(args.source_path, args.check, args.deleteonly)
+    elif sConfig[sid]['dbtype'] == 'csv':
+      syncSourceCsv(args.source_path, args.check, args.deleteonly)
   else:
     parser.print_help()
