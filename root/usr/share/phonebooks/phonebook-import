@@ -156,7 +156,7 @@ def syncSourceCsv(path, output, deleteonly):
 
   b_obj.seek(0)
 
-  df = pandas.read_csv(b_obj)
+  df = pandas.read_csv(b_obj, dtype=str)
 
   if output == True:
     result = df.to_json(orient="records")
