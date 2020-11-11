@@ -161,7 +161,7 @@ def syncSourceCsv(path, output, deleteonly):
   if output == True:
     result = df.to_json(orient="records")
     parsed = json.loads(result)
-    sys.stdout.write(json.dumps(parsed,ensure_ascii=False) + '\n')
+    sys.stdout.write(json.dumps(parsed,ensure_ascii=False).encode('utf-8') + '\n')
     logger.info('end ' + ('check of' if output == True else '') + ' source import of ' + path + ' into phonebook.phonebook')
     return
 
