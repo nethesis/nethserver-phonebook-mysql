@@ -144,6 +144,8 @@ def syncSourceCsv(path, output, deleteonly):
   b_obj = StringIO()
   crl.setopt(crl.WRITEFUNCTION, b_obj.write)
 
+  crl.setopt(crl.FAILONERROR, 1)
+
   try:
     crl.perform()
     logger.debug('source "' + sid + '" connection (' + sConfig[sid]['url'] + '): ok')
