@@ -246,7 +246,7 @@ def syncSourceCsv(path, output, deleteonly):
   logger.info('end source import of ' + path + ' into phonebook.phonebook')
 
 if __name__ == '__main__':
-  descr = 'MySQL Phonebook importer. Imports contacts from a MySQL database source into phonebook.phonebook database. The destination configuration data is into the /etc/phonebook/destination-import.json file. Destination log is syslog.'
+  descr = 'MySQL and CSV Phonebook importer. Imports contacts from a MySQL database (or CSV) source into phonebook.phonebook database. The destination configuration data is into the /etc/phonebook/destination-import.json file. Destination log is syslog.'
   parser = argparse.ArgumentParser(description=descr)
   parser.add_argument('source_path', help='absolute path of the source json configuration file')
   parser.add_argument('-lw', '--log_warning', action='store_true', help='enable only warning log messages in syslog')
