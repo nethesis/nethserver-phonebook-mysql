@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 import os, glob, sys, json, signal, logging, logging.handlers, MySQLdb, argparse, datetime
 import pycurl
-import pandas
+import csv
 from StringIO import StringIO
 
 DEST_PATH = '/etc/phonebook/destination-import.json'
@@ -158,10 +158,22 @@ def syncSourceCsv(path, output, deleteonly):
 
   b_obj.seek(0)
 
-  df = pandas.read_csv(b_obj, dtype=str, keep_default_na=False)
+  df = []
+  sample = b_obj.read(1024)
+  b_obj.seek(0)
+  dialect = csv.Sniffer().sniff(sample)
+  if (not csv.Sniffer().has_header(sample)):
+    logger.warn('CSV doesn\'t have a valid header!')
+  csvr = csv.reader(b_obj, dialect=dialect)
+  header = next(csvr, None)
+  for row in csvr:
+    r = {}
+    for idx,item in enumerate(row):
+        r[header[idx]] = item
+    df.append(r)
 
   if output == True:
-    result = df.to_json(orient="records")
+    result = json.dumps(df)
     parsed = json.loads(result)
     sys.stdout.write(json.dumps(parsed,ensure_ascii=False).encode('utf-8') + '\n')
     logger.info('end ' + ('check of' if output == True else '') + ' source import of ' + path + ' into phonebook.phonebook')
@@ -192,7 +204,7 @@ def syncSourceCsv(path, output, deleteonly):
     logger.error('cleaning destination: removing entries from ' + dConfig['dbname'] + '.' + dConfig['dbtable'] + ' with sid_imported="' + sid + '"')
     logger.error(str(err))
 
-  toTransfer = len(df.index)
+  toTransfer = len(df)
 
   logger.debug('synchronizing source "' + sid + '" (' + str(toTransfer) + ' entries)...')
 
@@ -210,7 +222,7 @@ def syncSourceCsv(path, output, deleteonly):
 
   percents = ('%s, ' * len(destCols))[:-2]
 
-  for index, row in df.iterrows():
+  for row in df:
     values = []
     for el in sourceCols:
       values.append(row[el])
