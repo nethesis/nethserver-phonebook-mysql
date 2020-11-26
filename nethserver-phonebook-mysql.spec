@@ -13,7 +13,6 @@ Requires:  nodejs
 Requires:  http-parser
 Requires:  MySQL-python
 Requires:  python-pycurl
-Requires:  python-pandas
 BuildArch:	noarch
 AutoReq: no
 

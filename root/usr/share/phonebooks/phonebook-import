@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 import os, glob, sys, json, signal, logging, logging.handlers, MySQLdb, argparse, datetime
 import pycurl
-import pandas
+import csv
 from StringIO import StringIO
 
 DEST_PATH = '/etc/phonebook/destination-import.json'
@@ -57,7 +57,7 @@ def syncSourceMysql(path, output, deleteonly):
       for x in cols:
         temp[x] = ''
       res.append(temp)
-    sys.stdout.write(json.dumps(res,ensure_ascii=False) + '\n')
+    json.dump(res, sys.stdout)
     logger.info('write ' + str(len(rows)) + ' entries to std output')
     logger.info('end ' + ('check of' if output == True else '') + ' source import of ' + path + ' into phonebook.phonebook')
     curSource.close()
@@ -158,12 +158,22 @@ def syncSourceCsv(path, output, deleteonly):
 
   b_obj.seek(0)
 
-  df = pandas.read_csv(b_obj, dtype=str, keep_default_na=False)
+  df = []
+  sample = b_obj.read(1024)
+  b_obj.seek(0)
+  dialect = csv.Sniffer().sniff(sample)
+  if (not csv.Sniffer().has_header(sample)):
+    logger.warn('CSV doesn\'t have a valid header!')
+  csvr = csv.reader(b_obj, dialect=dialect)
+  header = next(csvr, None)
+  for row in csvr:
+    r = {}
+    for idx,item in enumerate(row):
+        r[header[idx]] = item
+    df.append(r)
 
   if output == True:
-    result = df.to_json(orient="records")
-    parsed = json.loads(result)
-    sys.stdout.write(json.dumps(parsed,ensure_ascii=False).encode('utf-8') + '\n')
+    json.dump(df, sys.stdout)
     logger.info('end ' + ('check of' if output == True else '') + ' source import of ' + path + ' into phonebook.phonebook')
     return
 
@@ -192,7 +202,7 @@ def syncSourceCsv(path, output, deleteonly):
     logger.error('cleaning destination: removing entries from ' + dConfig['dbname'] + '.' + dConfig['dbtable'] + ' with sid_imported="' + sid + '"')
     logger.error(str(err))
 
-  toTransfer = len(df.index)
+  toTransfer = len(df)
 
   logger.debug('synchronizing source "' + sid + '" (' + str(toTransfer) + ' entries)...')
 
@@ -209,11 +219,10 @@ def syncSourceCsv(path, output, deleteonly):
   errCount = 0
 
   percents = ('%s, ' * len(destCols))[:-2]
-
-  for index, row in df.iterrows():
+  for row in df:
     values = []
     for el in sourceCols:
-      values.append(row[el])
+      values.append(row[el.encode('utf-8')].decode('utf-8'))
     values.append(str(sid))
     if sConfig[sid]['type'] != None:
       values.append(str(sConfig[sid]['type']))
@@ -234,7 +243,7 @@ def syncSourceCsv(path, output, deleteonly):
   logger.info('end source import of ' + path + ' into phonebook.phonebook')
 
 if __name__ == '__main__':
-  descr = 'MySQL Phonebook importer. Imports contacts from a MySQL database source into phonebook.phonebook database. The destination configuration data is into the /etc/phonebook/destination-import.json file. Destination log is syslog.'
+  descr = 'MySQL and CSV Phonebook importer. Imports contacts from a MySQL database (or CSV) source into phonebook.phonebook database. The destination configuration data is into the /etc/phonebook/destination-import.json file. Destination log is syslog.'
   parser = argparse.ArgumentParser(description=descr)
   parser.add_argument('source_path', help='absolute path of the source json configuration file')
   parser.add_argument('-lw', '--log_warning', action='store_true', help='enable only warning log messages in syslog')
