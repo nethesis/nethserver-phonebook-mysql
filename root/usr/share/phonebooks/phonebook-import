@@ -57,7 +57,7 @@ def syncSourceMysql(path, output, deleteonly):
       for x in cols:
         temp[x] = ''
       res.append(temp)
-    sys.stdout.write(json.dumps(res,ensure_ascii=False) + '\n')
+    json.dump(res, sys.stdout)
     logger.info('write ' + str(len(rows)) + ' entries to std output')
     logger.info('end ' + ('check of' if output == True else '') + ' source import of ' + path + ' into phonebook.phonebook')
     curSource.close()
@@ -173,7 +173,7 @@ def syncSourceCsv(path, output, deleteonly):
     df.append(r)
 
   if output == True:
-    sys.stdout.write(json.dumps(df, ensure_ascii=False).encode('utf-8') + '\n')
+    json.dump(df, sys.stdout)
     logger.info('end ' + ('check of' if output == True else '') + ' source import of ' + path + ' into phonebook.phonebook')
     return
 
