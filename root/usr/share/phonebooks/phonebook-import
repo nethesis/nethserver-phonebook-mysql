@@ -145,6 +145,8 @@ def syncSourceCsv(path, output, deleteonly):
   crl.setopt(crl.WRITEFUNCTION, b_obj.write)
 
   crl.setopt(crl.FAILONERROR, 1)
+  crl.setopt(crl.FOLLOWLOCATION, 1)
+  crl.setopt(crl.MAXREDIRS, 5)
 
   try:
     crl.perform()
