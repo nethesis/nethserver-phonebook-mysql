@@ -219,11 +219,10 @@ def syncSourceCsv(path, output, deleteonly):
   errCount = 0
 
   percents = ('%s, ' * len(destCols))[:-2]
-
   for row in df:
     values = []
     for el in sourceCols:
-      values.append(row[el])
+      values.append(row[el.encode('utf-8')].decode('utf-8'))
     values.append(str(sid))
     if sConfig[sid]['type'] != None:
       values.append(str(sConfig[sid]['type']))
