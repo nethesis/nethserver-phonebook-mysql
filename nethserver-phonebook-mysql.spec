@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 2.2.4
+Version: 2.3.0
 Release: 1%{?dist}
 Summary:	Public phonebook
 License:	GPLv2
@@ -56,6 +56,9 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Fri Nov 27 2020 Davide Principi <davide.principi@nethesis.it> - 2.3.0-1
+- Phonebook CSV sources - nethesis/dev#5903
+
 * Tue Oct 20 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.2.4-1
 - Phonebookjs(s) crashes when mysql connection is lost - Bug nethesis/dev#5857
 
