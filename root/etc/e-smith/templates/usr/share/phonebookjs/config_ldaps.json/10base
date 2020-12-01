@@ -16,7 +16,7 @@
   "user": "nobody",
   "group": "nobody",
   "limit": {{ $phonebookjs{'Limit'} || "500" }},
-  "certificate" : "/usr/share/phonebookjs/fullchain.pem",
+  "certificate" : "/etc/phonebookjs/fullchain.pem",
   "key": "{{ $pki{'KeyFile'} || "/etc/pki/tls/private/NSRV.key" }}",
   "username": "ldapuser",
   "password": "{{ $ldapPbPass }}"
