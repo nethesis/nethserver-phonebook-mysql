@@ -17,6 +17,7 @@ templates2events ('/etc/odbc.ini',$event);
 templates2events ('/usr/share/phonebookjs/config.json',$event);
 templates2events ('/usr/share/phonebookjs/config_ldaps.json',$event);
 templates2events ('/etc/phonebook/destination-import.json',$event);
+templates2events ('/etc/phonebookjs/fullchain.pem',$event);
 event_services($event, qw(
     phonebookjs restart
     phonebookjss restart
@@ -67,7 +68,7 @@ event_actions('post-restore-config', qw(
 #
 $event = "certificate-update";
 
-templates2events ('/usr/share/phonebookjs/config_ldaps.json',$event);
+templates2events ('/etc/phonebookjs/fullchain.pem',$event);
 
 event_services($event, qw(
     phonebookjss restart

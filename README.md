@@ -102,3 +102,8 @@ grep -Rl "/usr/lib64/openldap/back_sql.la" /etc/openldap/slapd.d/  | xargs rm -f
 grep -Rl "olcSqlConfig" /etc/openldap/slapd.d/  | xargs rm -f
 systemctl start slapd
 ```
+
+## Known issues
+
+Right now, LDAP configuration is in /usr/share/phonebookjs directory and this is incorrect according to FHS.
+It will be moved into /etc/phonebookjs in the future
