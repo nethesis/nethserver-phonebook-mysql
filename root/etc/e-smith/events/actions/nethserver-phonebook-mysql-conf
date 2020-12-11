@@ -1,9 +1,18 @@
 #!/bin/bash
 
+#
+# Create phonebook database on new installations.
+# Add missing fields on existing installations.
+#
+
 root_db_pwd=$(perl -e "use NethServer::Password; print NethServer::Password::store('mysql')")
 db_pwd=$(perl -e "use NethServer::Password; print NethServer::Password::store('PhonebookDBPasswd')")
 
-mysql -u root -p$root_db_pwd <<EOF
+db_exists=$(/usr/bin/mysql --defaults-file=/root/.my.cnf -e "select count(*) from information_schema.tables where table_type = 'BASE TABLE' and table_schema = 'phonebook'" | tail -n1)
+
+if [[ $db_exists == '0' ]]; then
+    # create phonebook database
+    mysql -u root -p$root_db_pwd <<EOF
 CREATE DATABASE IF NOT EXISTS phonebook;
 
 USE phonebook;
@@ -47,26 +56,6 @@ CREATE TABLE IF NOT EXISTS phonebook (
   KEY fax_idx (fax)
 ) ENGINE=MyISAM CHARSET=UTF8;
 
-
--- add column sid_imported only if it is needed
-DELIMITER //
-DROP PROCEDURE IF EXISTS AddPhonebookSourceColumn //
-CREATE PROCEDURE AddPhonebookSourceColumn()
-
-BEGIN
-
-IF NOT EXISTS( (SELECT * FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE()
-        AND COLUMN_NAME='sid_imported' AND TABLE_NAME='phonebook') ) THEN
-    ALTER TABLE phonebook ADD sid_imported varchar(255) default NULL;
-END IF;
-
-END; //
-DELIMITER ;
-
-CALL AddPhonebookSourceColumn();
-DROP PROCEDURE IF EXISTS AddPhonebookSourceColumn;
---
-
 USE mysql;
 
 GRANT ALL on phonebook.* TO pbookuser identified by '$db_pwd';
@@ -74,3 +63,14 @@ GRANT ALL on phonebook.* TO sogo;
 
 FLUSH privileges;
 EOF
+
+else
+    # update existing table, if needed
+    mysql -u root -p$root_db_pwd mysql  -BN -e "SELECT * FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='phonebook' AND COLUMN_NAME='sid_imported' AND TABLE_NAME='phonebook'" | grep -q sid_imported
+
+    if [ $? -gt 0 ]; then
+        # add missing fields
+        echo "[NOTICE] Adding sid_imported field"
+        mysql -u root -p$root_db_pwd phonebook -e "ALTER TABLE phonebook ADD sid_imported varchar(255) default NULL"
+    fi
+fi
