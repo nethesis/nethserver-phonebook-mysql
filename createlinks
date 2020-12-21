@@ -60,7 +60,6 @@ event_services($event, qw(
 #
 event_actions('post-restore-config', qw(
     nethserver-phonebook-mysql-fixldap 19
-    nethserver-phonebook-mysql-conf 60
 ));
 
 #
