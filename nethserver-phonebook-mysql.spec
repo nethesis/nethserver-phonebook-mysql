@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 2.3.1
+Version: 2.3.2
 Release: 1%{?dist}
 Summary:	Public phonebook
 License:	GPLv2
@@ -56,6 +56,9 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Mon Dec 21 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.3.2-1
+- Centralized phonebook fails to install - Bug nethesis/dev#5935
+
 * Mon Dec 07 2020 Stefano Fancello <stefano.fancello@nethesis.it> - 2.3.1-1
 - Certificate error message in Snom phone display - Bug nethesis/dev#5926
 
