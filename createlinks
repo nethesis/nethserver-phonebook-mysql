@@ -68,6 +68,7 @@ event_actions('post-restore-config', qw(
 $event = "certificate-update";
 
 templates2events ('/etc/phonebookjs/fullchain.pem',$event);
+templates2events ('/usr/share/phonebookjs/config_ldaps.json',$event);
 
 event_services($event, qw(
     phonebookjss restart
