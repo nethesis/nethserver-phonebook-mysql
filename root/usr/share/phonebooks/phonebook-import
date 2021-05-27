@@ -161,7 +161,7 @@ def syncSourceCsv(path, output, deleteonly):
   b_obj.seek(0)
 
   df = []
-  sample = b_obj.read(1024)
+  sample = b_obj.readline()
   b_obj.seek(0)
   dialect = csv.Sniffer().sniff(sample)
   if (not csv.Sniffer().has_header(sample)):
