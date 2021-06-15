@@ -213,7 +213,7 @@ db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook",
     req.filter = lowercaseSearchParameters(req.filter);
     for (var i = 0; i < userinfo[binddn].addrbooks.length; i++) {
       if (req.filter.matches(userinfo[binddn].addrbooks[i].attributes)) {
-        if ((config.limit > 0 && sent >= config.limit) || (req.sizeLimit > 0 && i >= req.sizeLimit)) {
+        if ((config.limit > 0 && sent >= config.limit) || (req.sizeLimit > 0 && sent >= req.sizeLimit)) {
             break;
         } else {
             res.send(userinfo[binddn].addrbooks[i]);
