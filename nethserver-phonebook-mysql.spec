@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 2.3.3
+Version: 2.3.4
 Release: 1%{?dist}
 Summary:	Public phonebook
 License:	GPLv2
@@ -56,6 +56,9 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Mon Jun 28 2021 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.3.4-1
+- Ldap phonebook doesn't respect the sizeLimit request parameter - Bug nethesis/dev#6034
+
 * Tue Jan 26 2021 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.3.3-1
 - phonebookjss fails after certificate-update - Bug nethesis/dev#5949
 
