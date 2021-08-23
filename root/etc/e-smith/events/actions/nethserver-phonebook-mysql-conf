@@ -52,8 +52,14 @@ CREATE TABLE IF NOT EXISTS phonebook (
   KEY hphone_idx (homephone),
   KEY wphone_idx (workphone),
   KEY cphone_idx (cellphone),
-  KEY fax_idx (fax)
+  KEY fax_idx (fax),
+  KEY company_idx (company)
 ) ENGINE=MyISAM CHARSET=UTF8;
+
+EXISTS=$(/usr/bin/mysql --defaults-file=/root/.my.cnf -e "SHOW KEYS FROM phonebook.phonebook WHERE Key_name='company_idx'");
+if [[ $EXISTS == "" ]]; then
+  /usr/bin/mysql --defaults-file=/root/.my.cnf -e "ALTER TABLE phonebook.phonebook ADD INDEX company_idx(company)"
+fi
 
 USE mysql;
 
