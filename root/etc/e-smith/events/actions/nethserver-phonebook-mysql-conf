@@ -64,7 +64,6 @@ fi
 USE mysql;
 
 GRANT ALL on phonebook.* TO pbookuser identified by '$db_pwd';
-GRANT ALL on phonebook.* TO sogo;
 
 FLUSH privileges;
 EOF
