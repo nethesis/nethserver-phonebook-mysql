@@ -64,7 +64,6 @@ fi
 USE mysql;
 
 GRANT ALL on phonebook.* TO pbookuser identified by '$db_pwd';
-GRANT ALL on phonebook.* TO sogo;
 
 FLUSH privileges;
 EOF
@@ -78,4 +77,8 @@ else
         echo "[NOTICE] Adding sid_imported field"
         mysql --defaults-file=/root/.my.cnf phonebook -e "ALTER TABLE phonebook ADD sid_imported varchar(255) default NULL"
     fi
+
+    #Set the pbookuser user's password, in the case that was updated.
+    /usr/bin/mysql --defaults-file=/root/.my.cnf -e "SET PASSWORD FOR 'pbookuser'@'%' = PASSWORD('$db_pwd')"
+    /usr/bin/mysql --defaults-file=/root/.my.cnf -e 'FLUSH PRIVILEGES'
 fi
