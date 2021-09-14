@@ -56,11 +56,6 @@ CREATE TABLE IF NOT EXISTS phonebook (
   KEY company_idx (company)
 ) ENGINE=MyISAM CHARSET=UTF8;
 
-EXISTS=$(/usr/bin/mysql --defaults-file=/root/.my.cnf -e "SHOW KEYS FROM phonebook.phonebook WHERE Key_name='company_idx'");
-if [[ $EXISTS == "" ]]; then
-  /usr/bin/mysql --defaults-file=/root/.my.cnf -e "ALTER TABLE phonebook.phonebook ADD INDEX company_idx(company)"
-fi
-
 USE mysql;
 
 GRANT ALL on phonebook.* TO pbookuser identified by '$db_pwd';
@@ -76,6 +71,12 @@ else
         # add missing fields
         echo "[NOTICE] Adding sid_imported field"
         mysql --defaults-file=/root/.my.cnf phonebook -e "ALTER TABLE phonebook ADD sid_imported varchar(255) default NULL"
+    fi
+
+    # set company column as index for existing tables
+    EXISTS=$(/usr/bin/mysql --defaults-file=/root/.my.cnf -e "SHOW KEYS FROM phonebook.phonebook WHERE Key_name='company_idx'");
+    if [[ $EXISTS == "" ]]; then
+        /usr/bin/mysql --defaults-file=/root/.my.cnf -e "ALTER TABLE phonebook.phonebook ADD INDEX company_idx(company)"
     fi
 
     #Set the pbookuser user's password, in the case that was updated.
