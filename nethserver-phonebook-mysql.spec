@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 2.3.4
+Version: 2.4.0
 Release: 1%{?dist}
 Summary:	Public phonebook
 License:	GPLv2
@@ -56,6 +56,11 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Thu Sep 16 2021 Stefano Fancello <stefano.fancello@nethesis.it> - 2.4.0-1
+- Add company column to tables indexes - nethesis/dev#6045
+- nethserver-phonebook-mysql: MySQL `pbookuser` user's password is not keep updated - Bug nethesis/dev#6054
+- Remove sogo user creation
+
 * Mon Jun 28 2021 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.3.4-1
 - Ldap phonebook doesn't respect the sizeLimit request parameter - Bug nethesis/dev#6034
 
