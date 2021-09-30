@@ -11,14 +11,14 @@ $number = '';
 $duser = $amp_conf["AMPDBUSER"];
 $dpass = $amp_conf["AMPDBPASS"];
 $dhost = $amp_conf["AMPDBHOST"];
-$db1 = new PDO("mysql:host=$dhost;dbname=asterisk",$duser, $dpass);
+$db1 = new PDO("mysql:host=$dhost;dbname=asterisk;charset=utf8",$duser, $dpass);
 
 // Phonebook database connection
 exec('perl -e \'use NethServer::Password; my $password = NethServer::Password::store("PhonebookDBPasswd") ; printf $password;\'',$out2);
 $duser2 = 'pbookuser';
 $dpass2 = $out2[0];
 $dhost2 = 'localhost';
-$db2 = new PDO("mysql:host=$dhost2;dbname=phonebook",$duser2, $dpass2);
+$db2 = new PDO("mysql:host=$dhost2;dbname=phonebook;charset=utf8",$duser2, $dpass2);
 
 // Remove NethVoice extensions from centralized phonebook
 $db2->query('DELETE FROM phonebook WHERE sid_imported = "NethVoice RapidCodes" OR sid_imported = "speeddial"');
