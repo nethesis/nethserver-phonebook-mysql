@@ -16,17 +16,15 @@ $pbookpass = $out[0];
 
 // Connect to NethServer phonebook database
 $phonebookDB = new PDO(
-    'mysql:host=localhost;dbname=phonebook',
+    'mysql:host=localhost;dbname=phonebook;charset=utf8',
     'pbookuser',
     $pbookpass);
-$phonebookDB->exec("set names utf8");
 
 // Connect to MSSQL using PDO odbc driver
 $mssqlDB = new PDO(
     'odbc:'.$dsn,
     $user,
     $pass);
-$phonebookDB->exec("set names utf8");
 
 // Remove Business contacts from centralized phonebook
 try {

@@ -7,7 +7,7 @@
  $dpass2 = $out2[0];
  $dhost2 = 'localhost';
 
- $db2 = new PDO("mysql:host=$dhost2;dbname=phonebook",$duser2, $dpass2);
+ $db2 = new PDO("mysql:host=$dhost2;dbname=phonebook;charset=utf8",$duser2, $dpass2);
 
  $tableExists = $db->getOne('SELECT COUNT(*) FROM information_schema.TABLES WHERE (TABLE_SCHEMA = "asterisk") AND (TABLE_NAME = "userman_users")');
  if ($tableExists == 1) {
