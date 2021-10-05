@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 2.4.0
+Version: 2.4.1
 Release: 1%{?dist}
 Summary:	Public phonebook
 License:	GPLv2
@@ -56,6 +56,9 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Tue Oct 05 2021 Stefano Fancello <stefano.fancello@nethesis.it> - 2.4.1-1
+- Phonebook doesn't correctly shows extensions with accented characters - Bug nethesis/dev#6063
+
 * Thu Sep 16 2021 Stefano Fancello <stefano.fancello@nethesis.it> - 2.4.0-1
 - Add company column to tables indexes - nethesis/dev#6045
 - nethserver-phonebook-mysql: MySQL `pbookuser` user's password is not keep updated - Bug nethesis/dev#6054
