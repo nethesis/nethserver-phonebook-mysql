@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 2.4.1
+Version: 2.4.2
 Release: 1%{?dist}
 Summary:	Public phonebook
 License:	GPLv2
@@ -56,6 +56,9 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Fri Nov 12 2021 Stefano Fancello <stefano.fancello@nethesis.it> - 2.4.2-1
+- Custom phonebook sources missing from backup - Bug nethesis/dev#6084
+
 * Tue Oct 05 2021 Stefano Fancello <stefano.fancello@nethesis.it> - 2.4.1-1
 - Phonebook doesn't correctly shows extensions with accented characters - Bug nethesis/dev#6063
 
