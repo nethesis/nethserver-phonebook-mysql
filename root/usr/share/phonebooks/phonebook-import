@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 import os, glob, sys, json, signal, logging, logging.handlers, MySQLdb, argparse, datetime
+import pyodbc
 import pycurl
 import csv
 from StringIO import StringIO
@@ -28,14 +29,22 @@ def getDbConn(config):
     except Exception as err:
       logger.error(str(err))
       return None
+  elif(config['dbtype'] == 'mssql'):
+    try:
+      port = int(config['port'])
+      return pyodbc.connect(driver=config['driver'], server=config['host'], port=port, uid=config['user'], pwd=config['password'], database=config['dbname'])
+    except Exception as err:
+      logger.error(str(err))
+      return None
 
-def syncSourceMysql(path, output, deleteonly):
+def syncSourceDB(path, output, deleteonly):
   with open(path, 'r') as sourceFile:
     sConfig = json.load(sourceFile)
   sid = next(iter(sConfig))
   dbSource = getDbConn(sConfig[sid])
   if output == True:
-    dbSource.set_character_set('utf8')
+    if(sConfig[sid]['dbtype'] == 'mysql'):
+        dbSource.set_character_set('utf8')
   if dbSource != None:
     logger.debug('source "' + sid + '" connection (' + sConfig[sid]['dbname'] + '): ok')
   else:
@@ -92,18 +101,27 @@ def syncSourceMysql(path, output, deleteonly):
   sourceCols = sConfig[sid]['mapping'].keys()
   destCols = sConfig[sid]['mapping'].values()
   destCols.append('sid_imported')
-  curSource = dbSource.cursor(MySQLdb.cursors.DictCursor)
+
+  if(sConfig[sid]['dbtype'] == 'mysql'):
+    curSource = dbSource.cursor(MySQLdb.cursors.DictCursor)
+  elif(sConfig[sid]['dbtype'] == 'mssql'):
+    curSource = dbSource.cursor()
+
   curSource.execute(sConfig[sid]['query'])
-  row = curSource.fetchone()
-  importedCount = 0
-  errCount = 0
+  row=curSource.fetchone()
+  importedCount=0
+  errCount=0
+
   if sConfig[sid]['type'] != None:
     destCols.append('type')
   percents = ('%s, ' * len(destCols))[:-2]
   while row is not None:
     values = []
     for el in sourceCols:
-      values.append(row[el])
+      if(sConfig[sid]['dbtype'] == 'mysql'):
+	values.append(row[el])
+      elif(sConfig[sid]['dbtype'] == 'mssql'):
+	values.append(row.__getattribute__(el))
     values.append(str(sid))
     if sConfig[sid]['type'] != None:
       values.append(str(sConfig[sid]['type']))
@@ -281,8 +299,8 @@ if __name__ == '__main__':
     if not sConfig[sid]['enabled']:
       logger.info(sid + ' is disabled')
       sys.exit(0)
-    if sConfig[sid]['dbtype'] == 'mysql':
-      syncSourceMysql(args.source_path, args.check, args.deleteonly)
+    if sConfig[sid]['dbtype'] == 'mysql' or sConfig[sid]['dbtype'] == 'mssql':
+      syncSourceDB(args.source_path, args.check, args.deleteonly)
     elif sConfig[sid]['dbtype'] == 'csv':
       syncSourceCsv(args.source_path, args.check, args.deleteonly)
   else:
