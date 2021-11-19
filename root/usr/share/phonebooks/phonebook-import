@@ -45,8 +45,6 @@ def syncSourceDB(path, output, deleteonly):
   if output == True:
     if(sConfig[sid]['dbtype'] == 'mysql'):
         dbSource.set_character_set('utf8')
-    elif(sConfig[sid]['dbtype'] == 'mssql'):
-        dbSource.setdecoding(pyodbc.SQL_WMETADATA, encoding='utf-32le') # TODO check this encoding
   if dbSource != None:
     logger.debug('source "' + sid + '" connection (' + sConfig[sid]['dbname'] + '): ok')
   else:
