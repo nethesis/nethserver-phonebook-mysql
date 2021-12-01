@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 2.4.2
+Version: 2.5.0
 Release: 1%{?dist}
 Summary:	Public phonebook
 License:	GPLv2
@@ -57,6 +57,9 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Wed Dec 01 2021 Stefano Fancello <stefano.fancello@nethesis.it> - 2.5.0-1
+- Add MSSQL support to centralized phonebook - nethesis/dev#6090
+
 * Fri Nov 12 2021 Stefano Fancello <stefano.fancello@nethesis.it> - 2.4.2-1
 - Custom phonebook sources missing from backup - Bug nethesis/dev#6084
 
