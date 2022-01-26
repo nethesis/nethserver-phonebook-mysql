@@ -6,6 +6,7 @@ License:	GPLv2
 URL:            %{url_prefix}/%{name}
 Source0:	%{name}-%{version}.tar.gz
 BuildRequires:  nethserver-devtools
+BuildRequires:  npm
 Requires:  nethserver-unixODBC
 Requires:  nethserver-mysql
 Requires:  php-odbc, php-mysql
@@ -37,6 +38,8 @@ Public phonebook
 %build
 %{makedocs}
 perl createlinks
+cd root/usr/share/phonebookjs
+npm install
 
 %install
 rm -rf %{buildroot}
