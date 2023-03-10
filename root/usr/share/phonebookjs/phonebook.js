@@ -97,7 +97,7 @@ function lowercaseSearchParameters(filter){
     return filter;
 }
 
-db.query("SELECT name,company,homephone,workphone,cellphone,fax FROM phonebook", function(err, contacts) {
+db.query("SELECT substr(name,1,63) as name,substr(company,1,63) as company,homephone,workphone,cellphone,fax FROM phonebook", function(err, contacts) {
   if (err) {
     console.log("Error fetching records", err);
     process.exit(1);
