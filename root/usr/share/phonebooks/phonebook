@@ -1,35 +1,18 @@
-#!/bin/bash
+#!/bin/sh
 
 # Publish all configured phonebook into one phonebook
 
-# use SCL version of PHP if NethVoice14 is installed
-if [[ -f /etc/e-smith/db/configuration/defaults/nethvoice/LegacyMode ]]; then
-    source /opt/rh/rh-php56/enable
-fi
-
 # empty phonebook table
-PBOOKPASS=$(perl -e "use NethServer::Password; my \$password = NethServer::Password::store('PhonebookDBPasswd')  ; printf \$password;")
-/usr/bin/mysql phonebook -upbookuser -p${PBOOKPASS} -e "DELETE FROM phonebook WHERE sid_imported IS NULL"
+/usr/bin/mysql -h ${PHONEBOOK_DB_HOST} ${PHONEBOOK_DB_NAME} -u${PHONEBOOK_DB_USER} -p${PHONEBOOK_DB_PASS} -e "DELETE FROM phonebook WHERE sid_imported IS NULL"
 
 # Export nethcti phonebook if requested
-nethcti_phonebook=$(/sbin/e-smith/config getprop phonebook nethcti 2>/dev/null)
-nethcti_status=$(/sbin/e-smith/config getprop nethcti-server status 2>/dev/null)
-if [[ "X$nethcti_phonebook" != "Xdisabled" && "X$nethcti_status" == "Xenabled" ]]; then
-    /usr/share/phonebooks/nethcti_export.php
-fi
+/usr/share/phonebooks/nethcti_export.php
 
 # Export nethvoice speeddial if requested
-nethvoice_speeddial=$(/sbin/e-smith/config getprop phonebook speeddial 2>/dev/null)
-    if [[ "X$nethvoice_speeddial" == "Xenabled" && $(/sbin/e-smith/config show nethvoice &>/dev/null ; echo $?) == 0 ]] ; then
-        /usr/share/phonebooks/speeddial_and_rapidcode_export.php
-    fi
+/usr/share/phonebooks/speeddial_and_rapidcode_export.php
 
 # Export nethvoice extensions
-nethvoice_extensions=$(/sbin/e-smith/config getprop phonebook extensions 2>/dev/null)
-    if [[ "X$nethvoice_extensions" == "Xenabled" && $(/sbin/e-smith/config show nethvoice &>/dev/null ; echo $?) == 0 ]] ; then
-        /usr/share/phonebooks/nethvoice_extensions_export.php
-    fi
-
+/usr/share/phonebooks/nethvoice_extensions_export.php
 
 # Execute all custom scripts
 for i in $(find /usr/share/phonebooks/scripts/); do
@@ -38,17 +21,11 @@ for i in $(find /usr/share/phonebooks/scripts/); do
         fi
 done
 
-# Export data in ldap if requested
-ldap_status=`/sbin/e-smith/config getprop phonebookjs status`
-if [[ "X$ldap_status" == "Xenabled" ]]; then
-        systemctl restart phonebookjs
-fi
-ldaps_status=`/sbin/e-smith/config getprop phonebookjss status`
-if [[ "X$ldaps_status" == "Xenabled" ]]; then
-        systemctl restart phonebookjss
-fi
+systemctl --user restart phonebookjs
 
-# Execute all custom scripts
+systemctl --user restart phonebookjss
+
+# Execute all custom post scripts
 for i in $(find /usr/share/phonebooks/post_scripts/); do
         if [ -f $i ] && [ -x $i ]; then
                 $i
