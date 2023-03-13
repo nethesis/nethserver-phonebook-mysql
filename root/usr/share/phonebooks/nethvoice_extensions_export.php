@@ -1,43 +1,69 @@
 #!/usr/bin/env php
 <?php
- include_once ("/etc/freepbx.conf");
+$DEBUG = isset($_ENV['DEBUG']) ? $_ENV['DEBUG'] : false;
 
- exec('perl -e \'use NethServer::Password; my $password = NethServer::Password::store("PhonebookDBPasswd") ; printf $password;\'',$out2);
- $duser2 = 'pbookuser';
- $dpass2 = $out2[0];
- $dhost2 = 'localhost';
+$nethvoicedb = new PDO(
+        'mysql:host='.$_ENV['AMPDBHOST'].';port='.$_ENV['NETHVOICE_MARIADB_PORT'].';dbname='.$_ENV['AMPDBNAME'],
+        $_ENV['AMPDBUSER'],
+        $_ENV['AMPDBPASS']);
 
- $db2 = new PDO("mysql:host=$dhost2;dbname=phonebook;charset=utf8",$duser2, $dpass2);
+$phonebookdb = new PDO(
+        'mysql:host='.$_ENV['PHONEBOOK_DB_HOST'].';port='.$_ENV['PHONEBOOK_DB_PORT'].';dbname='.$_ENV['PHONEBOOK_DB_NAME'],
+        $_ENV['PHONEBOOK_DB_USER'],
+        $_ENV['PHONEBOOK_DB_PASS']);
 
- $tableExists = $db->getOne('SELECT COUNT(*) FROM information_schema.TABLES WHERE (TABLE_SCHEMA = "asterisk") AND (TABLE_NAME = "userman_users")');
- if ($tableExists == 1) {
-     $ext = $db->getAll('SELECT default_extension as extension,displayname as name FROM userman_users WHERE default_extension != "none"',DB_FETCHMODE_ASSOC);
- } else {
-     $ext = $db->getAll('SELECT extension,name FROM users',DB_FETCHMODE_ASSOC);
- }
 
- if (DB::IsError($tableExists) || DB::IsError($ext)){
-     echo "Error reading extensions\n";
-     exit (1);
- } 
+// Remove NethVoice extensions from centralized phonebook
+$sth = $phonebookdb->prepare('DELETE FROM phonebook WHERE sid_imported = "nethvoice extensions"');
 
- // Remove NethVoice extensions from centralized phonebook
- $db2->query('DELETE FROM phonebook WHERE sid_imported = "nethvoice extensions"');
+$sth = $nethvoicedb->prepare('SELECT default_extension as extension,displayname as name FROM userman_users WHERE default_extension != "none"');
 
- if (empty($ext)) exit (0);
+$sth->execute([]);
 
- $query = "INSERT INTO phonebook.phonebook (owner_id,type, homeemail, workemail, homephone, workphone, cellphone,
-                                                fax, title, company, notes, name, homestreet, homepob, homecity,
-                                                homeprovince, homepostalcode, homecountry, workstreet, workpob,
-                                                workcity, workprovince, workpostalcode, workcountry, url, sid_imported) VALUES ";
- $v = array();
- foreach ($ext as $e){
-     $values[] .= "('admin', 'extension', '', '', '',?, '', '', '', '','', ?,'', '', '','', '', '', '','', '', '', '','', '', 'nethvoice extensions')";
-     $v[] = $e['extension'];
-     $v[] = $e['name'];
- }
- 
- $query .= implode(',',$values);
- $stmt2 = $db2->prepare($query);
- $stmt2->execute($v);
+$qm = [];
+while($row = $sth->fetch(\PDO::FETCH_ASSOC)) {
+        if($DEBUG) {
+                print_r($row);
+	}
+	if (empty($query)) { 
+	        $query = 'INSERT INTO phonebook.phonebook (
+                                owner_id,
+                                type,
+                                homeemail,
+                                workemail,
+                                homephone,
+                                workphone,
+                                cellphone,              
+                                fax,
+                                title,
+                                company,
+                                notes,
+                                name,
+                                homestreet,
+                                homepob,
+                                homecity,               
+                                homeprovince,
+                                homepostalcode,
+                                homecountry,
+                                workstreet,
+                                workpob,                
+                                workcity,
+                                workprovince,
+                                workpostalcode,
+                                workcountry,
+                                url,
+                                sid_imported
+                        )
+			VALUES ';
+	}
+
+	$query .= '("admin", "extension", "", "", "",? , "", "", "", "","", ?, "", "", "", "", "", "", "", "", "", "", "", "", "", "nethvoice extensions")';
+	$qm[] = $row['extension'];
+	$qm[] = $row['name'];
+}
+
+if (!empty($qm)) {
+	$sth = $nethvoicedb->prepare($query);
+	$sth->execute($qm);
+}
 
