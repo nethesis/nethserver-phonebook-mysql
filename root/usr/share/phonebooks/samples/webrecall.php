@@ -1,86 +1,88 @@
 #!/usr/bin/php -q
 <?php
 
-exec('perl -e \'use NethServer::Password; my $password = NethServer::Password::store(\'PhonebookDBPasswd\')  ; printf $password;\'',$out); //get sogo db password
-$pbookpass = $out[0];
+$DEBUG = isset($_ENV['DEBUG']) ? $_ENV['DEBUG'] : false;
+$source_name = 'webrecall';
 
-$database = mysql_connect('localhost','pbookuser',$pbookpass) or die("Database error config");
-mysql_select_db('phonebook', $database);
-mysql_set_charset("utf8");
+$sourcedb = new PDO(
+        'mssql:host=SOURCE.DB.HOSTNAME;port=PORT;dbname=DBNAME',
+        'USERNAME',
+        'PASSWORD');
 
- function ODBCconnect(){ 
-     //Modifica i seguenti parametri di accesso all'odbc
-     $dsn="DSN-NAME";
-     $user="dsn-user";
-     $pass="dsn-pass";
+$phonebookdb = new PDO(
+        'mysql:host='.$_ENV['PHONEBOOK_DB_HOST'].';port='.$_ENV['PHONEBOOK_DB_PORT'].';dbname='.$_ENV['PHONEBOOK_DB_NAME'],
+        $_ENV['PHONEBOOK_DB_USER'],
+	$_ENV['PHONEBOOK_DB_PASS']);
 
-     global $ODBC_handle;
-     if (!isset($ODBC_handle)){
-         $ODBC_handle = odbc_connect($dsn,$user,$pass);
-     }
-     if (!isset($ODBC_handle)) die("ODBCconnect() failed!");
- }
+// Remove old source data from centralized phonebook
+$sth = $phonebookdb->prepare('DELETE FROM phonebook WHERE sid_imported = ?');
+$sth->execute([$source_name]);
 
- //Questa funzione definisce la connessione con il DNS creato precedentemente
+$query="select QU12_RAGSOC as azienda,QU12_FAX as fax,QU12_LOCALITA as citta,QU12_CAP as cap,QU12_INDIRIZZO as via,QU12_TEL as tel,QU12_PROV as prov,QU12_EMAIL as email from QU12_RIVCLIFOR";
+$sth = $sourcedb->prepare($query);
+$sth->execute([]);
 
- function ODBCquery($query){
-     ODBCconnect();
-     global $ODBC_handle;
-     return odbc_exec($ODBC_handle,$query);
- }
-
- //Questa funzione esegue la query su MSSQLSERVER tramite l'odbc
-
- function ODBCquery2array($query){
-     $result = ODBCquery($query);
-     while ($row = odbc_fetch_array($result)){
-         $returnarray[] = $row;
-     }
-     if (isset($returnarray)) return $returnarray; else return false;
- }
-
- //Quest'ultima utilizza la funzione precedente, e distribuisce il risultato in un array
-
-  $query="select QU12_RAGSOC as azienda,QU12_FAX as fax,QU12_LOCALITA as citta,QU12_CAP as cap,QU12_INDIRIZZO as via,QU12_TEL as tel,QU12_PROV as prov,QU12_EMAIL as email from QU12_RIVCLIFOR ";
-
- $rubrica_ext = ODBCquery2array($query);
-
-// Remove webrecall contacts from centralized phonebook
-mysql_query('DELETE FROM phonebook WHERE sid_imported = "webrecall"',$database);
-
- foreach ($rubrica_ext as $record) {
-        $azienda=$record['azienda'];
-        $nome=$record['cognome']." ".$record['nome'];
-        $email=$record['email'];
-        $via=$record['via'];
-        $citta=$record['citta'];
-        $prov=$record['prov'];
-        $cap=$record['cap'];
-        $cell=$record['cell'];
-        $tel=str_replace("-","",$record['tel']);
-        $tel=str_replace(" ","",$tel);
-        $tel=str_replace("/","",$tel);
-        $tel=str_replace("+","00",$tel);
-       	$fax=str_replace("-","",$record['fax']);
-        $fax=str_replace(" ","",$fax);
-        $fax=str_replace("/","",$fax);
-        $fax=str_replace("+","00",$fax);
-
-        $query_ins = "INSERT INTO phonebook  SET 
-                        company='".mysql_escape_string($azienda)."', 
-                        name='".mysql_escape_string($nome)."', 
-                        workphone='".mysql_escape_string($tel)."', 
-                        fax='".mysql_escape_string($fax)."', 
-                        workemail='".mysql_escape_string($email)."', 
-                        workstreet='".mysql_escape_string($via)."', 
-                        workcity='".mysql_escape_string($citta)."', 
-                        workprovince='".mysql_escape_string($prov)."', 
-                        workpostalcode='".mysql_escape_string($cap)."', 
-                        cellphone='".mysql_escape_string($cell)."'.,
-                        type='webrecall',
-                        sid_imported='webrecall';";
- 
- 	$result = mysql_query($query_ins,$database);
- }
- 
-
+while($row = $sth->fetch(\PDO::FETCH_ASSOC)) {
+        if($DEBUG) {
+                print_r($row);
+        }
+        $query = 'INSERT INTO phonebook.phonebook (
+                                owner_id,
+                                type,
+                                homeemail,
+                                workemail,
+                                homephone,
+                                workphone,
+                                cellphone,              
+                                fax,
+                                title,
+                                company,
+                                notes,
+                                name,
+                                homestreet,
+                                homepob,
+                                homecity,               
+                                homeprovince,
+                                homepostalcode,
+                                homecountry,
+                                workstreet,
+                                workpob,                
+                                workcity,
+                                workprovince,
+                                workpostalcode,
+                                workcountry,
+                                url,
+                                sid_imported
+                        )
+                        VALUES
+				(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+	$sth = $phonebookdb->prepare($query);
+	$sth->execute(array(
+		'admin',		#owner_id
+		$source_name,		#type
+		$row['email'],		#homeemail
+		'',			#workemail
+                '',			#homephone
+		preg_replace("/^00/","+",preg_replace("/[^0-9+]/","",$row['tel'])),		#workphone
+		preg_replace("/^00/","+",preg_replace("/[^0-9+]/","",$row['cell'])),            #cellphone
+		preg_replace("/^00/","+",preg_replace("/[^0-9+]/","",$row['fax'])),     	#fax,
+                '',             	#title
+                $row['azienda'],        #company
+                '',             	#notes
+                $row['cognome']." ".$row['nome'],		#name
+                '',             	#homestreet
+                '',             	#homepob
+                '',             	#homecity            
+                '',             	#homeprovince
+                '',             	#homepostalcode
+                '',             	#homecountry
+                $row['via'],            #workstreet
+                '',             	#workpob
+                $row['citta'],          #workcity
+                $row['prov'],           #workprovince
+                $row['cap'],            #workpostalcode
+                '',             	#workcountry
+                '',             	#url
+                $source_name            #sid_imported
+	));
+}
