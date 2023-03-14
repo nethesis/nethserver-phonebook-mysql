@@ -1,92 +1,119 @@
 #!/usr/bin/env php
 <?php
-define("DEBUG",false);
+$DEBUG = isset($_ENV['DEBUG']) ? $_ENV['DEBUG'] : false;
 
-include_once ("/etc/freepbx.conf");
+$nethvoicedb = new PDO(
+        'mysql:host='.$_ENV['AMPDBHOST'].';port='.$_ENV['NETHVOICE_MARIADB_PORT'].';dbname='.$_ENV['AMPDBNAME'],
+        $_ENV['AMPDBUSER'],
+        $_ENV['AMPDBPASS']);
 
-$name = '';
-$number = '';
+$phonebookdb = new PDO(
+        'mysql:host='.$_ENV['PHONEBOOK_DB_HOST'].';port='.$_ENV['PHONEBOOK_DB_PORT'].';dbname='.$_ENV['PHONEBOOK_DB_NAME'],
+        $_ENV['PHONEBOOK_DB_USER'],
+        $_ENV['PHONEBOOK_DB_PASS']);
 
-// Asterisk database connection
-$duser = $amp_conf["AMPDBUSER"];
-$dpass = $amp_conf["AMPDBPASS"];
-$dhost = $amp_conf["AMPDBHOST"];
-$db1 = new PDO("mysql:host=$dhost;dbname=asterisk;charset=utf8",$duser, $dpass);
-
-// Phonebook database connection
-exec('perl -e \'use NethServer::Password; my $password = NethServer::Password::store("PhonebookDBPasswd") ; printf $password;\'',$out2);
-$duser2 = 'pbookuser';
-$dpass2 = $out2[0];
-$dhost2 = 'localhost';
-$db2 = new PDO("mysql:host=$dhost2;dbname=phonebook;charset=utf8",$duser2, $dpass2);
 
 // Remove NethVoice extensions from centralized phonebook
-$db2->query('DELETE FROM phonebook WHERE sid_imported = "NethVoice RapidCodes" OR sid_imported = "speeddial"');
+$sth = $phonebookdb->prepare('DELETE FROM phonebook WHERE sid_imported = "NethVoice RapidCodes" OR sid_imported = "speeddial"');
 
-// Export Speed Dials
-try {
-    if(DEBUG) {
-        echo "Exporting Speed Dials\n";
-    }
+// Import Speed dials
+$sth = $nethvoicedb->prepare('SELECT number AS extension, label AS name from `phonebook` order by name ');
+$sth->execute([]);
 
-    $stmt = $db1->prepare('SELECT * from `phonebook` order by name');
-    $stmt->execute();
-
-    while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        if($row["number"] != '' && $row["name"] != '') {
-
-            if(DEBUG) {
-                echo "Name: {$row["name"]}\n Numero: {$row["number"]}\n";
-            }
-
-            $query = "INSERT INTO phonebook.phonebook (owner_id,type, homeemail, workemail, homephone, workphone, cellphone,
-                                                fax, title, company, notes, name, homestreet, homepob, homecity,
-                                                homeprovince, homepostalcode, homecountry, workstreet, workpob,
-                                                workcity, workprovince, workpostalcode, workcountry, url, sid_imported)
-                      VALUES ('admin', 'speeddial', '', '', '',?, '', '', '', '','', ?, '', '', '','', '', '', '','', '', '', '','', '', 'speeddial')";
-            $stmt2 = $db2->prepare($query);
-            $stmt2->execute(array($row["number"],$row["name"]));
+$qm = [];
+while($row = $sth->fetch(\PDO::FETCH_ASSOC)) {
+        if($DEBUG) {
+                print_r($row);
         }
-    }
-
-    if(DEBUG) {
-        echo "Speed Dials Exported\n";
-    }
-} catch (Exception $e) {
-    if(DEBUG) {
-        echo 'Error exporting Speed Dials: ' . $e->getMessage();
-    }
+        if (empty($query)) {
+                $query = 'INSERT INTO phonebook.phonebook (
+                                owner_id,
+                                type,
+                                homeemail,
+                                workemail,
+                                homephone,
+                                workphone,
+                                cellphone,
+                                fax,
+                                title,
+                                company,
+                                notes,
+                                name,
+                                homestreet,
+                                homepob,
+                                homecity,
+                                homeprovince,
+                                homepostalcode,
+                                homecountry,
+                                workstreet,
+                                workpob,
+                                workcity,
+                                workprovince,
+                                workpostalcode,
+                                workcountry,
+                                url,
+                                sid_imported
+                        )
+			VALUES ';
+	}
+	$query .= '("admin", "speeddial", "", "", "", ?, "", "", "", "","", ?, "", "", "", "", "", "", "", "", "", "", "", "", "", "speeddial")';
+	$qm[] = $row['extension'];
+	$qm[] = $row['name'];
 }
 
-// Export Rapid Codes
-try {
-    if(DEBUG) {
-        echo "Exporting Rapid Codes\n";
-    }
-    $stmt = $db1->prepare('SELECT * from `rapidcode` order by label');
-    $stmt->execute();
+if (!empty($qm)) {
+        $sth = $nethvoicedb->prepare($query);
+        $sth->execute($qm);
+}
 
-    while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        if($row["number"] != '' && $row["label"] != '') {
 
-            if(DEBUG) {
-                echo "Name: {$row["label"]}\n Numero: {$row["number"]}\n";
-            }
-            $query = "INSERT INTO phonebook.phonebook (owner_id,type, homeemail, workemail, homephone, workphone, cellphone,
-                                                fax, title, company, notes, name, homestreet, homepob, homecity,
-                                                homeprovince, homepostalcode, homecountry, workstreet, workpob,
-                                                workcity, workprovince, workpostalcode, workcountry, url, sid_imported)
-                      VALUES ('admin', 'rapidcode', '', '', '',?, '', '', '', '','', ?, '', '', '','', '', '', '','', '', '', '','', '', 'NethVoice RapidCodes')";
-            $stmt2 = $db2->prepare($query);
-            $stmt2->execute(array($row["number"],$row["label"]));
+// Import NethVoice Rapidcode
+$sth = $nethvoicedb->prepare('SELECT number AS extension, label AS name from `phonebook` order by name ');
+$sth->execute([]);
+
+$qm = [];
+while($row = $sth->fetch(\PDO::FETCH_ASSOC)) {
+        if($DEBUG) {
+                print_r($row);
         }
-    }
-    if(DEBUG) {
-        echo "Rapid Codes Exported\n";
-    }
-} catch (Exception $e) {
-    if(DEBUG) {
-        echo 'Error exporting Rapid Codes: ' . $e->getMessage();
-    }
+        if (empty($query)) {
+                $query = 'INSERT INTO phonebook.phonebook (
+                                owner_id,
+                                type,
+                                homeemail,
+                                workemail,
+                                homephone,
+                                workphone,
+                                cellphone,
+                                fax,
+                                title,
+                                company,
+                                notes,
+                                name,
+                                homestreet,
+                                homepob,
+                                homecity,
+                                homeprovince,
+                                homepostalcode,
+                                homecountry,
+                                workstreet,
+                                workpob,
+                                workcity,
+                                workprovince,
+                                workpostalcode,
+                                workcountry,
+                                url,
+                                sid_imported
+                        )
+			VALUES ';
+	}
+	$query .= '("admin", "rapidcode", "", "", "", ?, "", "", "", "","", ?, "", "", "", "", "", "", "", "", "", "", "", "", "", "NethVoice RapidCodes")';
+	$qm[] = $row['extension'];
+	$qm[] = $row['name'];
+}
+
+if (!empty($qm)) {
+        $sth = $nethvoicedb->prepare($query);
+        $sth->execute($qm);
 }
 
