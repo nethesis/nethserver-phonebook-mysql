@@ -15,9 +15,9 @@ $phonebookdb = new PDO(
 
 // Remove NethVoice extensions from centralized phonebook
 $sth = $phonebookdb->prepare('DELETE FROM phonebook WHERE sid_imported = "nethvoice extensions"');
+$sth->execute([]);
 
 $sth = $nethvoicedb->prepare('SELECT default_extension as extension,displayname as name FROM userman_users WHERE default_extension != "none"');
-
 $sth->execute([]);
 
 $qm = [];

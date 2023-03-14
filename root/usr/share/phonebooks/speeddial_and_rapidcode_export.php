@@ -15,6 +15,7 @@ $phonebookdb = new PDO(
 
 // Remove NethVoice extensions from centralized phonebook
 $sth = $phonebookdb->prepare('DELETE FROM phonebook WHERE sid_imported = "NethVoice RapidCodes" OR sid_imported = "speeddial"');
+$sth->execute([]);
 
 // Import Speed dials
 $sth = $nethvoicedb->prepare('SELECT number AS extension, label AS name from `phonebook` order by name ');

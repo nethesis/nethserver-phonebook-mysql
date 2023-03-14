@@ -15,11 +15,11 @@ $phonebookdb = new PDO(
 
 // Remove NethCTI contacts from centralized phonebook
 $sth = $phonebookdb->prepare('DELETE FROM phonebook WHERE sid_imported = "nethcti"');
+$sth->execute([]);
 
 $sth = $nethctidb->prepare("SELECT owner_id, homeemail, workemail, homephone, workphone, cellphone, fax, title, company, notes, name,
                                 homestreet, homepob, homecity, homeprovince, homepostalcode, homecountry, workstreet, workpob, workcity,
 				workprovince, workpostalcode, workcountry, url FROM cti_phonebook WHERE type='public'");
-
 $sth->execute([]);
 
 while($row = $sth->fetch(\PDO::FETCH_ASSOC)) {
@@ -56,6 +56,6 @@ while($row = $sth->fetch(\PDO::FETCH_ASSOC)) {
 			)
 			VALUES
 				(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "nethcti")';
-	$sth = $nethctidb->prepare($query);
+	$sth = $phonebookdb->prepare($query);
 	$sth->execute(array_values($row));
 }
