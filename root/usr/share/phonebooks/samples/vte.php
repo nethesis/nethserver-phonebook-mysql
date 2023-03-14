@@ -3,24 +3,8 @@
 
 #
 # Copyright (C) 2022 Nethesis S.r.l.
-# http://www.nethesis.it - nethserver@nethesis.it
+# SPDX-License-Identifier: GPL-3.0-or-later
 #
-# This script is part of NethServer.
-#
-# NethServer is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License,
-# or any later version.
-#
-# NethServer is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with NethServer.  If not, see COPYING.
-#
-
 
 /***************************************************
  *
@@ -57,9 +41,6 @@ $res = json_decode(curl_exec($ch),TRUE);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
-// DEBUG
-//print_r($res);
-
 if ($res['status'] != 200 || $httpCode != 200) {
         error_log("Error contacting phonebook download API: ".$res['status']);
         exit(1);
@@ -69,14 +50,13 @@ if ($res['data'] != false && !empty($res['data'][0]['count'])) {
 	$limit = 1000;
 	$count = $res['data'][0]['count'];
 	// Connect to phonebook database using PDO
-	exec('perl -e \'use NethServer::Password; my $password = NethServer::Password::store(\'PhonebookDBPasswd\')  ; printf $password;\'',$out);
-	$phonebookDB = new PDO(
-		'mysql:host=localhost;dbname=phonebook;charset=utf8',
-		'pbookuser',
-		$out[0]);
+	$phonebookdb = new PDO(
+        'mysql:host='.$_ENV['PHONEBOOK_DB_HOST'].';port='.$_ENV['PHONEBOOK_DB_PORT'].';dbname='.$_ENV['PHONEBOOK_DB_NAME'],
+        $_ENV['PHONEBOOK_DB_USER'],
+	$_ENV['PHONEBOOK_DB_PASS']);
 
 	// Delete old contacts
-	$phonebookDB->exec('DELETE FROM phonebook WHERE sid_imported = "vte"');
+	$phonebookdb->exec('DELETE FROM phonebook WHERE sid_imported = "vte"');
 
 	for ($offset = 0; $offset < $count; $offset+=$limit) {
 		$query = "SELECT * FROM Contacts limit $offset,$limit;";
@@ -140,11 +120,8 @@ if ($res['data'] != false && !empty($res['data'][0]['count'])) {
 			}
 			$query_insert .= implode(',',$questionmarks);
 			
-			$sth = $phonebookDB->prepare($query_insert);
+			$sth = $phonebookdb->prepare($query_insert);
 			$sth->execute($query_data);
-			// DEBUG
-			//echo $query_insert."\n";
-			//print_r($query_data);
 		}
 	}
 }
