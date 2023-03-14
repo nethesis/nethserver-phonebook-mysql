@@ -1,60 +1,116 @@
 #!/usr/bin/php -q
 <?php
-exec('perl -e \'use NethServer::Password; my $password = NethServer::Password::store(\'PhonebookDBPasswd\')  ; printf $password;\'',$out); //get sogo db password
 
-$pbookpass = $out[0];
+$DEBUG = isset($_ENV['DEBUG']) ? $_ENV['DEBUG'] : false;
+$source_name = 'vtiger';
 
-$database = mysql_connect('localhost','pbookuser',$pbookpass) or die("Database error config");
-mysql_select_db('phonebook', $database);
+$sourcedb = new PDO(
+        'mysql:host=SOURCE.DB.HOSTNAME;port=PORT;dbname=DBNAME',
+        'USERNAME',
+        'PASSWORD');
 
-$vtdb= mysql_connect('localhost','vtdbuser','vtdbpass') or die("Database error config");
-mysql_select_db('vtigerdb', $vtdb);
-mysql_set_charset("utf8");
-
-$query="SELECT  accountname as company, '' as contact, phone as workphone, fax, otherphone as homephone, '' as mobile, bill_city as city, bill_code as code, bill_country as country, bill_state as state, bill_street as street, email1 as email  FROM vtiger_account join vtiger_accountbillads on vtiger_account.accountid=vtiger_accountbillads.accountaddressid
-        UNION SELECT accountname as company, concat(firstname,' ',lastname) as contact,  vtiger_contactdetails.phone as workphone, vtiger_contactdetails.fax, '' as homephone, mobile,mailingcity as city, mailingzip as code, mailingcountry as country,mailingstate as state,mailingstreet as street, email FROM vtiger_contactdetails LEFT JOIN vtiger_account on vtiger_account.accountid=vtiger_contactdetails.accountid LEFT JOIN vtiger_contactaddress  on vtiger_contactdetails.contactid=vtiger_contactaddress.contactaddressid";
+$phonebookdb = new PDO(
+        'mysql:host='.$_ENV['PHONEBOOK_DB_HOST'].';port='.$_ENV['PHONEBOOK_DB_PORT'].';dbname='.$_ENV['PHONEBOOK_DB_NAME'],
+        $_ENV['PHONEBOOK_DB_USER'],
+        $_ENV['PHONEBOOK_DB_PASS']);
 
 
- $res = mysql_query($query,$vtdb);
+// Remove NethCTI contacts from centralized phonebook
+$sth = $phonebookdb->prepare('DELETE FROM phonebook WHERE sid_imported = "vtiger"');
+$sth->execute([]);
 
-// Remove vtiger contacts from centralized phonebook
-mysql_query('DELETE FROM phonebook WHERE sid_imported = "vtiger"',$database);
+$sth = $sourcedb->prepare("
+		SELECT 
+			accountname AS company,
+			'' AS contact,
+			phone AS workphone,
+			fax,
+			otherphone AS homephone,
+			'' AS mobile,
+			bill_city AS city,
+			bill_code AS code,
+			bill_country AS country,
+			bill_state AS state,
+			bill_street AS street,
+			email1 AS email 
+		FROM vtiger_account JOIN vtiger_accountbillads ON vtiger_account.accountid=vtiger_accountbillads.accountaddressid
+	UNION 
+		SELECT
+			accountname AS company,
+			concat(firstname,' ',lastname) AS contact,
+			vtiger_contactdetails.phone AS workphone,
+			vtiger_contactdetails.fax, '' AS homephone,
+			mobile,
+			mailingcity AS city,
+			mailingzip AS code,
+			mailingcountry AS country,
+			mailingstate AS state,
+			mailingstreet AS street,
+			email
+		FROM vtiger_contactdetails LEFT JOIN vtiger_account ON vtiger_account.accountid=vtiger_contactdetails.accountid LEFT JOIN vtiger_contactaddress ON vtiger_contactdetails.contactid=vtiger_contactaddress.contactaddressid");
+$sth->execute([]);
 
- while ($record=mysql_fetch_assoc($res)) {
-        $azienda=$record['company'];
-        $nome=$record['contact'];
-	if (!$nome) $nome = $azienda;
-        $email=$record['email'];
-        $via=$record['street'];
-        $citta=$record['city'];
-        $prov=$record['state'];
-        $cap=$record['code'];
-        $tel=str_replace("-","",$record['workphone']);
-        $tel=str_replace(" ","",$tel);
-        $tel=str_replace("/","",$tel);
-        $tel=str_replace("+","00",$tel);
-        $cell=str_replace("-","",$record['mobile']);
-        $cell=str_replace(" ","",$cell);
-        $cell=str_replace("/","",$cell);
-        $cell=str_replace("+","00",$cell);
-       	$fax=str_replace("-","",$record['fax']);
-        $fax=str_replace(" ","",$fax);
-        $fax=str_replace("/","",$fax);
-        $fax=str_replace("+","00",$fax);
-
-        $query_ins = "INSERT INTO phonebook  SET 
-                        company='".mysql_escape_string($azienda)."', 
-                        name='".mysql_escape_string($nome)."', 
-                        workphone='".mysql_escape_string($tel)."', 
-                        fax='".mysql_escape_string($fax)."', 
-                        workemail='".mysql_escape_string($email)."', 
-                        workstreet='".mysql_escape_string($via)."', 
-                        workcity='".mysql_escape_string($citta)."', 
-                        workprovince='".mysql_escape_string($prov)."', 
-                        workpostalcode='".mysql_escape_string($cap)."', 
-                        cellphone='".mysql_escape_string($cell)."',
-                        type='vtiger',
-                        sid_imported='vtiger';";
- 	$result = mysql_query($query_ins,$database);
- }
- 
+while($row = $sth->fetch(\PDO::FETCH_ASSOC)) {
+        if($DEBUG) {
+                print_r($row);
+        }
+        $query = 'INSERT INTO phonebook.phonebook (
+                                owner_id,
+                                type,
+                                homeemail,
+                                workemail,
+                                homephone,
+                                workphone,
+                                cellphone,              
+                                fax,
+                                title,
+                                company,
+                                notes,
+                                name,
+                                homestreet,
+                                homepob,
+                                homecity,               
+                                homeprovince,
+                                homepostalcode,
+                                homecountry,
+                                workstreet,
+                                workpob,                
+                                workcity,
+                                workprovince,
+                                workpostalcode,
+                                workcountry,
+                                url,
+                                sid_imported
+                        )
+                        VALUES
+                                (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "vtiger")';
+	$sth = $phonebookdb->prepare($query);
+        $sth->execute(array(
+                'admin',                #owner_id
+                $source_name,           #type
+                $row['email'],          #homeemail
+                '',                     #workemail
+                '',                     #homephone
+                preg_replace("/^00/","+",preg_replace("/[^0-9+]/","",$row['workphone'])),             #workphone
+                preg_replace("/^00/","+",preg_replace("/[^0-9+]/","",$row['mobile'])),            #cellphone
+                preg_replace("/^00/","+",preg_replace("/[^0-9+]/","",$row['fax'])),             #fax,
+                '',                     #title
+                $row['company'],        #company
+                '',                     #notes
+                (empty($row['contact']) ? $row['company'] : $row['contact']),        #name
+                '',                     #homestreet
+                '',                     #homepob
+                '',                     #homecity            
+                '',                     #homeprovince
+                '',                     #homepostalcode
+                '',                     #homecountry
+                $row['street'],            #workstreet
+                '',                     #workpob
+                $row['city'],          #workcity
+                $row['state'],           #workprovince
+                $row['code'],            #workpostalcode
+                '',                     #workcountry
+                '',                     #url
+                $source_name            #sid_imported
+        ));
+}
