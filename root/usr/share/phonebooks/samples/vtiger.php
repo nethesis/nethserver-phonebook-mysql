@@ -1,6 +1,11 @@
 #!/usr/bin/php -q
 <?php
 
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
 $DEBUG = isset($_ENV['DEBUG']) ? $_ENV['DEBUG'] : false;
 $source_name = 'vtiger';
 
