@@ -6,7 +6,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-$DEBUG = isset($_ENV['DEBUG']) ? $_ENV['DEBUG'] : false;
+$DEBUG = isset(getenv('DEBUG')) ? getenv('DEBUG') : false;
 $source_name = 'webrecall';
 
 $sourcedb = new PDO(
@@ -15,9 +15,9 @@ $sourcedb = new PDO(
         'PASSWORD');
 
 $phonebookdb = new PDO(
-        'mysql:host='.$_ENV['PHONEBOOK_DB_HOST'].';port='.$_ENV['PHONEBOOK_DB_PORT'].';dbname='.$_ENV['PHONEBOOK_DB_NAME'],
-        $_ENV['PHONEBOOK_DB_USER'],
-	$_ENV['PHONEBOOK_DB_PASS']);
+        'mysql:host='.getenv('PHONEBOOK_DB_HOST').';port='.getenv('PHONEBOOK_DB_PORT').';dbname='.getenv('PHONEBOOK_DB_NAME'),
+        getenv('PHONEBOOK_DB_USER'),
+	getenv('PHONEBOOK_DB_PASS'));
 
 // Remove old source data from centralized phonebook
 $sth = $phonebookdb->prepare('DELETE FROM phonebook WHERE sid_imported = ?');

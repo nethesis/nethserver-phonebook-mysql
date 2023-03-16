@@ -51,9 +51,9 @@ if ($res['data'] != false && !empty($res['data'][0]['count'])) {
 	$count = $res['data'][0]['count'];
 	// Connect to phonebook database using PDO
 	$phonebookdb = new PDO(
-        'mysql:host='.$_ENV['PHONEBOOK_DB_HOST'].';port='.$_ENV['PHONEBOOK_DB_PORT'].';dbname='.$_ENV['PHONEBOOK_DB_NAME'],
-        $_ENV['PHONEBOOK_DB_USER'],
-	$_ENV['PHONEBOOK_DB_PASS']);
+        'mysql:host='.getenv('PHONEBOOK_DB_HOST').';port='.getenv('PHONEBOOK_DB_PORT').';dbname='.getenv('PHONEBOOK_DB_NAME'),
+        getenv('PHONEBOOK_DB_USER'),
+	getenv('PHONEBOOK_DB_PASS'));
 
 	// Delete old contacts
 	$phonebookdb->exec('DELETE FROM phonebook WHERE sid_imported = "vte"');

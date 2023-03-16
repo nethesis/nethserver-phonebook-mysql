@@ -6,17 +6,17 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-$DEBUG = isset($_ENV['DEBUG']) ? $_ENV['DEBUG'] : false;
+$DEBUG = !empty(getenv('DEBUG')) ? getenv('DEBUG') : false;
 
 $nethctidb = new PDO(
-	'mysql:host='.$_ENV['NETHCTI_DB_HOST'].';port='.$_ENV['NETHCTI_DB_PORT'].';dbname=nethcti3',
-	$_ENV['NETHCTI_DB_USER'],
-	$_ENV['NETHCTI_DB_PASSWORD']);
+	'mysql:host='.getenv('NETHCTI_DB_HOST').';port='.getenv('NETHCTI_DB_PORT').';dbname=nethcti3',
+	getenv('NETHCTI_DB_USER'),
+	getenv('NETHCTI_DB_PASSWORD'));
 
 $phonebookdb = new PDO(
-        'mysql:host='.$_ENV['PHONEBOOK_DB_HOST'].';port='.$_ENV['PHONEBOOK_DB_PORT'].';dbname='.$_ENV['PHONEBOOK_DB_NAME'],
-        $_ENV['PHONEBOOK_DB_USER'],
-        $_ENV['PHONEBOOK_DB_PASS']);
+        'mysql:host='.getenv('PHONEBOOK_DB_HOST').';port='.getenv('PHONEBOOK_DB_PORT').';dbname='.getenv('PHONEBOOK_DB_NAME'),
+        getenv('PHONEBOOK_DB_USER'),
+        getenv('PHONEBOOK_DB_PASS'));
 
 
 // Remove NethCTI contacts from centralized phonebook

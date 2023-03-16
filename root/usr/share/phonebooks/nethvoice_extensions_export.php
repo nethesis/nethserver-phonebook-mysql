@@ -6,17 +6,17 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-$DEBUG = isset($_ENV['DEBUG']) ? $_ENV['DEBUG'] : false;
+$DEBUG = isset(getenv('DEBUG')) ? getenv('DEBUG') : false;
 
 $nethvoicedb = new PDO(
-        'mysql:host='.$_ENV['AMPDBHOST'].';port='.$_ENV['NETHVOICE_MARIADB_PORT'].';dbname='.$_ENV['AMPDBNAME'],
-        $_ENV['AMPDBUSER'],
-        $_ENV['AMPDBPASS']);
+        'mysql:host='.getenv('AMPDBHOST').';port='.getenv('NETHVOICE_MARIADB_PORT').';dbname='.getenv('AMPDBNAME'),
+        getenv('AMPDBUSER'),
+        getenv('AMPDBPASS'));
 
 $phonebookdb = new PDO(
-        'mysql:host='.$_ENV['PHONEBOOK_DB_HOST'].';port='.$_ENV['PHONEBOOK_DB_PORT'].';dbname='.$_ENV['PHONEBOOK_DB_NAME'],
-        $_ENV['PHONEBOOK_DB_USER'],
-        $_ENV['PHONEBOOK_DB_PASS']);
+        'mysql:host='.getenv('PHONEBOOK_DB_HOST').';port='.getenv('PHONEBOOK_DB_PORT').';dbname='.getenv('PHONEBOOK_DB_NAME'),
+        getenv('PHONEBOOK_DB_USER'),
+        getenv('PHONEBOOK_DB_PASS'));
 
 
 // Remove NethVoice extensions from centralized phonebook
