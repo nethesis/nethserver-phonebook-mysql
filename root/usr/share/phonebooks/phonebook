@@ -21,10 +21,6 @@ for i in $(find /usr/share/phonebooks/scripts/); do
         fi
 done
 
-systemctl --user restart phonebookjs
-
-systemctl --user restart phonebookjss
-
 # Execute all custom post scripts
 for i in $(find /usr/share/phonebooks/post_scripts/); do
         if [ -f $i ] && [ -x $i ]; then
