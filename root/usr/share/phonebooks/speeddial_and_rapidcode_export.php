@@ -6,7 +6,12 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-$DEBUG = isset(getenv('DEBUG')) ? getenv('DEBUG') : false;
+$DEBUG = getenv('DEBUG');
+if (empty($DEBUG) || strcasecmp($DEBUG,'false') == 0 || $DEBUG == False) {
+        $DEBUG = False;
+} elseif (strcasecmp($DEBUG,'true') == 0 || $DEBUG == True)   {
+        $DEBUG = True;
+}
 
 $nethvoicedb = new PDO(
         'mysql:host='.getenv('AMPDBHOST').';port='.getenv('NETHVOICE_MARIADB_PORT').';dbname='.getenv('AMPDBNAME'),

@@ -3,7 +3,7 @@
 # Publish all configured phonebook into one phonebook
 
 # empty phonebook table
-/usr/bin/mysql -h ${PHONEBOOK_DB_HOST} ${PHONEBOOK_DB_NAME} -u${PHONEBOOK_DB_USER} -p${PHONEBOOK_DB_PASS} -e "DELETE FROM phonebook WHERE sid_imported IS NULL"
+/usr/share/phonebooks/clean.php
 
 # Export nethcti phonebook if requested
 /usr/share/phonebooks/nethcti_export.php

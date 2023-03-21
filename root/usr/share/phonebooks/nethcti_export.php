@@ -6,7 +6,12 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-$DEBUG = !empty(getenv('DEBUG')) ? getenv('DEBUG') : false;
+$DEBUG = getenv('DEBUG');
+if (empty($DEBUG) || strcasecmp($DEBUG,'false') == 0 || $DEBUG == False) {
+        $DEBUG = False;
+} elseif (strcasecmp($DEBUG,'true') == 0 || $DEBUG == True)   {
+        $DEBUG = True;
+}
 
 $nethctidb = new PDO(
 	'mysql:host='.getenv('NETHCTI_DB_HOST').';port='.getenv('NETHCTI_DB_PORT').';dbname=nethcti3',
