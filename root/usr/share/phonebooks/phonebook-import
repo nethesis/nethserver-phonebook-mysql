@@ -1,9 +1,9 @@
-#!/usr/bin/env python2
-import os, glob, sys, json, signal, logging, logging.handlers, MySQLdb, argparse, datetime
+#!/usr/bin/env python3
+import os, glob, sys, json, signal, logging, logging.handlers, mysql.connector, argparse, datetime
 import pyodbc
 import pycurl
 import csv
-from StringIO import StringIO
+import io
 
 def signalHandler(sig, frame):
   logger.critical('interrupted by SIGINT')
@@ -20,10 +20,7 @@ def getDbConn(config):
       port = None
       unixSocket = config['port']
     try:
-      if port:
-        return MySQLdb.connect(host=config['host'], port=port, user=config['user'], passwd=config['password'], db=config['dbname'])
-      else:
-        return MySQLdb.connect(host=config['host'], unix_socket=unixSocket, user=config['user'], passwd=config['password'], db=config['dbname'])
+      return mysql.connector.connect(host=config['host'], port=port, user=config['user'], password=config['password'], database=config['dbname'],charset='utf8')
     except Exception as err:
       logger.error(str(err))
       return None
@@ -81,7 +78,6 @@ def syncSourceDB(path, output, deleteonly):
                 "dbtable": 'phonebook'
                 }
   except Exception as err:
-    logger.error('reading ' + DEST_PATH)
     logger.error(str(err))
     sys.exit(1)
   dbDest = getDbConn(dConfig)
@@ -101,17 +97,16 @@ def syncSourceDB(path, output, deleteonly):
     logger.error(str(err))
   curSource.execute(sConfig[sid]['query'])
   toTransfer = curSource.rowcount
+  curSource.fetchall()
+
+  curSource.close()
   logger.debug('synchronizing source "' + sid + '" (' + str(toTransfer) + ' entries)...')
   start = datetime.datetime.now().replace(microsecond=0)
-  sourceCols = sConfig[sid]['mapping'].keys()
-  destCols = sConfig[sid]['mapping'].values()
+  sourceCols = list(sConfig[sid]['mapping'].keys())
+  destCols = list(sConfig[sid]['mapping'].values())
   destCols.append('sid_imported')
 
-  if(sConfig[sid]['dbtype'] == 'mysql'):
-    curSource = dbSource.cursor(MySQLdb.cursors.DictCursor)
-  elif(sConfig[sid]['dbtype'] == 'mssql'):
-    curSource = dbSource.cursor()
-
+  curSource = dbSource.cursor()
   curSource.execute(sConfig[sid]['query'])
   row=curSource.fetchone()
   importedCount=0
@@ -120,17 +115,34 @@ def syncSourceDB(path, output, deleteonly):
   if sConfig[sid]['type'] != None:
     destCols.append('type')
   percents = ('%s, ' * len(destCols))[:-2]
+
+  # Since now row isn't a dict, save columns name to convert it into a dict if it is needed in the while loop
+  if(sConfig[sid]['dbtype'] == 'mysql'):
+    columns = [col[0] for col in curSource.description]
+
   while row is not None:
     values = []
+    # convert row from tuple to dict if type is mysql
+    if(sConfig[sid]['dbtype'] == 'mysql'):
+      row = {columns[i]: row[i] for i in range(len(columns))}
+
     for el in sourceCols:
       if(sConfig[sid]['dbtype'] == 'mysql'):
         values.append(row[el])
       elif(sConfig[sid]['dbtype'] == 'mssql'):
         values.append(row.__getattribute__(el))
-        values.append(str(sid))
+
+    # Append sid_imported
+    values.append(str(sid))
+
+    # Append type
     if sConfig[sid]['type'] != None:
       values.append(str(sConfig[sid]['type']))
+    else:
+      values.append('custom')
+
     sql = 'INSERT INTO ' + dConfig['dbtable'] + ' (' + ','.join(destCols) + ') VALUES (' + percents + ')'
+
     try:
       curDest.execute(sql, tuple(values))
       importedCount += 1
@@ -164,7 +176,7 @@ def syncSourceCsv(path, output, deleteonly):
 
   crl.setopt(crl.URL,  str(sConfig[sid]['url']))
 
-  b_obj = StringIO()
+  b_obj = io.StringIO()
   crl.setopt(crl.WRITEFUNCTION, b_obj.write)
 
   crl.setopt(crl.FAILONERROR, 1)
@@ -268,7 +280,7 @@ def syncSourceCsv(path, output, deleteonly):
   logger.info('end source import of ' + path + ' into phonebook.phonebook')
 
 if __name__ == '__main__':
-  descr = 'MySQL and CSV Phonebook importer. Imports contacts from a MySQL database (or CSV) source into phonebook.phonebook database. The destination configuration data is into the /etc/phonebook/destination-import.json file. Destination log is syslog.'
+  descr = 'MySQL and CSV Phonebook importer. Imports contacts from a MySQL database (or CSV) source into phonebook.phonebook database. Destination log is syslog.'
   parser = argparse.ArgumentParser(description=descr)
   parser.add_argument('source_path', help='absolute path of the source json configuration file')
   parser.add_argument('-lw', '--log_warning', action='store_true', help='enable only warning log messages in syslog')
