@@ -37,9 +37,6 @@ def syncSourceDB(path, output, deleteonly):
     sConfig = json.load(sourceFile)
   sid = next(iter(sConfig))
   dbSource = getDbConn(sConfig[sid])
-  if output == True:
-    if(sConfig[sid]['dbtype'] == 'mysql'):
-        dbSource.set_character_set('utf8')
   if dbSource != None:
     logger.debug('source "' + sid + '" connection (' + sConfig[sid]['dbname'] + '): ok')
   else:
