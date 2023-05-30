@@ -1,5 +1,5 @@
 Name: nethserver-phonebook-mysql
-Version: 2.5.1
+Version: 2.5.2
 Release: 1%{?dist}
 Summary:	Public phonebook
 License:	GPLv2
@@ -60,6 +60,10 @@ rm -f %{name}-%{version}-%{release}-filelist
 
 
 %changelog
+* Tue May 30 2023 Stefano Fancello <stefano.fancello@nethesis.it> - 2.5.2-1
+- Limit name and company length for NethPhone X3 client
+- Add sample for VTE
+
 * Wed Jan 26 2022 Stefano Fancello <stefano.fancello@nethesis.it> - 2.5.1-1
 - Phonebookjs for nodejs 16 - nethesis/dev#6104
 
