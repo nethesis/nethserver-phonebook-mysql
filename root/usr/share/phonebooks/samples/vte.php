@@ -88,6 +88,7 @@ if ($res['data'] != false && !empty($res['data'][0]['count'])) {
 		if (!empty($res['data']) && is_array($res['data'])) {
 			$query_insert = 'INSERT INTO phonebook (name,company,title,workphone,cellphone,homephone,workemail,fax,workstreet,workpob,workcity,workprovince,workpostalcode,workcountry,type,sid_imported) VALUES ';
 			$questionmarks = [];
+			$query_data = [];
 			foreach ($res['data'] as $record) {
 				//Extract company and name from firstname and lastname
 				$pattern = '/^(.*) \(([^)]*)\)$/';
@@ -98,23 +99,23 @@ if ($res['data'] != false && !empty($res['data'][0]['count'])) {
 			        } else {
 			                $name = $matches[1];
 			                $company = $matches[2];
-			        }
+				}
 
 				$questionmarks[] = '(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
 				$query_data[] = $name;
 				$query_data[] = $company;
-				$query_data[] = $record['title'];
-				$query_data[] = $record['phone'];
-				$query_data[] = $record['mobile'];
-				$query_data[] = $record['homephone'];
-				$query_data[] = $record['email'];
-				$query_data[] = $record['fax'];
-				$query_data[] = $record['mailingstreet'];
-				$query_data[] = $record['mailingpobox'];
-				$query_data[] = $record['mailingcity'];
-				$query_data[] = $record['mailingstate'];
-				$query_data[] = $record['mailingzip'];
-				$query_data[] = $record['mailingcountry'];
+				$query_data[] = isset($record['title']) ? $record['title'] : '' ;
+				$query_data[] = isset($record['phone']) ? $record['phone'] : '' ;
+				$query_data[] = isset($record['mobile']) ? $record['mobile'] : '' ;
+				$query_data[] = isset($record['homephone']) ? $record['homephone'] : '' ;
+				$query_data[] = isset($record['email']) ? $record['email'] : '' ;
+				$query_data[] = isset($record['fax']) ? $record['fax'] : '' ;
+				$query_data[] = isset($record['mailingstreet']) ? $record['mailingstreet'] : '' ;
+				$query_data[] = isset($record['mailingpobox']) ? $record['mailingpobox'] : '' ;
+				$query_data[] = isset($record['mailingcity']) ? $record['mailingcity'] : '' ;
+				$query_data[] = isset($record['mailingstate']) ? $record['mailingstate'] : '' ;
+				$query_data[] = isset($record['mailingzip']) ? $record['mailingzip'] : '' ;
+				$query_data[] = isset($record['mailingcountry']) ? $record['mailingcountry'] : '' ;
 				$query_data[] = 'vte';
 				$query_data[] = 'vte';
 			}
