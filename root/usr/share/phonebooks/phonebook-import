@@ -171,9 +171,9 @@ def syncSourceCsv(path, output, deleteonly):
   sid = next(iter(sConfig))
   crl = pycurl.Curl()
 
-  crl.setopt(crl.URL,  str(sConfig[sid]['url']))
+  crl.setopt(crl.URL, str(sConfig[sid]['url']))
 
-  b_obj = io.StringIO()
+  b_obj = io.BytesIO()
   crl.setopt(crl.WRITEFUNCTION, b_obj.write)
 
   crl.setopt(crl.FAILONERROR, 1)
@@ -182,6 +182,7 @@ def syncSourceCsv(path, output, deleteonly):
 
   try:
     crl.perform()
+    s_obj = io.StringIO(b_obj.getvalue().decode('utf-8'))
     logger.debug('source "' + sid + '" connection (' + sConfig[sid]['url'] + '): ok')
   except Exception as err:
     logger.error('source "' + sid + '" connection (' + sConfig[sid]['url'] + '): failed')
@@ -190,15 +191,15 @@ def syncSourceCsv(path, output, deleteonly):
   finally:
     crl.close()
 
-  b_obj.seek(0)
+  s_obj.seek(0)
 
   df = []
-  sample = b_obj.readline()
-  b_obj.seek(0)
+  sample = s_obj.readline()
+  s_obj.seek(0)
   dialect = csv.Sniffer().sniff(sample)
   if (not csv.Sniffer().has_header(sample)):
     logger.warn('CSV doesn\'t have a valid header!')
-  csvr = csv.reader(b_obj, dialect=dialect)
+  csvr = csv.reader(s_obj, dialect=dialect)
   header = next(csvr, None)
   for row in csvr:
     r = {}
