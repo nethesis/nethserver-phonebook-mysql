@@ -213,12 +213,19 @@ def syncSourceCsv(path, output, deleteonly):
     return
 
   try:
-    with open(DEST_PATH, 'r') as configFile:
-      dConfig = json.load(configFile)
+      dConfig = {
+                "dbtype": "mysql",
+                "host": os.environ['PHONEBOOK_DB_HOST'],
+                "port": os.environ['PHONEBOOK_DB_PORT'],
+                "user": os.environ['PHONEBOOK_DB_USER'],
+                "password": os.environ['PHONEBOOK_DB_PASS'],
+                "dbname": os.environ['PHONEBOOK_DB_NAME'],
+                "dbtable": 'phonebook'
+                }
   except Exception as err:
-    logger.error('reading ' + DEST_PATH)
     logger.error(str(err))
     sys.exit(1)
+
   dbDest = getDbConn(dConfig)
   if dbDest != None:
     logger.debug('destination db connection ("phonebook"): ok')
@@ -244,7 +251,7 @@ def syncSourceCsv(path, output, deleteonly):
   start = datetime.datetime.now().replace(microsecond=0)
 
   sourceCols = sConfig[sid]['mapping'].keys()
-  destCols = sConfig[sid]['mapping'].values()
+  destCols = list(sConfig[sid]['mapping'].values())
   destCols.append('sid_imported')
 
   if sConfig[sid]['type'] != None:
@@ -257,7 +264,7 @@ def syncSourceCsv(path, output, deleteonly):
   for row in df:
     values = []
     for el in sourceCols:
-      values.append(row[el.encode('utf-8')].decode('utf-8'))
+      values.append(row[el])
     values.append(str(sid))
     if sConfig[sid]['type'] != None:
       values.append(str(sConfig[sid]['type']))
