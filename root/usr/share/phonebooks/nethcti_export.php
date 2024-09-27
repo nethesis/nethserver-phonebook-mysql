@@ -67,6 +67,6 @@ while($row = $sth->fetch(\PDO::FETCH_ASSOC)) {
 			)
 			VALUES
 				(?, "nethcti", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "nethcti")';
-	$sth = $phonebookdb->prepare($query);
-	$sth->execute(array_values($row));
+	$sth2 = $phonebookdb->prepare($query);
+	$sth2->execute(array_values($row));
 }
