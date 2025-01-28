@@ -1,3 +1,17 @@
+# Centralized Phonebook
+
+Centralized phonebook is a mysql table where all contacts from various sources are stored.
+By default are copied in phonebook CTI public contacts,  NethVoice extensions and every other source the user configure from NethVoice interface.
+MySQL and Postgres external databases are supported. Also CSV files.
+It is possible also to import contacts from Zucchetti Infinity, by creating the configuration file by hand with Zucchetti base url, username and password:
+```
+[root@infinity ~]# runagent -m nethvoice1 bash
+bash-5.1$ podman exec -it freepbx bash
+root@voice:/var/lib/asterisk# cat /etc/phonebook/sources.d/custom_1.json
+{"custom_1":{"url":"https://BASE_URL","username":"USERNAME","password":"PASSWORD","dbtype":"infinity","interval":"60","enabled":true}}
+
+```
+
 # phonebookjs
 
 phonebookjs is a daemon written in nodejs.
