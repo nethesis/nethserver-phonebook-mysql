@@ -9,7 +9,11 @@ It is possible also to import contacts from Zucchetti Infinity, by creating the 
 bash-5.1$ podman exec -it freepbx bash
 root@voice:/var/lib/asterisk# cat /etc/phonebook/sources.d/custom_1.json
 {"custom_1":{"url":"https://BASE_URL","username":"USERNAME","password":"PASSWORD","dbtype":"infinity","interval":"60","enabled":true}}
+```
 
+Test with
+```
+/usr/share/phonebooks/phonebook-import -v /etc/phonebook/sources.d/custom_1.json
 ```
 
 # phonebookjs
