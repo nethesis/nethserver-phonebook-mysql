@@ -27,7 +27,7 @@ Features:
 - SSL and authentication are not supported
 - all search are case insensitive
 
-Configuration is saved inside `/usr/share/phonebookjs/config.json`: 
+Configuration is saved inside `/usr/share/phonebookjs/config.json`:
 ```
 {
   "basedn" : "dc=phonebook, dc=nh",
@@ -125,3 +125,94 @@ systemctl start slapd
 
 Right now, LDAP configuration is in /usr/share/phonebookjs directory and this is incorrect according to FHS.
 It will be moved into /etc/phonebookjs in the future
+
+## Infinity API details
+
+Infinity has two APIs, one tor retrieve the toke, one to retrieves contacts
+
+### **JSON Structure Documentation**
+
+#### **Root Object**
+- **Key:** `data`
+  **Type:** Array
+  **Description:** Contains a list of entities, each representing a company or individual with their respective contact details.
+
+---
+
+### **Entity Structure (Each Item in `data` Array)**
+
+1. **`address`**
+   - **Type:** String
+   - **Description:** The full postal address of the entity, including street, postal code, city, and province.
+
+2. **`mail`**
+   - **Type:** Array
+   - **Description:** A list of email addresses associated with the entity.
+   - **Each Object in `mail` Array:**
+     - **`mail`** (String) – The email address.
+     - **`type`** (String) – The type of email (e.g., "primary").
+
+3. **`name`**
+   - **Type:** String
+   - **Description:** The name of the entity (company or individual).
+
+4. **`tel`**
+   - **Type:** Array
+   - **Description:** A list of phone numbers associated with the entity.
+   - **Each Object in `tel` Array:**
+     - **`number`** (String) – The phone number.
+     - **`type`** (String) – The type of phone number (e.g., "Telefono fisso" for landline, "Cellulare" for mobile).
+
+5. **`company`**
+   - **Type:** String
+   - **Description:** The company name the individual is associated with (empty if not applicable).
+
+6. **`id`**
+   - **Type:** String
+   - **Description:** A unique identifier for the entity.
+
+7. **`office`**
+   - **Type:** String
+   - **Description:** The office location or designation (e.g., "Principale" for the main office).
+
+8. **`status`**
+   - **Type:** String
+   - **Description:** The legal/business status of the entity.
+   - **Possible Values:**
+     - `"SPA"` – Public Limited Company
+     - `"SRL"` – Private Limited Company
+     - `"PER"` – Individual/Professional
+     - `"PUB"` – Public Entity
+     - `"IND"` – Industrial
+     - `"ALT"` – Alternative/Other
+
+---
+
+### **Example JSON Object**
+```json
+{
+    "address": "via Foo Bar 3/B 20100 MILANO (MI)",
+    "mail": [
+        {
+            "mail": "foom@gmail.com",
+            "type": "primary"
+        }
+    ],
+    "name": "Light Dream",
+    "tel": [
+        {
+            "number": "0213245678",
+            "type": "Telefono fisso"
+        },
+        {
+            "number": "3201234568",
+            "type": "Cellulare"
+        }
+    ],
+    "company": "",
+    "id": "000000000000005",
+    "office": "Principale",
+    "status": "SPA"
+}
+```
+
