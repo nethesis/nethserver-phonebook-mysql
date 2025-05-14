@@ -63,7 +63,6 @@ $query = 'INSERT INTO phonebook.phonebook (
 ) VALUES ';
 
 $qm = [];
-$sth = $phonebookdb->prepare($query.implode(',',$query_values));
 while($row = $sth->fetch(\PDO::FETCH_ASSOC)) {
     if($DEBUG) {
         print_r($row);
