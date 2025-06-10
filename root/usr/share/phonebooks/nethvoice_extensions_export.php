@@ -28,7 +28,7 @@ $phonebookdb = new PDO(
 $sth = $phonebookdb->prepare('DELETE FROM phonebook WHERE sid_imported = "nethvoice extensions"');
 $sth->execute([]);
 
-$sth = $nethvoicedb->prepare('SELECT default_extension as extension,displayname as name FROM userman_users WHERE default_extension != "none"');
+$sth = $nethvoicedb->prepare('SELECT default_extension as extension,displayname as name,mobile FROM userman_users JOIN rest_users ON rest_users.user_id = userman_users.id WHERE default_extension != "none"');
 $sth->execute([]);
 
 $query = 'INSERT INTO phonebook (
@@ -66,9 +66,10 @@ while($row = $sth->fetch(\PDO::FETCH_ASSOC)) {
         if($DEBUG) {
                 print_r($row);
 	}
-	$query_values[] = '("admin", "extension", "", "", "",? , "", "", "", "","", ?, "", "", "", "", "", "", "", "", "", "", "", "", "", "nethvoice extensions")';
+	$query_values[] = '("admin", "extension", "", "", "",? ,? , "", "", "","", ?, "", "", "", "", "", "", "", "", "", "", "", "", "", "nethvoice extensions")';
 	$qm[] = $row['extension'];
 	$qm[] = $row['name'];
+	$qm[] = $row['mobile'];
 }
 
 if (!empty($qm)) {
