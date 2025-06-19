@@ -68,8 +68,8 @@ while($row = $sth->fetch(\PDO::FETCH_ASSOC)) {
 	}
 	$query_values[] = '("admin", "extension", "", "", "",? ,? , "", "", "","", ?, "", "", "", "", "", "", "", "", "", "", "", "", "", "nethvoice extensions")';
 	$qm[] = $row['extension'];
-	$qm[] = $row['name'];
 	$qm[] = $row['mobile'];
+	$qm[] = $row['name'];
 }
 
 if (!empty($qm)) {
